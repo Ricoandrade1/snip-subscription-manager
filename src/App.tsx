@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import Index from "./pages/Index";
+import Members from "./pages/Members";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +22,7 @@ const App = () => (
             <main className="flex-1 overflow-y-auto">
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/members/*" element={<div>Members Page</div>} />
+                <Route path="/members/*" element={<Members />} />
                 <Route path="/revenue" element={<div>Revenue Page</div>} />
                 <Route path="/schedule" element={<div>Schedule Page</div>} />
                 <Route path="/suppliers/*" element={<div>Suppliers Page</div>} />
