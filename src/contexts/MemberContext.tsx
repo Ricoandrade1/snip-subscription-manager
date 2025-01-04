@@ -17,6 +17,7 @@ export type Member = {
   debitDate: string;
   phone: string;
   plan: "Basic" | "Classic" | "Business";
+  nextPaymentDue?: string;
   paymentHistory?: {
     date: string;
     amount: number;
@@ -86,6 +87,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         iban: member.iban,
         debitDate: member.debit_date,
         plan: member.plan_id === '1' ? 'Basic' : member.plan_id === '2' ? 'Classic' : 'Business',
+        nextPaymentDue: member.debit_date, // Using debit_date as nextPaymentDue
         paymentHistory: member.payments?.map(payment => ({
           date: payment.payment_date,
           amount: payment.amount,
