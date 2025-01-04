@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PlanCard } from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
-import { UserPlus, BarChart3, Users } from "lucide-react";
+import { UserPlus, BarChart3, Users, Eye, EyeOff } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { SubscriberForm } from "@/components/SubscriberForm";
 import { useMemberContext } from "@/contexts/MemberContext";
@@ -43,6 +43,8 @@ const PLANS = [
 const Index = () => {
   const { members, addMember, getMembersByPlan } = useMemberContext();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showRevenue, setShowRevenue] = useState(true);
+  const [showSubscribers, setShowSubscribers] = useState(true);
 
   const handleNewSubscriber = (data: any) => {
     addMember(data);
@@ -55,7 +57,6 @@ const Index = () => {
     return acc + plan.price * planMembers.length;
   }, 0);
 
-  // Calculate current subscribers per plan for the form
   const currentSubscribers = {
     Basic: getMembersByPlan("Basic").length,
     Classic: getMembersByPlan("Classic").length,
@@ -75,22 +76,54 @@ const Index = () => {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          <div className="bg-barber-gray rounded-lg p-6 flex items-center space-x-4">
-            <div className="p-4 bg-barber-gold/10 rounded-full">
-              <Users className="h-6 w-6 text-barber-gold" />
-            </div>
-            <div>
-              <p className="text-sm text-barber-light/60">Total de Assinantes</p>
-              <p className="text-2xl font-bold">{totalSubscribers}</p>
+          <div className="bg-barber-gray rounded-lg p-6">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center space-x-4">
+                <div className="p-4 bg-barber-gold/10 rounded-full">
+                  <Users className="h-6 w-6 text-barber-gold" />
+                </div>
+                <div>
+                  <p className="text-sm text-barber-light/60">Total de Assinantes</p>
+                  {showSubscribers ? (
+                    <p className="text-2xl font-bold">{totalSubscribers}</p>
+                  ) : (
+                    <p className="text-2xl font-bold">****</p>
+                  )}
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowSubscribers(!showSubscribers)}
+                className="text-barber-gold hover:text-barber-gold/80 hover:bg-barber-gold/10"
+              >
+                {showSubscribers ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
             </div>
           </div>
-          <div className="bg-barber-gray rounded-lg p-6 flex items-center space-x-4">
-            <div className="p-4 bg-barber-gold/10 rounded-full">
-              <BarChart3 className="h-6 w-6 text-barber-gold" />
-            </div>
-            <div>
-              <p className="text-sm text-barber-light/60">Receita Mensal</p>
-              <p className="text-2xl font-bold">{monthlyRevenue}€</p>
+          <div className="bg-barber-gray rounded-lg p-6">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center space-x-4">
+                <div className="p-4 bg-barber-gold/10 rounded-full">
+                  <BarChart3 className="h-6 w-6 text-barber-gold" />
+                </div>
+                <div>
+                  <p className="text-sm text-barber-light/60">Receita Mensal</p>
+                  {showRevenue ? (
+                    <p className="text-2xl font-bold">{monthlyRevenue}€</p>
+                  ) : (
+                    <p className="text-2xl font-bold">****€</p>
+                  )}
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowRevenue(!showRevenue)}
+                className="text-barber-gold hover:text-barber-gold/80 hover:bg-barber-gold/10"
+              >
+                {showRevenue ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
             </div>
           </div>
         </div>
