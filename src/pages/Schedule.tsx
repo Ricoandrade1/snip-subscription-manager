@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export function Schedule() {
+export default function Schedule() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [appointments] = useState([
     {
