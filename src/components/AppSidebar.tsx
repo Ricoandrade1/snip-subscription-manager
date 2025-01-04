@@ -1,16 +1,5 @@
-import {
-  Users,
-  BarChart3,
-  Calendar,
-  Truck,
-  Package,
-  Scissors,
-  Building,
-  Home,
-  ChevronDown,
-  Image,
-  Rss,
-} from "lucide-react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -18,82 +7,11 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarTrigger,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Link, useLocation } from "react-router-dom";
 import { useMemberContext } from "@/contexts/MemberContext";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useState, useEffect } from "react";
-
-const menuItems = [
-  {
-    title: "Home",
-    icon: Home,
-    url: "/",
-    submenu: [
-      {
-        title: "Membros",
-        icon: Users,
-        url: "/members",
-        submenu: [
-          { title: "Todos", url: "/members/all" },
-          { title: "Basic", url: "/members/basic" },
-          { title: "Classic", url: "/members/classic" },
-          { title: "Business", url: "/members/business" },
-        ],
-      },
-      {
-        title: "Social Media",
-        icon: Rss,
-        url: "/social",
-        submenu: [
-          { title: "Story", url: "/social/story", icon: Image },
-          { title: "Feed", url: "/social/feed", icon: Rss },
-        ],
-      },
-      {
-        title: "Receita",
-        icon: BarChart3,
-        url: "/revenue",
-      },
-      {
-        title: "Agenda",
-        icon: Calendar,
-        url: "/schedule",
-      },
-      {
-        title: "Fornecedores",
-        icon: Truck,
-        url: "/suppliers",
-        submenu: [
-          { title: "Registrar", url: "/suppliers/register" },
-          { title: "Receber", url: "/suppliers/receive" },
-          { title: "Pagar", url: "/suppliers/pay" },
-        ],
-      },
-      {
-        title: "Produtos",
-        icon: Package,
-        url: "/products",
-      },
-      {
-        title: "Barbeiros",
-        icon: Scissors,
-        url: "/barbers",
-      },
-      {
-        title: "Barbearia",
-        icon: Building,
-        url: "/locations",
-      },
-    ],
-  },
-];
+import { menuItems } from "./sidebar/menuItems";
+import { SidebarMenuItemComponent } from "./sidebar/SidebarMenuItem";
 
 export function AppSidebar() {
   const location = useLocation();
@@ -103,10 +21,7 @@ export function AppSidebar() {
   useEffect(() => {
     const currentPath = location.pathname;
     const activeMenuItem = menuItems.find(item => 
-      item.submenu?.some(subItem => 
-        subItem.submenu?.some(subSubItem => currentPath.startsWith(subSubItem.url)) ||
-        currentPath === subItem.url
-      ) || 
+      item.submenu?.some(subItem => currentPath.startsWith(subItem.url)) ||
       currentPath === item.url
     );
     
@@ -114,10 +29,6 @@ export function AppSidebar() {
       setOpenSubmenus(prev => [...prev, activeMenuItem.title]);
     }
   }, [location.pathname]);
-
-  const getSubscriberCount = (plan: "Basic" | "Classic" | "Business") => {
-    return getMembersByPlan(plan).length;
-  };
 
   const toggleSubmenu = (title: string) => {
     setOpenSubmenus(prev =>
@@ -131,77 +42,6 @@ export function AppSidebar() {
     return location.pathname === url || location.pathname.startsWith(url + '/');
   };
 
-  const renderSubmenu = (items: any[], level = 0) => {
-    return items.map((item) => (
-      <SidebarMenuItem key={item.title}>
-        {item.submenu ? (
-          <Collapsible
-            open={openSubmenus.includes(item.title)}
-            onOpenChange={() => toggleSubmenu(item.title)}
-          >
-            <CollapsibleTrigger asChild>
-              <SidebarMenuButton asChild tooltip={item.title}>
-                <div className="flex w-full items-center justify-between">
-                  <Link 
-                    to={item.url} 
-                    className="flex items-center gap-2"
-                    data-active={isActiveRoute(item.url)}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
-                  </Link>
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform duration-200 ${
-                      openSubmenus.includes(item.title) ? "rotate-180" : ""
-                    }`}
-                  />
-                </div>
-              </SidebarMenuButton>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <SidebarMenuSub>
-                {item.submenu.map((subItem: any) => (
-                  <SidebarMenuSubItem key={subItem.title}>
-                    <SidebarMenuSubButton
-                      asChild
-                      data-active={isActiveRoute(subItem.url)}
-                    >
-                      <Link 
-                        to={subItem.url}
-                        className="w-full"
-                      >
-                        {subItem.title}
-                        {level === 1 && item.title === "Membros" &&
-                          subItem.title !== "Todos" && (
-                            <span className="ml-auto text-xs opacity-60">
-                              {getSubscriberCount(
-                                subItem.title as "Basic" | "Classic" | "Business"
-                              )}
-                            </span>
-                          )}
-                      </Link>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                ))}
-              </SidebarMenuSub>
-            </CollapsibleContent>
-          </Collapsible>
-        ) : (
-          <SidebarMenuButton
-            asChild
-            tooltip={item.title}
-            data-active={isActiveRoute(item.url)}
-          >
-            <Link to={item.url}>
-              <item.icon className="h-4 w-4" />
-              <span>{item.title}</span>
-            </Link>
-          </SidebarMenuButton>
-        )}
-      </SidebarMenuItem>
-    ));
-  };
-
   return (
     <Sidebar>
       <SidebarContent>
@@ -213,7 +53,16 @@ export function AppSidebar() {
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {renderSubmenu(menuItems)}
+              {menuItems.map((item) => (
+                <SidebarMenuItemComponent
+                  key={item.title}
+                  item={item}
+                  isActiveRoute={isActiveRoute}
+                  openSubmenus={openSubmenus}
+                  toggleSubmenu={toggleSubmenu}
+                  getSubscriberCount={getMembersByPlan}
+                />
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

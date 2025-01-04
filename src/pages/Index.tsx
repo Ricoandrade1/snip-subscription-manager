@@ -7,7 +7,6 @@ import { SubscriberForm } from "@/components/SubscriberForm";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { useSidebar } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 const Index = () => {
@@ -17,7 +16,6 @@ const Index = () => {
   const [showRevenue, setShowRevenue] = useState(true);
   const [showSubscribers, setShowSubscribers] = useState(true);
   const [session, setSession] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -35,11 +33,11 @@ const Index = () => {
 
   if (!session) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-barber-black">
-        <div className="w-full max-w-md space-y-8 rounded-lg bg-barber-gray p-8 shadow-lg">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-lg">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-barber-gold">Bem-vindo</h2>
-            <p className="mt-2 text-sm text-barber-light/60">
+            <p className="mt-2 text-sm text-gray-600">
               Faça login para acessar o sistema
             </p>
           </div>
