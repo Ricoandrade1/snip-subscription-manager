@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PlanCard } from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
 import { UserPlus, BarChart3, Users, Eye, EyeOff, Menu } from "lucide-react";
@@ -6,11 +6,9 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { SubscriberForm } from "@/components/SubscriberForm";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { useSidebar } from "@/components/ui/sidebar";
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { LoginForm } from "@/components/auth/LoginForm";
 
 const Index = () => {
   const { members, getMembersByPlan } = useMemberContext();
@@ -34,6 +32,14 @@ const Index = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  if (!session) {
+    return (
+      <div className="flex min-h-screen bg-gray-50">
+        <LoginForm />
+      </div>
+    );
+  }
 
   const PLANS = [
     {
@@ -66,38 +72,6 @@ const Index = () => {
     const planMembers = getMembersByPlan(plan.title as "Basic" | "Classic" | "Business");
     return acc + plan.price * planMembers.length;
   }, 0);
-
-  if (!session) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-barber-dark p-4">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-barber-gold mb-2">
-              Bem-vindo
-            </h1>
-            <p className="text-barber-light/60">
-              Faça login para acessar o sistema
-            </p>
-          </div>
-          <Auth
-            supabaseClient={supabase}
-            appearance={{
-              theme: ThemeSupa,
-              variables: {
-                default: {
-                  colors: {
-                    brand: '#D4AF37',
-                    brandAccent: '#B4941F',
-                  },
-                },
-              },
-            }}
-            providers={[]}
-          />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="p-8">
