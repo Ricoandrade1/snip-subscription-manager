@@ -18,8 +18,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useMemberContext } from "@/contexts/MemberContext";
 
 const menuItems = [
   {
@@ -76,6 +80,13 @@ const menuItems = [
 ];
 
 export function AppSidebar() {
+  const location = useLocation();
+  const { getMembersByPlan } = useMemberContext();
+
+  const getSubscriberCount = (plan: "Basic" | "Classic" | "Business") => {
+    return getMembersByPlan(plan).length;
+  };
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -89,12 +100,49 @@ export function AppSidebar() {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link to={item.url}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
+                  {item.submenu ? (
+                    <>
+                      <SidebarMenuButton asChild tooltip={item.title}>
+                        <Link to={item.url}>
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                      <SidebarMenuSub>
+                        {item.submenu.map((subItem) => (
+                          <SidebarMenuSubItem key={subItem.title}>
+                            <SidebarMenuSubButton
+                              asChild
+                              data-active={location.pathname === subItem.url}
+                            >
+                              <Link to={subItem.url}>
+                                {subItem.title}
+                                {item.title === "Membros" &&
+                                  subItem.title !== "Todos" && (
+                                    <span className="ml-auto text-xs opacity-60">
+                                      {getSubscriberCount(
+                                        subItem.title as "Basic" | "Classic" | "Business"
+                                      )}
+                                    </span>
+                                  )}
+                              </Link>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        ))}
+                      </SidebarMenuSub>
+                    </>
+                  ) : (
+                    <SidebarMenuButton
+                      asChild
+                      tooltip={item.title}
+                      data-active={location.pathname === item.url}
+                    >
+                      <Link to={item.url}>
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  )}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
