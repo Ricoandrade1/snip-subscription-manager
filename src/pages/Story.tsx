@@ -4,22 +4,21 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 
-// Simulated banner data - replace these URLs with your actual Canva exported images
 const banners = [
   {
     id: 1,
     title: "Banner 1",
-    imageUrl: "/placeholder.svg",
+    imageUrl: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
   },
   {
     id: 2,
     title: "Banner 2",
-    imageUrl: "/placeholder.svg",
+    imageUrl: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
   },
   {
     id: 3,
     title: "Banner 3",
-    imageUrl: "/placeholder.svg",
+    imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475",
   },
 ];
 
