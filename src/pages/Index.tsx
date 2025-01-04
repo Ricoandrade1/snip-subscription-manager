@@ -55,6 +55,13 @@ const Index = () => {
     return acc + plan.price * planMembers.length;
   }, 0);
 
+  // Calculate current subscribers per plan for the form
+  const currentSubscribers = {
+    Basic: getMembersByPlan("Basic").length,
+    Classic: getMembersByPlan("Classic").length,
+    Business: getMembersByPlan("Business").length,
+  };
+
   return (
     <div className="p-8">
       <div className="max-w-7xl mx-auto space-y-12">
@@ -97,7 +104,10 @@ const Index = () => {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-3xl">
-              <SubscriberForm onSubmit={handleNewSubscriber} />
+              <SubscriberForm 
+                onSubmit={handleNewSubscriber} 
+                currentSubscribers={currentSubscribers}
+              />
             </DialogContent>
           </Dialog>
         </div>
