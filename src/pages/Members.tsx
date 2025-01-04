@@ -1,33 +1,54 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { SubscriberForm } from "@/components/SubscriberForm";
+import { MembersTable } from "@/components/MembersTable";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemberContext } from "@/contexts/MemberContext";
+import { PlanCard } from "@/components/PlanCard";
+import { useNavigate } from "react-router-dom";
 
 export default function Members() {
-  const { members, getMembersByPlan } = useMemberContext();
+  const { members } = useMemberContext();
+  const navigate = useNavigate();
+
+  const handleViewSubscribers = (plan: string) => {
+    const tabValue = plan.toLowerCase();
+    navigate(`/members?tab=${tabValue}`);
+  };
 
   return (
     <div className="p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        <header className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-barber-gold">Membros</h1>
-          <p className="text-barber-light/60">
-            Gerencie todos os membros da sua barbearia
-          </p>
+        <header className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-barber-gold">Membros</h1>
+            <p className="text-barber-light/60">
+              Gerencie todos os membros da sua barbearia
+            </p>
+          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>Cadastrar Assinante</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl">
+              <SubscriberForm />
+            </DialogContent>
+          </Dialog>
         </header>
 
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="w-full justify-start bg-barber-gray">
             <TabsTrigger value="all" className="text-barber-light">
-              Todos
+              Todos ({members.length})
             </TabsTrigger>
             <TabsTrigger value="basic" className="text-barber-light">
-              Basic
+              Basic ({members.filter(m => m.plan === "Basic").length})
             </TabsTrigger>
             <TabsTrigger value="classic" className="text-barber-light">
-              Classic
+              Classic ({members.filter(m => m.plan === "Classic").length})
             </TabsTrigger>
             <TabsTrigger value="business" className="text-barber-light">
-              Business
+              Business ({members.filter(m => m.plan === "Business").length})
             </TabsTrigger>
             <TabsTrigger value="new-plans" className="text-barber-light">
               +Mais planos
@@ -35,69 +56,47 @@ export default function Members() {
           </TabsList>
 
           <TabsContent value="all" className="mt-6">
-            <div className="bg-barber-gray rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-barber-gold mb-4">
-                Todos os Membros
-              </h2>
-              <p className="text-barber-light/60">
-                Total de membros: {members.length}
-              </p>
-            </div>
+            <MembersTable />
           </TabsContent>
 
           <TabsContent value="basic" className="mt-6">
-            <div className="bg-barber-gray rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-barber-gold mb-4">
-                Membros Basic
-              </h2>
-              <p className="text-barber-light/60">
-                Total de membros Basic: {getMembersByPlan("Basic").length}
-              </p>
-            </div>
+            <MembersTable planFilter="Basic" />
           </TabsContent>
 
           <TabsContent value="classic" className="mt-6">
-            <div className="bg-barber-gray rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-barber-gold mb-4">
-                Membros Classic
-              </h2>
-              <p className="text-barber-light/60">
-                Total de membros Classic: {getMembersByPlan("Classic").length}
-              </p>
-            </div>
+            <MembersTable planFilter="Classic" />
           </TabsContent>
 
           <TabsContent value="business" className="mt-6">
-            <div className="bg-barber-gray rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-barber-gold mb-4">
-                Membros Business
-              </h2>
-              <p className="text-barber-light/60">
-                Total de membros Business: {getMembersByPlan("Business").length}
-              </p>
-            </div>
+            <MembersTable planFilter="Business" />
           </TabsContent>
 
           <TabsContent value="new-plans" className="mt-6">
-            <div className="bg-barber-gray rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-barber-gold mb-4">
-                Novos Planos
-              </h2>
-              <p className="text-barber-light/60">
-                Em breve, novos planos estarão disponíveis.
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <PlanCard
+                title="Basic"
+                price={30}
+                features={["Somente Barba"]}
+                subscribers={members.filter(m => m.plan === "Basic").length}
+                onViewSubscribers={() => handleViewSubscribers("Basic")}
+              />
+              <PlanCard
+                title="Classic"
+                price={40}
+                features={["Somente Cabelo"]}
+                subscribers={members.filter(m => m.plan === "Classic").length}
+                onViewSubscribers={() => handleViewSubscribers("Classic")}
+              />
+              <PlanCard
+                title="Business"
+                price={50}
+                features={["Cabelo e Barba"]}
+                subscribers={members.filter(m => m.plan === "Business").length}
+                onViewSubscribers={() => handleViewSubscribers("Business")}
+              />
             </div>
           </TabsContent>
         </Tabs>
-
-        <div className="mt-8">
-          <h2 className="text-2xl font-semibold text-barber-gold mb-6">
-            Cadastrar Novo Membro
-          </h2>
-          <div className="bg-barber-gray rounded-lg p-6">
-            <SubscriberForm />
-          </div>
-        </div>
       </div>
     </div>
   );
