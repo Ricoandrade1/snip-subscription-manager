@@ -4,13 +4,14 @@ import { useMemberContext } from "@/contexts/MemberContext";
 import { useState } from "react";
 import type { Member } from "@/contexts/MemberContext";
 import { EditMemberDialog } from "./EditMemberDialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MembersTableProps {
   planFilter?: "Basic" | "Classic" | "Business";
 }
 
 export function MembersTable({ planFilter }: MembersTableProps) {
-  const { members } = useMemberContext();
+  const { members, isLoading } = useMemberContext();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -43,6 +44,19 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     setSelectedMember(member);
     setDialogOpen(true);
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-10 w-[300px]" />
+        <div className="space-y-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-16 w-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

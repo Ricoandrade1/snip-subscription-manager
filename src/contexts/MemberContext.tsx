@@ -1,6 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase/client';
+import type { Tables } from '@/lib/supabase/client';
+import { toast } from "sonner";
 
-export interface Member {
+export type Member = {
   id: string;
   name: string;
   nickname: string;
@@ -12,127 +15,197 @@ export interface Member {
   bank: string;
   iban: string;
   debitDate: string;
-  phone: string; // New field
+  phone: string;
   plan: "Basic" | "Classic" | "Business";
-  // Campos adicionais para relatórios e pagamentos
-  lastPayment?: string;
-  nextPaymentDue?: string;
   paymentHistory?: {
     date: string;
     amount: number;
     status: "paid" | "pending" | "overdue";
     receiptUrl?: string;
   }[];
-  // Campos para relatórios futuros
   visits?: {
     date: string;
     service: string;
     barber: string;
   }[];
-}
+};
 
 interface MemberContextType {
   members: Member[];
-  addMember: (member: Omit<Member, "id">) => void;
-  updateMember: (id: string, member: Partial<Member>) => void;
-  deleteMember: (id: string) => void;
+  addMember: (member: Omit<Member, "id">) => Promise<void>;
+  updateMember: (id: string, member: Partial<Member>) => Promise<void>;
+  deleteMember: (id: string) => Promise<void>;
   getMembersByPlan: (plan: Member["plan"]) => Member[];
+  isLoading: boolean;
 }
 
 const MemberContext = createContext<MemberContextType | undefined>(undefined);
 
 export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [members, setMembers] = useState<Member[]>([
-    {
-      id: "1",
-      name: "João Silva",
-      nickname: "João",
-      nif: "123456789",
-      birthDate: "1990-01-15",
-      passport: "AB123456",
-      citizenCard: "",
-      bi: "",
-      bank: "Banco do Brasil",
-      iban: "PT50123456789012345678901",
-      debitDate: "2024-03-01",
-      phone: "+351 912 345 678",
-      plan: "Basic",
-      lastPayment: "2024-02-01",
-      nextPaymentDue: "2024-03-01",
-      paymentHistory: [
-        {
-          date: "2024-02-01",
-          amount: 30,
-          status: "paid",
-        }
-      ]
-    },
-    {
-      id: "2",
-      name: "Maria Santos",
-      nickname: "Mari",
-      nif: "987654321",
-      birthDate: "1985-06-20",
-      passport: "",
-      citizenCard: "12345678",
-      bi: "",
-      bank: "Caixa Geral",
-      iban: "PT50987654321098765432109",
-      debitDate: "2024-03-05",
-      phone: "+351 987 654 321",
-      plan: "Classic",
-      lastPayment: "2024-02-05",
-      nextPaymentDue: "2024-03-05",
-      paymentHistory: [
-        {
-          date: "2024-02-05",
-          amount: 40,
-          status: "paid",
-        }
-      ]
-    },
-    {
-      id: "3",
-      name: "António Ferreira",
-      nickname: "Tony",
-      nif: "456789123",
-      birthDate: "1982-12-10",
-      passport: "",
-      citizenCard: "",
-      bi: "87654321",
-      bank: "Millennium BCP",
-      iban: "PT50456789123456789123456",
-      debitDate: "2024-03-10",
-      phone: "+351 654 321 987",
-      plan: "Business",
-      lastPayment: "2024-02-10",
-      nextPaymentDue: "2024-03-10",
-      paymentHistory: [
-        {
-          date: "2024-02-10",
-          amount: 50,
-          status: "paid",
-        }
-      ]
+  const [members, setMembers] = useState<Member[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchMembers();
+  }, []);
+
+  const fetchMembers = async () => {
+    try {
+      const { data: membersData, error: membersError } = await supabase
+        .from('members')
+        .select(`
+          *,
+          payments (
+            id,
+            amount,
+            status,
+            payment_date,
+            receipt_url
+          ),
+          visits (
+            id,
+            service,
+            barber,
+            visit_date
+          )
+        `);
+
+      if (membersError) throw membersError;
+
+      const formattedMembers: Member[] = membersData.map(member => ({
+        id: member.id,
+        name: member.name,
+        nickname: member.nickname || '',
+        phone: member.phone,
+        nif: member.nif || '',
+        birthDate: member.birth_date,
+        passport: member.passport || '',
+        citizenCard: member.citizen_card || '',
+        bi: member.bi || '',
+        bank: member.bank,
+        iban: member.iban,
+        debitDate: member.debit_date,
+        plan: member.plan_id === '1' ? 'Basic' : member.plan_id === '2' ? 'Classic' : 'Business',
+        paymentHistory: member.payments?.map(payment => ({
+          date: payment.payment_date,
+          amount: payment.amount,
+          status: payment.status,
+          receiptUrl: payment.receipt_url || undefined
+        })),
+        visits: member.visits?.map(visit => ({
+          date: visit.visit_date,
+          service: visit.service,
+          barber: visit.barber
+        }))
+      }));
+
+      setMembers(formattedMembers);
+    } catch (error) {
+      console.error('Erro ao buscar membros:', error);
+      toast.error('Erro ao carregar membros');
+    } finally {
+      setIsLoading(false);
     }
-  ]);
-
-  const addMember = (member: Omit<Member, "id">) => {
-    const newMember = {
-      ...member,
-      id: Date.now().toString(),
-    };
-    setMembers([...members, newMember]);
   };
 
-  const updateMember = (id: string, updatedFields: Partial<Member>) => {
-    setMembers(members.map(member => 
-      member.id === id ? { ...member, ...updatedFields } : member
-    ));
+  const addMember = async (member: Omit<Member, "id">) => {
+    try {
+      const { data: planData } = await supabase
+        .from('plans')
+        .select('id')
+        .eq('title', member.plan)
+        .single();
+
+      if (!planData) throw new Error('Plano não encontrado');
+
+      const { data, error } = await supabase
+        .from('members')
+        .insert([{
+          name: member.name,
+          nickname: member.nickname,
+          phone: member.phone,
+          nif: member.nif,
+          birth_date: member.birthDate,
+          passport: member.passport,
+          citizen_card: member.citizenCard,
+          bi: member.bi,
+          bank: member.bank,
+          iban: member.iban,
+          debit_date: member.debitDate,
+          plan_id: planData.id
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setMembers(prev => [...prev, { ...member, id: data.id }]);
+      toast.success('Membro adicionado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao adicionar membro:', error);
+      toast.error('Erro ao adicionar membro');
+    }
   };
 
-  const deleteMember = (id: string) => {
-    setMembers(members.filter(member => member.id !== id));
+  const updateMember = async (id: string, updatedFields: Partial<Member>) => {
+    try {
+      let planId = null;
+      if (updatedFields.plan) {
+        const { data: planData } = await supabase
+          .from('plans')
+          .select('id')
+          .eq('title', updatedFields.plan)
+          .single();
+        planId = planData?.id;
+      }
+
+      const { error } = await supabase
+        .from('members')
+        .update({
+          name: updatedFields.name,
+          nickname: updatedFields.nickname,
+          phone: updatedFields.phone,
+          nif: updatedFields.nif,
+          birth_date: updatedFields.birthDate,
+          passport: updatedFields.passport,
+          citizen_card: updatedFields.citizenCard,
+          bi: updatedFields.bi,
+          bank: updatedFields.bank,
+          iban: updatedFields.iban,
+          debit_date: updatedFields.debitDate,
+          ...(planId && { plan_id: planId })
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setMembers(prev =>
+        prev.map(member =>
+          member.id === id ? { ...member, ...updatedFields } : member
+        )
+      );
+      toast.success('Membro atualizado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao atualizar membro:', error);
+      toast.error('Erro ao atualizar membro');
+    }
+  };
+
+  const deleteMember = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('members')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setMembers(prev => prev.filter(member => member.id !== id));
+      toast.success('Membro removido com sucesso!');
+    } catch (error) {
+      console.error('Erro ao deletar membro:', error);
+      toast.error('Erro ao remover membro');
+    }
   };
 
   const getMembersByPlan = (plan: Member["plan"]) => {
@@ -145,7 +218,8 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       addMember, 
       updateMember, 
       deleteMember,
-      getMembersByPlan
+      getMembersByPlan,
+      isLoading
     }}>
       {children}
     </MemberContext.Provider>
