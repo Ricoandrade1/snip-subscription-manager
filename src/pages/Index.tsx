@@ -2,6 +2,8 @@ import { useState } from "react";
 import { PlanCard } from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
 import { UserPlus, BarChart3, Users } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { SubscriberForm } from "@/components/SubscriberForm";
 
 const PLANS = [
   {
@@ -13,7 +15,7 @@ const PLANS = [
       "1 vez por semana",
       "Agendamento prioritário",
     ],
-    subscribers: 45,
+    subscribers: 0,
   },
   {
     id: 2,
@@ -24,7 +26,7 @@ const PLANS = [
       "1 vez por semana",
       "Agendamento prioritário",
     ],
-    subscribers: 32,
+    subscribers: 0,
   },
   {
     id: 3,
@@ -36,16 +38,30 @@ const PLANS = [
       "Agendamento VIP",
       "Produtos exclusivos",
     ],
-    subscribers: 18,
+    subscribers: 0,
   },
 ];
 
 const Index = () => {
-  const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
+  const [subscribers, setSubscribers] = useState<{ [key: string]: number }>({
+    Basic: 0,
+    Classic: 0,
+    Business: 0,
+  });
 
-  const totalSubscribers = PLANS.reduce((acc, plan) => acc + plan.subscribers, 0);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleNewSubscriber = (data: any) => {
+    setSubscribers((prev) => ({
+      ...prev,
+      [data.plan]: prev[data.plan] + 1,
+    }));
+    setIsDialogOpen(false);
+  };
+
+  const totalSubscribers = Object.values(subscribers).reduce((a, b) => a + b, 0);
   const monthlyRevenue = PLANS.reduce(
-    (acc, plan) => acc + plan.price * plan.subscribers,
+    (acc, plan) => acc + plan.price * subscribers[plan.title],
     0
   );
 
@@ -83,10 +99,20 @@ const Index = () => {
         </div>
 
         <div className="flex justify-end">
-          <Button className="bg-barber-gold hover:bg-barber-gold/90 text-black">
-            <UserPlus className="mr-2 h-4 w-4" />
-            Novo Assinante
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-barber-gold hover:bg-barber-gold/90 text-black">
+                <UserPlus className="mr-2 h-4 w-4" />
+                Novo Assinante
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl">
+              <SubscriberForm
+                onSubmit={handleNewSubscriber}
+                currentSubscribers={subscribers}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="grid grid-cols-3 gap-6">
@@ -96,8 +122,8 @@ const Index = () => {
               title={plan.title}
               price={plan.price}
               features={plan.features}
-              subscribers={plan.subscribers}
-              onViewSubscribers={() => setSelectedPlan(plan.id)}
+              subscribers={subscribers[plan.title]}
+              onViewSubscribers={() => {}}
             />
           ))}
         </div>
