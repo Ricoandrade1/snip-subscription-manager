@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppSidebar } from "./components/AppSidebar";
-import { Index } from "./pages/Index";
-import { Members } from "./pages/Members";
-import { Revenue } from "./pages/Revenue";
-import { Schedule } from "./pages/Schedule";
-import { Story } from "./pages/Story";
-import { Feed } from "./pages/Feed";
+import Index from "./pages/Index";
+import Members from "./pages/Members";
+import Revenue from "./pages/Revenue";
+import Schedule from "./pages/Schedule";
+import Story from "./pages/Story";
+import Feed from "./pages/Feed";
 
 function App() {
   return (
