@@ -77,9 +77,7 @@ const Index = () => {
             </div>
             <div>
               <p className="text-sm text-barber-light/60">Receita Mensal</p>
-              <p className="text-2xl font-bold">
-                R$ {monthlyRevenue.toFixed(2)}
-              </p>
+              <p className="text-2xl font-bold">{monthlyRevenue}€</p>
             </div>
           </div>
         </div>
@@ -91,7 +89,7 @@ const Index = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-3 gap-6">
           {PLANS.map((plan) => (
             <PlanCard
               key={plan.id}
