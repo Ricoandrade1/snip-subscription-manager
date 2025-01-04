@@ -1,48 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  :root {
-    --background: 0 0% 10%;
-    --foreground: 0 0% 96%;
-    
-    --card: 0 0% 16%;
-    --card-foreground: 0 0% 96%;
-    
-    --popover: 0 0% 16%;
-    --popover-foreground: 0 0% 96%;
-    
-    --primary: 38 61% 47%;
-    --primary-foreground: 0 0% 96%;
-    
-    --secondary: 0 0% 16%;
-    --secondary-foreground: 0 0% 96%;
-    
-    --muted: 0 0% 16%;
-    --muted-foreground: 0 0% 64%;
-    
-    --accent: 38 61% 47%;
-    --accent-foreground: 0 0% 96%;
-    
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 96%;
-
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 38 61% 47%;
-
-    --radius: 0.5rem;
-  }
+/* Google Calendar Styles */
+.fc {
+  --fc-border-color: theme('colors.border');
+  --fc-button-bg-color: theme('colors.barber-gold');
+  --fc-button-border-color: theme('colors.barber-gold');
+  --fc-button-hover-bg-color: theme('colors.barber-gold/0.9');
+  --fc-button-hover-border-color: theme('colors.barber-gold/0.9');
+  --fc-button-active-bg-color: theme('colors.barber-gold');
+  --fc-button-active-border-color: theme('colors.barber-gold');
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-barber-black text-barber-light font-montserrat;
-  }
+.fc .fc-button {
+  @apply font-normal;
+}
+
+.fc .fc-toolbar-title {
+  @apply text-xl font-semibold capitalize;
+}
+
+.fc .fc-day-today {
+  @apply bg-barber-gold/5;
+}
+
+.gcal-event {
+  @apply bg-barber-gold border-barber-gold;
 }
