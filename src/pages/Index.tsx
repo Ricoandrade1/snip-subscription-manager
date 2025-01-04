@@ -76,7 +76,7 @@ const Index = () => {
   const totalSubscribers = members.length;
   const monthlyRevenue = PLANS.reduce((acc, plan) => {
     const planMembers = getMembersByPlan(plan.title as "Basic" | "Classic" | "Business");
-    return acc + plan.price * planMembers.length;
+    return acc + plan.price * planMembers;
   }, 0);
 
   return (
@@ -173,7 +173,7 @@ const Index = () => {
               title={plan.title}
               price={plan.price}
               features={plan.features}
-              subscribers={getMembersByPlan(plan.title as "Basic" | "Classic" | "Business").length}
+              subscribers={getMembersByPlan(plan.title as "Basic" | "Classic" | "Business")}
               onViewSubscribers={() => {}}
             />
           ))}
