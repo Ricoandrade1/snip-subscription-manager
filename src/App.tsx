@@ -8,6 +8,7 @@ import { MemberProvider } from "@/contexts/MemberContext";
 import { AppSidebar } from "@/components/AppSidebar";
 import Index from "./pages/Index";
 import Members from "./pages/Members";
+import Revenue from "./pages/Revenue";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +26,7 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/members/*" element={<Members />} />
-                  <Route path="/revenue" element={<div>Revenue Page</div>} />
+                  <Route path="/revenue" element={<Revenue />} />
                   <Route path="/schedule" element={<div>Schedule Page</div>} />
                   <Route path="/suppliers/*" element={<div>Suppliers Page</div>} />
                   <Route path="/products" element={<div>Products Page</div>} />
