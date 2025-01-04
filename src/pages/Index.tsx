@@ -43,7 +43,7 @@ const PLANS = [
 
 const Index = () => {
   const { members, getMembersByPlan } = useMemberContext();
-  const { toggle } = useSidebar();
+  const { toggleSidebar } = useSidebar();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showRevenue, setShowRevenue] = useState(true);
   const [showSubscribers, setShowSubscribers] = useState(true);
@@ -122,7 +122,7 @@ const Index = () => {
         <div className="flex justify-end gap-2">
           <Button
             variant="outline"
-            onClick={toggle}
+            onClick={toggleSidebar}
             className="border-barber-gold text-barber-gold hover:bg-barber-gold/10"
           >
             <Menu className="h-4 w-4" />
