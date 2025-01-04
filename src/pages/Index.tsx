@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { UserPlus, BarChart3, Users } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { SubscriberForm } from "@/components/SubscriberForm";
+import { useMemberContext } from "@/contexts/MemberContext";
 
 const PLANS = [
   {
@@ -15,7 +16,6 @@ const PLANS = [
       "1 vez por semana",
       "Agendamento prioritário",
     ],
-    subscribers: 1,
   },
   {
     id: 2,
@@ -26,7 +26,6 @@ const PLANS = [
       "1 vez por semana",
       "Agendamento prioritário",
     ],
-    subscribers: 1,
   },
   {
     id: 3,
@@ -38,77 +37,23 @@ const PLANS = [
       "Agendamento VIP",
       "Produtos exclusivos",
     ],
-    subscribers: 1,
   },
-];
-
-const INITIAL_SUBSCRIBERS = {
-  Basic: 1,
-  Classic: 1,
-  Business: 1,
-};
-
-const INITIAL_SUBSCRIBERS_DATA = [
-  {
-    name: "João Silva",
-    nickname: "João",
-    nif: "123456789",
-    birthDate: "1990-01-15",
-    passport: "AB123456",
-    citizenCard: "",
-    bi: "",
-    bank: "Banco do Brasil",
-    iban: "PT50123456789012345678901",
-    debitDate: "2024-03-01",
-    plan: "Basic"
-  },
-  {
-    name: "Maria Santos",
-    nickname: "Mari",
-    nif: "987654321",
-    birthDate: "1985-06-20",
-    passport: "",
-    citizenCard: "12345678",
-    bi: "",
-    bank: "Caixa Geral",
-    iban: "PT50987654321098765432109",
-    debitDate: "2024-03-05",
-    plan: "Classic"
-  },
-  {
-    name: "António Ferreira",
-    nickname: "Tony",
-    nif: "456789123",
-    birthDate: "1982-12-10",
-    passport: "",
-    citizenCard: "",
-    bi: "87654321",
-    bank: "Millennium BCP",
-    iban: "PT50456789123456789123456",
-    debitDate: "2024-03-10",
-    plan: "Business"
-  }
 ];
 
 const Index = () => {
-  const [subscribers, setSubscribers] = useState(INITIAL_SUBSCRIBERS);
-  const [subscribersData, setSubscribersData] = useState(INITIAL_SUBSCRIBERS_DATA);
+  const { members, addMember, getMembersByPlan } = useMemberContext();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleNewSubscriber = (data: any) => {
-    setSubscribers((prev) => ({
-      ...prev,
-      [data.plan]: prev[data.plan] + 1,
-    }));
-    setSubscribersData((prev) => [...prev, data]);
+    addMember(data);
     setIsDialogOpen(false);
   };
 
-  const totalSubscribers = Object.values(subscribers).reduce((a, b) => a + b, 0);
-  const monthlyRevenue = PLANS.reduce(
-    (acc, plan) => acc + plan.price * subscribers[plan.title],
-    0
-  );
+  const totalSubscribers = members.length;
+  const monthlyRevenue = PLANS.reduce((acc, plan) => {
+    const planMembers = getMembersByPlan(plan.title as "Basic" | "Classic" | "Business");
+    return acc + plan.price * planMembers.length;
+  }, 0);
 
   return (
     <div className="p-8">
@@ -152,10 +97,7 @@ const Index = () => {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-3xl">
-              <SubscriberForm
-                onSubmit={handleNewSubscriber}
-                currentSubscribers={subscribers}
-              />
+              <SubscriberForm onSubmit={handleNewSubscriber} />
             </DialogContent>
           </Dialog>
         </div>
@@ -167,7 +109,7 @@ const Index = () => {
               title={plan.title}
               price={plan.price}
               features={plan.features}
-              subscribers={subscribers[plan.title]}
+              subscribers={getMembersByPlan(plan.title as "Basic" | "Classic" | "Business").length}
               onViewSubscribers={() => {}}
             />
           ))}
