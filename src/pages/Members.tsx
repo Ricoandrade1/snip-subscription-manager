@@ -1,26 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SubscriberForm } from "@/components/SubscriberForm";
-import { useState } from "react";
-
-interface Subscriber {
-  name: string;
-  plan: "Basic" | "Classic" | "Business";
-  // ... outros campos do formulário
-}
+import { useMemberContext } from "@/contexts/MemberContext";
 
 export default function Members() {
-  const [subscribers, setSubscribers] = useState<{ [key: string]: number }>({
-    Basic: 0,
-    Classic: 0,
-    Business: 0,
-  });
-
-  const handleNewSubscriber = (data: any) => {
-    setSubscribers((prev) => ({
-      ...prev,
-      [data.plan]: prev[data.plan] + 1,
-    }));
-  };
+  const { members, getMembersByPlan } = useMemberContext();
 
   return (
     <div className="p-8">
@@ -57,7 +40,7 @@ export default function Members() {
                 Todos os Membros
               </h2>
               <p className="text-barber-light/60">
-                Total de membros: {Object.values(subscribers).reduce((a, b) => a + b, 0)}
+                Total de membros: {members.length}
               </p>
             </div>
           </TabsContent>
@@ -68,7 +51,7 @@ export default function Members() {
                 Membros Basic
               </h2>
               <p className="text-barber-light/60">
-                Total de membros Basic: {subscribers.Basic}
+                Total de membros Basic: {getMembersByPlan("Basic").length}
               </p>
             </div>
           </TabsContent>
@@ -79,7 +62,7 @@ export default function Members() {
                 Membros Classic
               </h2>
               <p className="text-barber-light/60">
-                Total de membros Classic: {subscribers.Classic}
+                Total de membros Classic: {getMembersByPlan("Classic").length}
               </p>
             </div>
           </TabsContent>
@@ -90,7 +73,7 @@ export default function Members() {
                 Membros Business
               </h2>
               <p className="text-barber-light/60">
-                Total de membros Business: {subscribers.Business}
+                Total de membros Business: {getMembersByPlan("Business").length}
               </p>
             </div>
           </TabsContent>
@@ -112,10 +95,7 @@ export default function Members() {
             Cadastrar Novo Membro
           </h2>
           <div className="bg-barber-gray rounded-lg p-6">
-            <SubscriberForm
-              onSubmit={handleNewSubscriber}
-              currentSubscribers={subscribers}
-            />
+            <SubscriberForm />
           </div>
         </div>
       </div>
