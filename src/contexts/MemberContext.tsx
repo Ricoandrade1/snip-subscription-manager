@@ -33,7 +33,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const addMember = async (member: Omit<Member, "id">) => {
     try {
       const newMember = await addMemberToDB(member);
-      setMembers(prev => [...prev, { ...member, id: newMember.id }]);
+      setMembers(prev => [...prev, { ...member, id: newMember.id } as Member]);
       toast.success('Membro adicionado com sucesso!');
     } catch (error) {
       console.error('Erro ao adicionar membro:', error);

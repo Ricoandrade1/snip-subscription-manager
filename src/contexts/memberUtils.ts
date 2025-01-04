@@ -37,7 +37,7 @@ export const fetchMembersFromDB = async () => {
     bank: member.bank,
     iban: member.iban,
     debitDate: member.debit_date,
-    plan: member.plan_id === '1' ? 'Basic' : member.plan_id === '2' ? 'Classic' : 'Business',
+    plan: member.plan_id === '1' ? 'Basic' : member.plan_id === '2' ? 'Classic' : 'Business' as Member["plan"],
     nextPaymentDue: member.debit_date,
     paymentHistory: member.payments?.map(payment => ({
       date: payment.payment_date,
@@ -50,7 +50,7 @@ export const fetchMembersFromDB = async () => {
       service: visit.service,
       barber: visit.barber
     }))
-  }));
+  })) as Member[];
 };
 
 export const addMemberToDB = async (member: Omit<Member, "id">) => {
