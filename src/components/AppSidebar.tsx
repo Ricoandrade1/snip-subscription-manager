@@ -26,7 +26,7 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const menuItems = [
   {
@@ -87,14 +87,27 @@ export function AppSidebar() {
   const { getMembersByPlan } = useMemberContext();
   const [openSubmenus, setOpenSubmenus] = useState<string[]>([]);
 
+  // Atualiza o estado inicial dos submenus baseado na rota atual
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const activeMenuItem = menuItems.find(item => 
+      item.submenu?.some(subItem => currentPath.startsWith(subItem.url)) || 
+      currentPath === item.url
+    );
+    
+    if (activeMenuItem && !openSubmenus.includes(activeMenuItem.title)) {
+      setOpenSubmenus(prev => [...prev, activeMenuItem.title]);
+    }
+  }, [location.pathname]);
+
   const getSubscriberCount = (plan: "Basic" | "Classic" | "Business") => {
     return getMembersByPlan(plan).length;
   };
 
   const toggleSubmenu = (title: string) => {
-    setOpenSubmenus((prev) =>
+    setOpenSubmenus(prev =>
       prev.includes(title)
-        ? prev.filter((item) => item !== title)
+        ? prev.filter(item => item !== title)
         : [...prev, title]
     );
   };
@@ -118,7 +131,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   {item.submenu ? (
                     <Collapsible
-                      open={openSubmenus.includes(item.title) || isActiveRoute(item.url)}
+                      open={openSubmenus.includes(item.title)}
                       onOpenChange={() => toggleSubmenu(item.title)}
                     >
                       <CollapsibleTrigger asChild>
@@ -133,8 +146,8 @@ export function AppSidebar() {
                               <span>{item.title}</span>
                             </Link>
                             <ChevronDown
-                              className={`h-4 w-4 transition-transform ${
-                                openSubmenus.includes(item.title) || isActiveRoute(item.url) ? "rotate-180" : ""
+                              className={`h-4 w-4 transition-transform duration-200 ${
+                                openSubmenus.includes(item.title) ? "rotate-180" : ""
                               }`}
                             />
                           </div>
@@ -148,7 +161,10 @@ export function AppSidebar() {
                                 asChild
                                 data-active={isActiveRoute(subItem.url)}
                               >
-                                <Link to={subItem.url}>
+                                <Link 
+                                  to={subItem.url}
+                                  className="w-full"
+                                >
                                   {subItem.title}
                                   {item.title === "Membros" &&
                                     subItem.title !== "Todos" && (
