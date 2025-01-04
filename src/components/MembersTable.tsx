@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { useState } from "react";
 import type { Member } from "@/contexts/MemberContext";
+import { EditMemberDialog } from "./EditMemberDialog";
 
 interface MembersTableProps {
   planFilter?: "Basic" | "Classic" | "Business";
@@ -11,6 +12,8 @@ interface MembersTableProps {
 export function MembersTable({ planFilter }: MembersTableProps) {
   const { members } = useMemberContext();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const filteredMembers = members
     .filter((member) => !planFilter || member.plan === planFilter)
@@ -36,6 +39,11 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     return `${member.plan} ${memberNumber}`;
   };
 
+  const handleMemberClick = (member: Member) => {
+    setSelectedMember(member);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="space-y-4">
       <Input
@@ -57,7 +65,11 @@ export function MembersTable({ planFilter }: MembersTableProps) {
         </TableHeader>
         <TableBody>
           {filteredMembers.map((member) => (
-            <TableRow key={member.id}>
+            <TableRow 
+              key={member.id} 
+              className="cursor-pointer hover:bg-muted/50"
+              onClick={() => handleMemberClick(member)}
+            >
               <TableCell className="font-medium">{getMemberCode(member)}</TableCell>
               <TableCell>{member.name}</TableCell>
               <TableCell>{member.nickname}</TableCell>
@@ -68,6 +80,12 @@ export function MembersTable({ planFilter }: MembersTableProps) {
           ))}
         </TableBody>
       </Table>
+
+      <EditMemberDialog
+        member={selectedMember}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   );
 }
