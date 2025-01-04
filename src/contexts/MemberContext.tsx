@@ -92,3 +92,5 @@ export const useMemberContext = () => {
   }
   return context;
 };
+
+export type { Member } from './types';
