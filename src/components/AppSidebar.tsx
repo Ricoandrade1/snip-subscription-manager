@@ -16,6 +16,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
 
@@ -72,6 +73,10 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent>
+        <div className="flex items-center justify-between px-2 py-2">
+          <span className="font-semibold text-barber-gold">Barbearia</span>
+          <SidebarTrigger />
+        </div>
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
