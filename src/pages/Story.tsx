@@ -2,7 +2,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const motivationalQuotes = [
+  "Sua determinação define seu destino.",
+  "Transforme seus sonhos em realidade.",
+  "Seja a melhor versão de si mesmo.",
+  "O sucesso é construído diariamente.",
+  "Acredite em seu potencial infinito.",
+  "Sua jornada, suas conquistas.",
+  "Persistência é o caminho do êxito.",
+  "Foco, força e determinação.",
+  "Supere seus limites.",
+  "Hoje é dia de vitória.",
+];
 
 const banners = [
   {
@@ -24,7 +37,20 @@ const banners = [
 
 export default function Story() {
   const [selectedBanner, setSelectedBanner] = useState<number | null>(null);
+  const [quote, setQuote] = useState("");
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Get today's date as a seed
+    const today = new Date();
+    const seed = today.getFullYear() * 10000 + 
+                (today.getMonth() + 1) * 100 + 
+                today.getDate();
+    
+    // Use the seed to get a consistent quote for the day
+    const index = seed % motivationalQuotes.length;
+    setQuote(motivationalQuotes[index]);
+  }, []);
 
   const handleBannerSelect = (bannerId: number) => {
     setSelectedBanner(bannerId);
@@ -41,11 +67,35 @@ export default function Story() {
           <CardTitle>Stories</CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="available" className="w-full">
+          <Tabs defaultValue="story" className="w-full">
             <TabsList>
+              <TabsTrigger value="story">Story do Dia</TabsTrigger>
               <TabsTrigger value="available">Banners Disponíveis</TabsTrigger>
               <TabsTrigger value="selected">Banner Selecionado</TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="story" className="mt-4">
+              <div className="relative w-full max-w-[400px] mx-auto aspect-[9/16] bg-black rounded-lg overflow-hidden">
+                <div className="absolute inset-0 flex items-center justify-center p-8">
+                  <p className="text-white text-center font-montserrat text-2xl font-bold leading-relaxed">
+                    {quote}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 flex justify-center">
+                <Button 
+                  className="bg-barber-gold hover:bg-barber-gold/90 text-black"
+                  onClick={() => {
+                    toast({
+                      title: "Story copiado!",
+                      description: "O story foi copiado para sua área de transferência.",
+                    });
+                  }}
+                >
+                  Copiar Story
+                </Button>
+              </div>
+            </TabsContent>
             
             <TabsContent value="available" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
