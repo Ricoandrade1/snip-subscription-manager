@@ -1,12 +1,12 @@
 /* Google Calendar Styles */
 .fc {
   --fc-border-color: theme('colors.border');
-  --fc-button-bg-color: theme('colors.barber-gold');
-  --fc-button-border-color: theme('colors.barber-gold');
-  --fc-button-hover-bg-color: theme('colors.barber-gold/0.9');
-  --fc-button-hover-border-color: theme('colors.barber-gold/0.9');
-  --fc-button-active-bg-color: theme('colors.barber-gold');
-  --fc-button-active-border-color: theme('colors.barber-gold');
+  --fc-button-bg-color: theme('colors.barber.gold');
+  --fc-button-border-color: theme('colors.barber.gold');
+  --fc-button-hover-bg-color: theme('colors.barber.gold/0.9');
+  --fc-button-hover-border-color: theme('colors.barber.gold/0.9');
+  --fc-button-active-bg-color: theme('colors.barber.gold');
+  --fc-button-active-border-color: theme('colors.barber.gold');
 }
 
 .fc .fc-button {
