@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PlanCard } from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
-import { UserPlus, BarChart3 } from "lucide-react";
+import { UserPlus, BarChart3, Users } from "lucide-react";
 
 const PLANS = [
   {
