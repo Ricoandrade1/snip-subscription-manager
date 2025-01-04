@@ -5,15 +5,47 @@ import { MembersTable } from "@/components/MembersTable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { PlanCard } from "@/components/PlanCard";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
-export default function Members() {
+interface MembersProps {
+  planType?: "Basic" | "Classic" | "Business";
+}
+
+export default function Members({ planType }: MembersProps) {
   const { members } = useMemberContext();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const getInitialTab = () => {
+    if (planType === "Basic") return "basic";
+    if (planType === "Classic") return "classic";
+    if (planType === "Business") return "business";
+    return "all";
+  };
+
+  const handleTabChange = (value: string) => {
+    switch (value) {
+      case "basic":
+        navigate("/members/basic");
+        break;
+      case "classic":
+        navigate("/members/classic");
+        break;
+      case "business":
+        navigate("/members/business");
+        break;
+      case "all":
+        navigate("/members/all");
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleViewSubscribers = (plan: string) => {
     const tabValue = plan.toLowerCase();
-    navigate(`/members?tab=${tabValue}`);
+    navigate(`/members/${tabValue}`);
   };
 
   return (
@@ -36,7 +68,7 @@ export default function Members() {
           </Dialog>
         </header>
 
-        <Tabs defaultValue="all" className="w-full">
+        <Tabs defaultValue={getInitialTab()} className="w-full" onValueChange={handleTabChange}>
           <TabsList className="w-full justify-start bg-barber-gray">
             <TabsTrigger value="all" className="text-barber-light">
               Todos ({members.length})
