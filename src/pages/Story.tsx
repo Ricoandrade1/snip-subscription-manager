@@ -15,23 +15,25 @@ const motivationalQuotes = [
   "Foco, força e determinação.",
   "Supere seus limites.",
   "Hoje é dia de vitória.",
+  "Cada passo é uma conquista.",
+  "Seu potencial não tem limites.",
+  "A excelência é um hábito diário.",
+  "Inspire-se, supere-se, conquiste.",
+  "Sua força vem de dentro.",
 ];
 
-const banners = [
+const storyBackgrounds = [
   {
     id: 1,
-    title: "Banner 1",
     imageUrl: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
   },
   {
     id: 2,
-    title: "Banner 2",
-    imageUrl: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+    imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475",
   },
   {
     id: 3,
-    title: "Banner 3",
-    imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+    imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
   },
 ];
 
@@ -52,14 +54,6 @@ export default function Story() {
     setQuote(motivationalQuotes[index]);
   }, []);
 
-  const handleBannerSelect = (bannerId: number) => {
-    setSelectedBanner(bannerId);
-    toast({
-      title: "Banner selecionado",
-      description: `Banner ${bannerId} foi selecionado com sucesso.`,
-    });
-  };
-
   return (
     <div className="container py-6">
       <Card>
@@ -70,17 +64,35 @@ export default function Story() {
           <Tabs defaultValue="story" className="w-full">
             <TabsList>
               <TabsTrigger value="story">Story do Dia</TabsTrigger>
-              <TabsTrigger value="available">Banners Disponíveis</TabsTrigger>
               <TabsTrigger value="selected">Banner Selecionado</TabsTrigger>
             </TabsList>
             
             <TabsContent value="story" className="mt-4">
-              <div className="relative w-full max-w-[400px] mx-auto aspect-[9/16] bg-black rounded-lg overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center p-8">
-                  <p className="text-white text-center font-montserrat text-2xl font-bold leading-relaxed">
-                    {quote}
-                  </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Black background story */}
+                <div className="relative w-full aspect-[9/16] bg-black rounded-lg overflow-hidden">
+                  <div className="absolute inset-0 flex items-center justify-center p-8">
+                    <p className="text-white text-center font-montserrat text-2xl font-bold leading-relaxed">
+                      {quote}
+                    </p>
+                  </div>
                 </div>
+
+                {/* Image background stories */}
+                {storyBackgrounds.map((bg) => (
+                  <div key={bg.id} className="relative w-full aspect-[9/16] rounded-lg overflow-hidden">
+                    <img 
+                      src={bg.imageUrl} 
+                      alt="Story background" 
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-8">
+                      <p className="text-white text-center font-montserrat text-2xl font-bold leading-relaxed">
+                        {quote}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
               <div className="mt-4 flex justify-center">
                 <Button 
@@ -97,37 +109,12 @@ export default function Story() {
               </div>
             </TabsContent>
             
-            <TabsContent value="available" className="mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {banners.map((banner) => (
-                  <div 
-                    key={banner.id} 
-                    className="relative group cursor-pointer border rounded-lg overflow-hidden"
-                  >
-                    <img
-                      src={banner.imageUrl}
-                      alt={banner.title}
-                      className="w-full aspect-video object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Button 
-                        onClick={() => handleBannerSelect(banner.id)}
-                        variant="secondary"
-                      >
-                        Selecionar Banner
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-            
             <TabsContent value="selected" className="mt-4">
               {selectedBanner ? (
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Banner Selecionado</h3>
                   <img
-                    src={banners.find(b => b.id === selectedBanner)?.imageUrl}
+                    src={storyBackgrounds.find(b => b.id === selectedBanner)?.imageUrl}
                     alt={`Banner ${selectedBanner}`}
                     className="w-full max-w-2xl mx-auto rounded-lg shadow-lg"
                   />
