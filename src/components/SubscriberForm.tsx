@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
+import { useMemberContext } from "@/contexts/MemberContext";
 
 const formSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -30,13 +31,10 @@ const formSchema = z.object({
 
 type SubscriberFormData = z.infer<typeof formSchema>;
 
-interface SubscriberFormProps {
-  onSubmit: (data: SubscriberFormData) => void;
-  currentSubscribers: { [key: string]: number };
-}
-
-export function SubscriberForm({ onSubmit, currentSubscribers }: SubscriberFormProps) {
+export function SubscriberForm() {
   const { toast } = useToast();
+  const { members, addMember } = useMemberContext();
+  
   const form = useForm<SubscriberFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,10 +43,12 @@ export function SubscriberForm({ onSubmit, currentSubscribers }: SubscriberFormP
   });
 
   const handleSubmit = (data: SubscriberFormData) => {
-    onSubmit(data);
+    addMember(data);
+    const currentSubscribers = members.filter(member => member.plan === data.plan).length;
+    
     toast({
       title: "Assinante cadastrado com sucesso!",
-      description: `Número único: ${data.plan} ${String(currentSubscribers[data.plan] + 1).padStart(2, '0')}`,
+      description: `Número único: ${data.plan} ${String(currentSubscribers + 1).padStart(2, '0')}`,
     });
     form.reset();
   };
