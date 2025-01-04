@@ -68,7 +68,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const getMembersByPlan = (plan: Member["plan"]) => {
-    return members.filter(member => member.plan === plan);
+    return members.filter(member => member.plan === plan).length;
   };
 
   return (

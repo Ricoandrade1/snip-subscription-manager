@@ -31,6 +31,6 @@ export interface MemberContextType {
   addMember: (member: Omit<Member, "id">) => Promise<void>;
   updateMember: (id: string, member: Partial<Member>) => Promise<void>;
   deleteMember: (id: string) => Promise<void>;
-  getMembersByPlan: (plan: Member["plan"]) => Member[];
+  getMembersByPlan: (plan: Member["plan"]) => number;
   isLoading: boolean;
 }
