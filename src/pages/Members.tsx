@@ -7,6 +7,8 @@ import { useMemberContext } from "@/contexts/MemberContext";
 import { PlanCard } from "@/components/PlanCard";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { Plus } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface MembersProps {
   planType?: "Basic" | "Classic" | "Business";
@@ -16,6 +18,7 @@ export default function Members({ planType }: MembersProps) {
   const { members } = useMemberContext();
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
 
   const getInitialTab = () => {
     if (planType === "Basic") return "basic";
@@ -46,6 +49,13 @@ export default function Members({ planType }: MembersProps) {
   const handleViewSubscribers = (plan: string) => {
     const tabValue = plan.toLowerCase();
     navigate(`/members/${tabValue}`);
+  };
+
+  const handleCreateNewPlan = () => {
+    toast({
+      title: "Funcionalidade em desenvolvimento",
+      description: "A criação de novos planos estará disponível em breve.",
+    });
   };
 
   return (
@@ -108,24 +118,39 @@ export default function Members({ planType }: MembersProps) {
               <PlanCard
                 title="Basic"
                 price={30}
-                features={["Somente Barba"]}
+                features={["Somente Barba", "1 vez por semana", "Agendamento prioritário"]}
                 subscribers={members.filter(m => m.plan === "Basic").length}
                 onViewSubscribers={() => handleViewSubscribers("Basic")}
               />
               <PlanCard
                 title="Classic"
                 price={40}
-                features={["Somente Cabelo"]}
+                features={["Somente Cabelo", "1 vez por semana", "Agendamento prioritário"]}
                 subscribers={members.filter(m => m.plan === "Classic").length}
                 onViewSubscribers={() => handleViewSubscribers("Classic")}
               />
               <PlanCard
                 title="Business"
                 price={50}
-                features={["Cabelo e Barba"]}
+                features={[
+                  "Cabelo e Barba",
+                  "1 vez por semana",
+                  "Agendamento VIP",
+                  "Produtos exclusivos"
+                ]}
                 subscribers={members.filter(m => m.plan === "Business").length}
                 onViewSubscribers={() => handleViewSubscribers("Business")}
               />
+              <div className="flex items-center justify-center w-full max-w-sm h-[400px] border-2 border-dashed border-barber-gold/20 rounded-lg hover:border-barber-gold/40 transition-colors">
+                <Button
+                  variant="ghost"
+                  onClick={handleCreateNewPlan}
+                  className="flex flex-col gap-4 text-barber-gold hover:text-barber-gold/80 hover:bg-barber-gold/10"
+                >
+                  <Plus className="h-8 w-8" />
+                  <span>Criar novo plano</span>
+                </Button>
+              </div>
             </div>
           </TabsContent>
         </Tabs>
