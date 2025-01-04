@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { PlanCard } from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
 import { UserPlus, BarChart3, Users, Eye, EyeOff, Menu } from "lucide-react";
@@ -15,37 +15,6 @@ const Index = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showRevenue, setShowRevenue] = useState(true);
   const [showSubscribers, setShowSubscribers] = useState(true);
-  const [session, setSession] = useState(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  if (!session) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-        <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-lg">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-barber-gold">Bem-vindo</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Faça login para acessar o sistema
-            </p>
-          </div>
-          <LoginForm />
-        </div>
-      </div>
-    );
-  }
 
   const PLANS = [
     {
