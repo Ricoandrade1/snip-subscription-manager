@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 import { useMemberContext } from "@/contexts/MemberContext";
+import type { Member } from "@/contexts/MemberContext";
 
 const formSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -39,11 +40,36 @@ export function SubscriberForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       plan: "Basic",
+      name: "",
+      birthDate: "",
+      bank: "",
+      iban: "",
+      debitDate: "",
+      nickname: "",
+      nif: "",
+      passport: "",
+      citizenCard: "",
+      bi: "",
     },
   });
 
   const handleSubmit = (data: SubscriberFormData) => {
-    addMember(data);
+    // Ensure all required fields are present for Member type
+    const memberData: Omit<Member, "id"> = {
+      name: data.name,
+      nickname: data.nickname || "",
+      nif: data.nif || "",
+      birthDate: data.birthDate,
+      passport: data.passport || "",
+      citizenCard: data.citizenCard || "",
+      bi: data.bi || "",
+      bank: data.bank,
+      iban: data.iban,
+      debitDate: data.debitDate,
+      plan: data.plan,
+    };
+    
+    addMember(memberData);
     const currentSubscribers = members.filter(member => member.plan === data.plan).length;
     
     toast({

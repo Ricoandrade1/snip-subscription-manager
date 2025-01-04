@@ -46,11 +46,6 @@ const Index = () => {
   const [showRevenue, setShowRevenue] = useState(true);
   const [showSubscribers, setShowSubscribers] = useState(true);
 
-  const handleNewSubscriber = (data: any) => {
-    addMember(data);
-    setIsDialogOpen(false);
-  };
-
   const totalSubscribers = members.length;
   const monthlyRevenue = PLANS.reduce((acc, plan) => {
     const planMembers = getMembersByPlan(plan.title as "Basic" | "Classic" | "Business");
@@ -137,10 +132,7 @@ const Index = () => {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-3xl">
-              <SubscriberForm 
-                onSubmit={handleNewSubscriber} 
-                currentSubscribers={currentSubscribers}
-              />
+              <SubscriberForm />
             </DialogContent>
           </Dialog>
         </div>
