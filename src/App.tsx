@@ -6,6 +6,8 @@ import Index from "@/pages/Index";
 import Members from "@/pages/Members";
 import Revenue from "@/pages/Revenue";
 import PaymentReports from "@/pages/PaymentReports";
+import Story from "@/pages/Story";
+import Feed from "@/pages/Feed";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
                 <Route path="/members/business" element={<Members planType="Business" />} />
                 <Route path="/revenue" element={<Revenue />} />
                 <Route path="/payment-reports" element={<PaymentReports />} />
+                <Route path="/social/story" element={<Story />} />
+                <Route path="/social/feed" element={<Feed />} />
               </Routes>
             </main>
           </div>

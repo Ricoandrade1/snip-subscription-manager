@@ -8,6 +8,8 @@ import {
   Building,
   Home,
   ChevronDown,
+  Image,
+  Rss,
 } from "lucide-react";
 import {
   Sidebar,
@@ -43,6 +45,15 @@ const menuItems = [
       { title: "Basic", url: "/members/basic" },
       { title: "Classic", url: "/members/classic" },
       { title: "Business", url: "/members/business" },
+    ],
+  },
+  {
+    title: "Social Media",
+    icon: Rss,
+    url: "/social",
+    submenu: [
+      { title: "Story", url: "/social/story", icon: Image },
+      { title: "Feed", url: "/social/feed", icon: Rss },
     ],
   },
   {
