@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { PlanCard } from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
-import { UserPlus, BarChart3, Users, Eye, EyeOff } from "lucide-react";
+import { UserPlus, BarChart3, Users, Eye, EyeOff, Menu } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { SubscriberForm } from "@/components/SubscriberForm";
 import { useMemberContext } from "@/contexts/MemberContext";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const PLANS = [
   {
@@ -41,7 +42,8 @@ const PLANS = [
 ];
 
 const Index = () => {
-  const { members, addMember, getMembersByPlan } = useMemberContext();
+  const { members, getMembersByPlan } = useMemberContext();
+  const { toggle } = useSidebar();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showRevenue, setShowRevenue] = useState(true);
   const [showSubscribers, setShowSubscribers] = useState(true);
@@ -51,12 +53,6 @@ const Index = () => {
     const planMembers = getMembersByPlan(plan.title as "Basic" | "Classic" | "Business");
     return acc + plan.price * planMembers.length;
   }, 0);
-
-  const currentSubscribers = {
-    Basic: getMembersByPlan("Basic").length,
-    Classic: getMembersByPlan("Classic").length,
-    Business: getMembersByPlan("Business").length,
-  };
 
   return (
     <div className="p-8">
@@ -123,7 +119,15 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            onClick={toggle}
+            className="border-barber-gold text-barber-gold hover:bg-barber-gold/10"
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
+
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-barber-gold hover:bg-barber-gold/90 text-black">
