@@ -99,6 +99,10 @@ export function AppSidebar() {
     );
   };
 
+  const isActiveRoute = (url: string) => {
+    return location.pathname === url || location.pathname.startsWith(url + '/');
+  };
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -114,19 +118,23 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   {item.submenu ? (
                     <Collapsible
-                      open={openSubmenus.includes(item.title)}
+                      open={openSubmenus.includes(item.title) || isActiveRoute(item.url)}
                       onOpenChange={() => toggleSubmenu(item.title)}
                     >
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton asChild tooltip={item.title}>
                           <div className="flex w-full items-center justify-between">
-                            <Link to={item.url} className="flex items-center gap-2">
+                            <Link 
+                              to={item.url} 
+                              className="flex items-center gap-2"
+                              data-active={isActiveRoute(item.url)}
+                            >
                               <item.icon className="h-4 w-4" />
                               <span>{item.title}</span>
                             </Link>
                             <ChevronDown
                               className={`h-4 w-4 transition-transform ${
-                                openSubmenus.includes(item.title) ? "rotate-180" : ""
+                                openSubmenus.includes(item.title) || isActiveRoute(item.url) ? "rotate-180" : ""
                               }`}
                             />
                           </div>
@@ -138,7 +146,7 @@ export function AppSidebar() {
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton
                                 asChild
-                                data-active={location.pathname === subItem.url}
+                                data-active={isActiveRoute(subItem.url)}
                               >
                                 <Link to={subItem.url}>
                                   {subItem.title}
@@ -161,7 +169,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       tooltip={item.title}
-                      data-active={location.pathname === item.url}
+                      data-active={isActiveRoute(item.url)}
                     >
                       <Link to={item.url}>
                         <item.icon className="h-4 w-4" />
