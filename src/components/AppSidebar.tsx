@@ -6,6 +6,7 @@ import {
   Package,
   Scissors,
   Building,
+  Home,
 } from "lucide-react";
 import {
   Sidebar,
@@ -21,6 +22,11 @@ import {
 import { Link } from "react-router-dom";
 
 const menuItems = [
+  {
+    title: "Home",
+    icon: Home,
+    url: "/",
+  },
   {
     title: "Membros",
     icon: Users,
