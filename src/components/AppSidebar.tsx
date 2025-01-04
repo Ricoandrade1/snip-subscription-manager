@@ -17,7 +17,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
-  SidebarProvider,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
 
@@ -72,32 +71,30 @@ const menuItems = [
 
 export function AppSidebar() {
   return (
-    <SidebarProvider defaultOpen={true}>
-      <Sidebar>
-        <SidebarContent>
-          <div className="flex items-center justify-between px-2 py-2">
-            <span className="font-semibold text-barber-gold">Barbearia</span>
-            <SidebarTrigger />
-          </div>
-          <SidebarGroup>
-            <SidebarGroupLabel>Menu</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {menuItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild tooltip={item.title}>
-                      <Link to={item.url}>
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
-    </SidebarProvider>
+    <Sidebar>
+      <SidebarContent>
+        <div className="flex items-center justify-between px-2 py-2">
+          <span className="font-semibold text-barber-gold">Barbearia</span>
+          <SidebarTrigger />
+        </div>
+        <SidebarGroup>
+          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link to={item.url}>
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
   );
 }
