@@ -22,7 +22,7 @@ export const PlanCard = ({
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-barber-gold">{title}</CardTitle>
         <p className="text-4xl font-bold mt-2">
-          R$ {price}
+          {price}€
           <span className="text-sm font-normal text-barber-light/60">/mês</span>
         </p>
       </CardHeader>
