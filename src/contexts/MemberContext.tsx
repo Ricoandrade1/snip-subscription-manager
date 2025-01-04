@@ -1,44 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase/client';
-import type { Tables } from '@/lib/supabase/client';
 import { toast } from "sonner";
-
-export type Member = {
-  id: string;
-  name: string;
-  nickname: string;
-  nif: string;
-  birthDate: string;
-  passport: string;
-  citizenCard: string;
-  bi: string;
-  bank: string;
-  iban: string;
-  debitDate: string;
-  phone: string;
-  plan: "Basic" | "Classic" | "Business";
-  nextPaymentDue?: string;
-  paymentHistory?: {
-    date: string;
-    amount: number;
-    status: "paid" | "pending" | "overdue";
-    receiptUrl?: string;
-  }[];
-  visits?: {
-    date: string;
-    service: string;
-    barber: string;
-  }[];
-};
-
-interface MemberContextType {
-  members: Member[];
-  addMember: (member: Omit<Member, "id">) => Promise<void>;
-  updateMember: (id: string, member: Partial<Member>) => Promise<void>;
-  deleteMember: (id: string) => Promise<void>;
-  getMembersByPlan: (plan: Member["plan"]) => Member[];
-  isLoading: boolean;
-}
+import { Member, MemberContextType } from './types';
+import { 
+  fetchMembersFromDB, 
+  addMemberToDB, 
+  updateMemberInDB, 
+  deleteMemberFromDB 
+} from './memberUtils';
 
 const MemberContext = createContext<MemberContextType | undefined>(undefined);
 
@@ -52,55 +20,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const fetchMembers = async () => {
     try {
-      const { data: membersData, error: membersError } = await supabase
-        .from('members')
-        .select(`
-          *,
-          payments (
-            id,
-            amount,
-            status,
-            payment_date,
-            receipt_url
-          ),
-          visits (
-            id,
-            service,
-            barber,
-            visit_date
-          )
-        `);
-
-      if (membersError) throw membersError;
-
-      const formattedMembers: Member[] = membersData.map(member => ({
-        id: member.id,
-        name: member.name,
-        nickname: member.nickname || '',
-        phone: member.phone,
-        nif: member.nif || '',
-        birthDate: member.birth_date,
-        passport: member.passport || '',
-        citizenCard: member.citizen_card || '',
-        bi: member.bi || '',
-        bank: member.bank,
-        iban: member.iban,
-        debitDate: member.debit_date,
-        plan: member.plan_id === '1' ? 'Basic' : member.plan_id === '2' ? 'Classic' : 'Business',
-        nextPaymentDue: member.debit_date, // Using debit_date as nextPaymentDue
-        paymentHistory: member.payments?.map(payment => ({
-          date: payment.payment_date,
-          amount: payment.amount,
-          status: payment.status,
-          receiptUrl: payment.receipt_url || undefined
-        })),
-        visits: member.visits?.map(visit => ({
-          date: visit.visit_date,
-          service: visit.service,
-          barber: visit.barber
-        }))
-      }));
-
+      const formattedMembers = await fetchMembersFromDB();
       setMembers(formattedMembers);
     } catch (error) {
       console.error('Erro ao buscar membros:', error);
@@ -112,36 +32,8 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const addMember = async (member: Omit<Member, "id">) => {
     try {
-      const { data: planData } = await supabase
-        .from('plans')
-        .select('id')
-        .eq('title', member.plan)
-        .single();
-
-      if (!planData) throw new Error('Plano não encontrado');
-
-      const { data, error } = await supabase
-        .from('members')
-        .insert([{
-          name: member.name,
-          nickname: member.nickname,
-          phone: member.phone,
-          nif: member.nif,
-          birth_date: member.birthDate,
-          passport: member.passport,
-          citizen_card: member.citizenCard,
-          bi: member.bi,
-          bank: member.bank,
-          iban: member.iban,
-          debit_date: member.debitDate,
-          plan_id: planData.id
-        }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setMembers(prev => [...prev, { ...member, id: data.id }]);
+      const newMember = await addMemberToDB(member);
+      setMembers(prev => [...prev, { ...member, id: newMember.id }]);
       toast.success('Membro adicionado com sucesso!');
     } catch (error) {
       console.error('Erro ao adicionar membro:', error);
@@ -151,36 +43,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const updateMember = async (id: string, updatedFields: Partial<Member>) => {
     try {
-      let planId = null;
-      if (updatedFields.plan) {
-        const { data: planData } = await supabase
-          .from('plans')
-          .select('id')
-          .eq('title', updatedFields.plan)
-          .single();
-        planId = planData?.id;
-      }
-
-      const { error } = await supabase
-        .from('members')
-        .update({
-          name: updatedFields.name,
-          nickname: updatedFields.nickname,
-          phone: updatedFields.phone,
-          nif: updatedFields.nif,
-          birth_date: updatedFields.birthDate,
-          passport: updatedFields.passport,
-          citizen_card: updatedFields.citizenCard,
-          bi: updatedFields.bi,
-          bank: updatedFields.bank,
-          iban: updatedFields.iban,
-          debit_date: updatedFields.debitDate,
-          ...(planId && { plan_id: planId })
-        })
-        .eq('id', id);
-
-      if (error) throw error;
-
+      await updateMemberInDB(id, updatedFields);
       setMembers(prev =>
         prev.map(member =>
           member.id === id ? { ...member, ...updatedFields } : member
@@ -195,13 +58,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const deleteMember = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('members')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
+      await deleteMemberFromDB(id);
       setMembers(prev => prev.filter(member => member.id !== id));
       toast.success('Membro removido com sucesso!');
     } catch (error) {
