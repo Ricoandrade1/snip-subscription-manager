@@ -15,7 +15,7 @@ const PLANS = [
       "1 vez por semana",
       "Agendamento prioritário",
     ],
-    subscribers: 0,
+    subscribers: 1,
   },
   {
     id: 2,
@@ -26,7 +26,7 @@ const PLANS = [
       "1 vez por semana",
       "Agendamento prioritário",
     ],
-    subscribers: 0,
+    subscribers: 1,
   },
   {
     id: 3,
@@ -38,17 +38,61 @@ const PLANS = [
       "Agendamento VIP",
       "Produtos exclusivos",
     ],
-    subscribers: 0,
+    subscribers: 1,
   },
 ];
 
-const Index = () => {
-  const [subscribers, setSubscribers] = useState<{ [key: string]: number }>({
-    Basic: 0,
-    Classic: 0,
-    Business: 0,
-  });
+const INITIAL_SUBSCRIBERS = {
+  Basic: 1,
+  Classic: 1,
+  Business: 1,
+};
 
+const INITIAL_SUBSCRIBERS_DATA = [
+  {
+    name: "João Silva",
+    nickname: "João",
+    nif: "123456789",
+    birthDate: "1990-01-15",
+    passport: "AB123456",
+    citizenCard: "",
+    bi: "",
+    bank: "Banco do Brasil",
+    iban: "PT50123456789012345678901",
+    debitDate: "2024-03-01",
+    plan: "Basic"
+  },
+  {
+    name: "Maria Santos",
+    nickname: "Mari",
+    nif: "987654321",
+    birthDate: "1985-06-20",
+    passport: "",
+    citizenCard: "12345678",
+    bi: "",
+    bank: "Caixa Geral",
+    iban: "PT50987654321098765432109",
+    debitDate: "2024-03-05",
+    plan: "Classic"
+  },
+  {
+    name: "António Ferreira",
+    nickname: "Tony",
+    nif: "456789123",
+    birthDate: "1982-12-10",
+    passport: "",
+    citizenCard: "",
+    bi: "87654321",
+    bank: "Millennium BCP",
+    iban: "PT50456789123456789123456",
+    debitDate: "2024-03-10",
+    plan: "Business"
+  }
+];
+
+const Index = () => {
+  const [subscribers, setSubscribers] = useState(INITIAL_SUBSCRIBERS);
+  const [subscribersData, setSubscribersData] = useState(INITIAL_SUBSCRIBERS_DATA);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleNewSubscriber = (data: any) => {
@@ -56,6 +100,7 @@ const Index = () => {
       ...prev,
       [data.plan]: prev[data.plan] + 1,
     }));
+    setSubscribersData((prev) => [...prev, data]);
     setIsDialogOpen(false);
   };
 
@@ -115,7 +160,7 @@ const Index = () => {
           </Dialog>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {PLANS.map((plan) => (
             <PlanCard
               key={plan.id}
