@@ -35,8 +35,16 @@ const Index = () => {
 
   if (!session) {
     return (
-      <div className="flex min-h-screen bg-gray-50">
-        <LoginForm />
+      <div className="flex min-h-screen items-center justify-center bg-barber-black">
+        <div className="w-full max-w-md space-y-8 rounded-lg bg-barber-gray p-8 shadow-lg">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-barber-gold">Bem-vindo</h2>
+            <p className="mt-2 text-sm text-barber-light/60">
+              Faça login para acessar o sistema
+            </p>
+          </div>
+          <LoginForm />
+        </div>
       </div>
     );
   }
@@ -78,10 +86,10 @@ const Index = () => {
       <div className="max-w-7xl mx-auto space-y-12">
         <header className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-barber-gold">
-            Gestão de Assinaturas
+            Dashboard
           </h1>
           <p className="text-barber-light/60 max-w-2xl mx-auto">
-            Gerencie os planos e assinantes da sua barbearia em um só lugar
+            Visão geral do seu negócio
           </p>
         </header>
 
@@ -95,9 +103,9 @@ const Index = () => {
                 <div>
                   <p className="text-sm text-barber-light/60">Total de Assinantes</p>
                   {showSubscribers ? (
-                    <p className="text-2xl font-bold">{totalSubscribers}</p>
+                    <p className="text-2xl font-bold text-barber-light">{totalSubscribers}</p>
                   ) : (
-                    <p className="text-2xl font-bold">****</p>
+                    <p className="text-2xl font-bold text-barber-light">****</p>
                   )}
                 </div>
               </div>
@@ -120,9 +128,9 @@ const Index = () => {
                 <div>
                   <p className="text-sm text-barber-light/60">Receita Mensal</p>
                   {showRevenue ? (
-                    <p className="text-2xl font-bold">{monthlyRevenue}€</p>
+                    <p className="text-2xl font-bold text-barber-light">{monthlyRevenue}€</p>
                   ) : (
-                    <p className="text-2xl font-bold">****€</p>
+                    <p className="text-2xl font-bold text-barber-light">****€</p>
                   )}
                 </div>
               </div>
