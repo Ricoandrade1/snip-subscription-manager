@@ -12,6 +12,7 @@ export interface Member {
   bank: string;
   iban: string;
   debitDate: string;
+  phone: string; // New field
   plan: "Basic" | "Classic" | "Business";
   // Campos adicionais para relatórios e pagamentos
   lastPayment?: string;
@@ -54,6 +55,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       bank: "Banco do Brasil",
       iban: "PT50123456789012345678901",
       debitDate: "2024-03-01",
+      phone: "+351 912 345 678",
       plan: "Basic",
       lastPayment: "2024-02-01",
       nextPaymentDue: "2024-03-01",
@@ -77,6 +79,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       bank: "Caixa Geral",
       iban: "PT50987654321098765432109",
       debitDate: "2024-03-05",
+      phone: "+351 987 654 321",
       plan: "Classic",
       lastPayment: "2024-02-05",
       nextPaymentDue: "2024-03-05",
@@ -100,6 +103,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       bank: "Millennium BCP",
       iban: "PT50456789123456789123456",
       debitDate: "2024-03-10",
+      phone: "+351 654 321 987",
       plan: "Business",
       lastPayment: "2024-02-10",
       nextPaymentDue: "2024-03-10",

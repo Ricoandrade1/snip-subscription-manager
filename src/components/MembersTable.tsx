@@ -16,7 +16,8 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     .filter((member) => !planFilter || member.plan === planFilter)
     .filter((member) =>
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.nickname.toLowerCase().includes(searchTerm.toLowerCase())
+      member.nickname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.phone.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort((a, b) => {
       const aCode = `${a.plan} ${String(
@@ -38,7 +39,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   return (
     <div className="space-y-4">
       <Input
-        placeholder="Pesquisar por nome ou apelido..."
+        placeholder="Pesquisar por nome, apelido ou telefone..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="max-w-sm"
@@ -49,6 +50,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
             <TableHead>Código</TableHead>
             <TableHead>Nome</TableHead>
             <TableHead>Apelido</TableHead>
+            <TableHead>Telefone</TableHead>
             <TableHead>Plano</TableHead>
             <TableHead>Data de Débito</TableHead>
           </TableRow>
@@ -59,6 +61,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
               <TableCell className="font-medium">{getMemberCode(member)}</TableCell>
               <TableCell>{member.name}</TableCell>
               <TableCell>{member.nickname}</TableCell>
+              <TableCell>{member.phone}</TableCell>
               <TableCell>{member.plan}</TableCell>
               <TableCell>{member.debitDate}</TableCell>
             </TableRow>

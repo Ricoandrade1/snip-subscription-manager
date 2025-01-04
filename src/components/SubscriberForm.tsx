@@ -1,24 +1,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 import { useMemberContext } from "@/contexts/MemberContext";
+import { PersonalInfoFields } from "./PersonalInfoFields";
+import { DocumentFields } from "./DocumentFields";
+import { BankingFields } from "./BankingFields";
 import type { Member } from "@/contexts/MemberContext";
 
 const formSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   nickname: z.string().optional(),
+  phone: z.string().min(9, "Telefone deve ter pelo menos 9 dígitos"),
   nif: z.string().optional(),
   birthDate: z.string(),
   passport: z.string().optional(),
@@ -30,7 +26,7 @@ const formSchema = z.object({
   plan: z.enum(["Basic", "Classic", "Business"]),
 });
 
-type SubscriberFormData = z.infer<typeof formSchema>;
+export type SubscriberFormData = z.infer<typeof formSchema>;
 
 export function SubscriberForm() {
   const { toast } = useToast();
@@ -41,11 +37,12 @@ export function SubscriberForm() {
     defaultValues: {
       plan: "Basic",
       name: "",
+      nickname: "",
+      phone: "",
       birthDate: "",
       bank: "",
       iban: "",
       debitDate: "",
-      nickname: "",
       nif: "",
       passport: "",
       citizenCard: "",
@@ -54,19 +51,13 @@ export function SubscriberForm() {
   });
 
   const handleSubmit = (data: SubscriberFormData) => {
-    // Ensure all required fields are present for Member type
     const memberData: Omit<Member, "id"> = {
-      name: data.name,
+      ...data,
       nickname: data.nickname || "",
       nif: data.nif || "",
-      birthDate: data.birthDate,
       passport: data.passport || "",
       citizenCard: data.citizenCard || "",
       bi: data.bi || "",
-      bank: data.bank,
-      iban: data.iban,
-      debitDate: data.debitDate,
-      plan: data.plan,
     };
     
     addMember(memberData);
@@ -83,145 +74,9 @@ export function SubscriberForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nome</FormLabel>
-                <FormControl>
-                  <Input placeholder="Nome completo" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="nickname"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Apelido</FormLabel>
-                <FormControl>
-                  <Input placeholder="Apelido" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="nif"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>NIF</FormLabel>
-                <FormControl>
-                  <Input placeholder="Número de Identificação Fiscal" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="birthDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Data de Nascimento</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="passport"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Passaporte</FormLabel>
-                <FormControl>
-                  <Input placeholder="Número do Passaporte" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="citizenCard"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cartão Cidadão</FormLabel>
-                <FormControl>
-                  <Input placeholder="Número do Cartão Cidadão" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="bi"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>BI</FormLabel>
-                <FormControl>
-                  <Input placeholder="Número do BI" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="bank"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Banco</FormLabel>
-                <FormControl>
-                  <Input placeholder="Nome do Banco" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="iban"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>IBAN</FormLabel>
-                <FormControl>
-                  <Input placeholder="PT50..." {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="debitDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Data de Débito</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <PersonalInfoFields form={form} />
+          <DocumentFields form={form} />
+          <BankingFields form={form} />
         </div>
 
         <FormField
