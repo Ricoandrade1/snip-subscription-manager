@@ -52,12 +52,18 @@ export function SubscriberForm() {
 
   const handleSubmit = (data: SubscriberFormData) => {
     const memberData: Omit<Member, "id"> = {
-      ...data,
+      name: data.name,
       nickname: data.nickname || "",
+      phone: data.phone,
       nif: data.nif || "",
+      birthDate: data.birthDate,
       passport: data.passport || "",
       citizenCard: data.citizenCard || "",
       bi: data.bi || "",
+      bank: data.bank,
+      iban: data.iban,
+      debitDate: data.debitDate,
+      plan: data.plan
     };
     
     addMember(memberData);
