@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { UseFormReturn } from "react-hook-form";
 import { ProductFormValues } from "./schema";
+import { Card } from "@/components/ui/card";
 
 interface ProductBasicFieldsProps {
   form: UseFormReturn<ProductFormValues>;
@@ -25,9 +26,13 @@ export function ProductBasicFields({ form }: ProductBasicFieldsProps) {
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nome do Item</FormLabel>
+            <FormLabel className="text-barber-light">Nome do Item</FormLabel>
             <FormControl>
-              <Input placeholder="Digite o nome do item" {...field} />
+              <Input 
+                placeholder="Digite o nome do item" 
+                className="bg-barber-gray border-barber-gold/30 text-barber-light placeholder:text-gray-500"
+                {...field} 
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -39,11 +44,11 @@ export function ProductBasicFields({ form }: ProductBasicFieldsProps) {
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Descrição</FormLabel>
+            <FormLabel className="text-barber-light">Descrição</FormLabel>
             <FormControl>
               <Textarea 
                 placeholder="Adicione uma descrição do item"
-                className="min-h-[80px]"
+                className="min-h-[80px] bg-barber-gray border-barber-gold/30 text-barber-light placeholder:text-gray-500"
                 {...field} 
               />
             </FormControl>
@@ -58,12 +63,13 @@ export function ProductBasicFields({ form }: ProductBasicFieldsProps) {
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Preço</FormLabel>
+              <FormLabel className="text-barber-light">Preço</FormLabel>
               <FormControl>
                 <Input 
                   type="number"
                   step="0.01"
                   placeholder="Digite o preço" 
+                  className="bg-barber-gray border-barber-gold/30 text-barber-light placeholder:text-gray-500"
                   {...field} 
                 />
               </FormControl>
@@ -77,11 +83,12 @@ export function ProductBasicFields({ form }: ProductBasicFieldsProps) {
           name="stock"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Quantidade em Estoque</FormLabel>
+              <FormLabel className="text-barber-light">Quantidade em Estoque</FormLabel>
               <FormControl>
                 <Input 
                   type="number"
                   placeholder="Digite a quantidade" 
+                  className="bg-barber-gray border-barber-gold/30 text-barber-light placeholder:text-gray-500"
                   {...field} 
                 />
               </FormControl>
@@ -91,8 +98,8 @@ export function ProductBasicFields({ form }: ProductBasicFieldsProps) {
         />
       </div>
 
-      <div className="space-y-4 border rounded-lg p-4 bg-muted/50">
-        <h3 className="font-medium">Configurações de IVA</h3>
+      <Card className="p-4 bg-barber-gray border-barber-gold/30">
+        <h3 className="font-medium text-barber-light mb-4">Configurações de IVA</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
@@ -100,12 +107,13 @@ export function ProductBasicFields({ form }: ProductBasicFieldsProps) {
             name="vat_rate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Taxa de IVA (%)</FormLabel>
+                <FormLabel className="text-barber-light">Taxa de IVA (%)</FormLabel>
                 <FormControl>
                   <Input 
                     type="number"
                     step="0.1"
                     placeholder="23%" 
+                    className="bg-barber-black border-barber-gold/30 text-barber-light placeholder:text-gray-500"
                     {...field} 
                   />
                 </FormControl>
@@ -118,14 +126,15 @@ export function ProductBasicFields({ form }: ProductBasicFieldsProps) {
             control={form.control}
             name="vat_included"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between space-y-0 rounded-lg border p-3">
+              <FormItem className="flex flex-row items-center justify-between space-y-0 rounded-lg border border-barber-gold/30 p-3 bg-barber-black">
                 <div className="space-y-0.5">
-                  <FormLabel>IVA incluído no preço</FormLabel>
+                  <FormLabel className="text-barber-light">IVA incluído no preço</FormLabel>
                 </div>
                 <FormControl>
                   <Switch
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    className="data-[state=checked]:bg-barber-gold"
                   />
                 </FormControl>
               </FormItem>
@@ -133,10 +142,10 @@ export function ProductBasicFields({ form }: ProductBasicFieldsProps) {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
           <div className="space-y-1">
-            <span className="text-muted-foreground">Preço sem IVA:</span>
-            <div className="font-medium">
+            <span className="text-gray-400">Preço sem IVA:</span>
+            <div className="font-medium text-barber-light">
               {new Intl.NumberFormat("pt-PT", {
                 style: "currency",
                 currency: "EUR",
@@ -144,17 +153,17 @@ export function ProductBasicFields({ form }: ProductBasicFieldsProps) {
             </div>
           </div>
           <div className="space-y-1">
-            <span className="text-muted-foreground">Valor do IVA:</span>
-            <div className="font-medium">
+            <span className="text-gray-400">Valor do IVA:</span>
+            <div className="font-medium text-barber-light">
               {new Intl.NumberFormat("pt-PT", {
                 style: "currency",
                 currency: "EUR",
               }).format(vatAmount)}
             </div>
           </div>
-          <div className="col-span-2 pt-2 border-t">
-            <span className="text-muted-foreground">Preço total com IVA:</span>
-            <div className="text-lg font-bold">
+          <div className="col-span-2 pt-2 border-t border-barber-gold/30">
+            <span className="text-gray-400">Preço total com IVA:</span>
+            <div className="text-lg font-bold text-barber-light">
               {new Intl.NumberFormat("pt-PT", {
                 style: "currency",
                 currency: "EUR",
@@ -162,7 +171,7 @@ export function ProductBasicFields({ form }: ProductBasicFieldsProps) {
             </div>
           </div>
         </div>
-      </div>
+      </Card>
     </>
   );
 }

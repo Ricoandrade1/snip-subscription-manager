@@ -81,7 +81,11 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
         </div>
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={isLoading}>
+          <Button 
+            type="submit" 
+            disabled={isLoading}
+            className="bg-barber-gold hover:bg-barber-gold/90 text-black font-medium px-8"
+          >
             {isLoading ? "Salvando..." : initialData ? "Atualizar" : "Criar"}
           </Button>
         </div>
