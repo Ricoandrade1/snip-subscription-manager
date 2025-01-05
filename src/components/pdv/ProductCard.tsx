@@ -46,9 +46,9 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
 
       if (error) throw error;
 
-      toast.success("Produto removido com sucesso");
       onDelete?.(product.id);
       setIsDeleteDialogOpen(false);
+      toast.success("Produto removido com sucesso");
     } catch (error) {
       console.error("Error deleting product:", error);
       toast.error("Erro ao remover produto");

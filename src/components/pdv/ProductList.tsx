@@ -90,7 +90,7 @@ export function ProductList({
       const formattedProducts: Product[] = (data || []).map(product => ({
         ...product,
         commission_rates: product.commission_rates ? 
-          JSON.parse(JSON.stringify(product.commission_rates)) as Record<string, number> : 
+          JSON.parse(JSON.stringify(product.commission_rates)) : 
           undefined
       }));
 
@@ -117,10 +117,12 @@ export function ProductList({
           table: 'products'
         },
         (payload) => {
+          console.log('Received payload:', payload);
           if (payload.eventType === 'DELETE') {
-            setProducts(prevProducts => 
-              prevProducts.filter(product => product.id !== payload.old.id)
-            );
+            setProducts(prevProducts => {
+              console.log('Removing product:', payload.old.id);
+              return prevProducts.filter(product => product.id !== payload.old.id);
+            });
           } else {
             fetchProducts();
           }
@@ -134,6 +136,7 @@ export function ProductList({
   }, [filters]);
 
   const handleProductDelete = (deletedProductId: string) => {
+    console.log('Handling product delete:', deletedProductId);
     setProducts(prevProducts => 
       prevProducts.filter(product => product.id !== deletedProductId)
     );
