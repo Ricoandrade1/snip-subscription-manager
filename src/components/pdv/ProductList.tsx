@@ -135,13 +135,6 @@ export function ProductList({
     };
   }, [filters]);
 
-  const handleProductDelete = (deletedProductId: string) => {
-    console.log('Handling product delete:', deletedProductId);
-    setProducts(prevProducts => 
-      prevProducts.filter(product => product.id !== deletedProductId)
-    );
-  };
-
   if (isLoading) {
     return <ProductListSkeleton />;
   }
@@ -168,7 +161,6 @@ export function ProductList({
             barbers={barbers}
             onSelect={onProductSelect}
             onEdit={onEdit}
-            onDelete={handleProductDelete}
           />
           {index < products.length - 1 && <Separator className="my-2" />}
         </div>
