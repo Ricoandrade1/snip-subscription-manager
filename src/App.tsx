@@ -1,16 +1,16 @@
 import { Routes, Route } from "react-router-dom";
 import { LoginForm } from "@/components/auth/LoginForm";
-import { Index } from "@/pages/Index";
-import { Members } from "@/pages/Members";
-import { Products } from "@/pages/Products";
-import { Barbers } from "@/pages/Barbers";
-import { Revenue } from "@/pages/Revenue";
-import { Categories } from "@/pages/Categories";
-import { Brands } from "@/pages/Brands";
-import { CashFlow } from "@/pages/CashFlow";
-import { Schedule } from "@/pages/Schedule";
-import { Feed } from "@/pages/Feed";
-import { Story } from "@/pages/Story";
+import Index from "@/pages/Index";
+import Members from "@/pages/Members";
+import Products from "@/pages/Products";
+import Barbers from "@/pages/Barbers";
+import Revenue from "@/pages/Revenue";
+import Categories from "@/pages/Categories";
+import Brands from "@/pages/Brands";
+import CashFlow from "@/pages/CashFlow";
+import Schedule from "@/pages/Schedule";
+import Feed from "@/pages/Feed";
+import Story from "@/pages/Story";
 
 import "./App.css";
 
