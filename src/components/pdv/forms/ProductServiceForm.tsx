@@ -6,38 +6,17 @@ import { ProductCategoryFields } from "./ProductCategoryFields";
 import { supabase } from "@/integrations/supabase/client";
 import { useProductForm } from "./useProductForm";
 import { toast } from "sonner";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  description?: string | null;
-  stock?: number;
-  brand?: string | null;
-  category?: string | null;
-  vat_rate?: number;
-  vat_included?: boolean;
-}
-
-interface Brand {
-  id: string;
-  name: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-}
+import { Product } from "../types";
 
 interface ProductServiceFormProps {
-  initialData?: Product;
+  initialData?: Product | null;
   onSuccess: () => void;
 }
 
 export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFormProps) {
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const { form, isLoading, onSubmit } = useProductForm(initialData, onSuccess);
+  const [brands, setBrands] = useState<{ id: string; name: string }[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const { form, isLoading, onSubmit } = useProductForm({ initialData, onSuccess });
 
   useEffect(() => {
     fetchBrandsAndCategories();
@@ -78,7 +57,11 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
         </div>
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={isLoading}>
+          <Button 
+            type="submit" 
+            disabled={isLoading}
+            className="bg-barber-gold hover:bg-barber-gold/90 text-black font-medium px-8"
+          >
             {isLoading ? "Salvando..." : initialData ? "Atualizar" : "Criar"}
           </Button>
         </div>
