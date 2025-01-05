@@ -17,6 +17,7 @@ const formSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   nickname: z.string().optional(),
   phone: z.string().optional(),
+  nif: z.string().optional(),
   plan: z.enum(["Basic", "Classic", "Business"]),
 });
 
@@ -32,6 +33,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       name: member.name,
       nickname: member.nickname || "",
       phone: member.phone || "",
+      nif: member.nif || "",
       plan: member.plan,
     },
   });
@@ -79,6 +81,20 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
               <FormLabel>Telefone</FormLabel>
               <FormControl>
                 <Input placeholder="+351 912 345 678" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="nif"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>NIF</FormLabel>
+              <FormControl>
+                <Input placeholder="Número de Identificação Fiscal" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
