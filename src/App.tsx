@@ -14,9 +14,36 @@ import { Toaster } from "@/components/ui/sonner";
 
 import "./App.css";
 
+// Create a default session object
+const defaultSession = {
+  access_token: 'default_token',
+  token_type: 'bearer',
+  expires_in: 3600,
+  refresh_token: 'default_refresh',
+  user: {
+    id: 'default_user_id',
+    aud: 'authenticated',
+    role: 'authenticated',
+    email: 'default@example.com',
+    email_confirmed_at: new Date().toISOString(),
+    phone: '',
+    confirmed_at: new Date().toISOString(),
+    last_sign_in_at: new Date().toISOString(),
+    app_metadata: {
+      provider: 'email',
+      providers: ['email'],
+    },
+    user_metadata: {},
+    identities: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  expires_at: Math.floor(Date.now() / 1000) + 3600,
+};
+
 function App() {
   return (
-    <SessionContextProvider supabaseClient={supabase}>
+    <SessionContextProvider supabaseClient={supabase} initialSession={defaultSession}>
       <MemberProvider>
         <SidebarProvider>
           <Router>
