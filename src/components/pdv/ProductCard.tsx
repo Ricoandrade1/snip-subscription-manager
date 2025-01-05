@@ -1,71 +1,22 @@
 import { Card } from "@/components/ui/card";
 import { Product } from "./types";
-import { Package, Scissors, Pencil, Trash2 } from "lucide-react";
+import { Package, Scissors, Pencil } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 interface ProductCardProps {
   product: Product;
   barbers: { id: string; name: string }[];
   onSelect: (product: Product) => void;
   onEdit?: (product: Product) => void;
-  onDelete?: (productId: string) => void;
 }
 
-export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCardProps) {
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleDelete = async () => {
-    try {
-      setIsDeleting(true);
-      console.log('Iniciando exclusão do produto:', product.id);
-
-      const { error } = await supabase
-        .from("products")
-        .delete()
-        .eq("id", product.id);
-
-      if (error) {
-        console.error("Erro ao excluir produto:", error);
-        toast.error("Erro ao excluir produto");
-        return;
-      }
-
-      console.log('Produto excluído com sucesso:', product.id);
-      if (onDelete) {
-        onDelete(product.id);
-      }
-      setIsDeleteDialogOpen(false);
-      toast.success("Produto excluído com sucesso");
-    } catch (error) {
-      console.error("Erro ao excluir produto:", error);
-      toast.error("Erro ao excluir produto");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
+export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
   return (
     <Card
       className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer hover:bg-muted/50"
@@ -141,48 +92,6 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
                   >
                     Editar produto
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <AlertDialog 
-                    open={isDeleteDialogOpen} 
-                    onOpenChange={setIsDeleteDialogOpen}
-                  >
-                    <AlertDialogTrigger asChild>
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsDeleteDialogOpen(true);
-                        }}
-                        className="text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Remover produto
-                      </DropdownMenuItem>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Remover produto</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Tem certeza que deseja remover o produto "{product.name}"? Esta ação não pode ser desfeita.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
-                          Cancelar
-                        </AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleDelete();
-                          }}
-                          className="bg-destructive hover:bg-destructive/90"
-                          disabled={isDeleting}
-                        >
-                          {isDeleting ? "Removendo..." : "Remover"}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
