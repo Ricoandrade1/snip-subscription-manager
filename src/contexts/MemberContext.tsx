@@ -7,21 +7,27 @@ import {
   updateMemberInDB, 
   deleteMemberFromDB 
 } from './memberUtils';
+import { useSession } from '@supabase/auth-helpers-react';
 
 const MemberContext = createContext<MemberContextType | undefined>(undefined);
 
 export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [members, setMembers] = useState<Member[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const session = useSession();
 
   useEffect(() => {
-    fetchMembers();
-  }, []);
+    if (session) {
+      fetchMembers();
+    }
+  }, [session]);
 
   const fetchMembers = async () => {
     try {
+      setIsLoading(true);
       const formattedMembers = await fetchMembersFromDB();
       setMembers(formattedMembers);
+      console.log('Membros carregados com sucesso:', formattedMembers);
     } catch (error) {
       console.error('Erro ao buscar membros:', error);
       toast.error('Erro ao carregar membros');

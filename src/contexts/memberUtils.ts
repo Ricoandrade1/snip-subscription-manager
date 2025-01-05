@@ -1,8 +1,10 @@
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { Member } from './types';
 import { toast } from "sonner";
 
 export const fetchMembersFromDB = async () => {
+  console.log('Iniciando busca de membros...');
+  
   const { data: membersData, error: membersError } = await supabase
     .from('members')
     .select(`
@@ -22,9 +24,19 @@ export const fetchMembersFromDB = async () => {
       )
     `);
 
-  if (membersError) throw membersError;
+  if (membersError) {
+    console.error('Erro ao buscar membros:', membersError);
+    throw membersError;
+  }
 
-  return membersData.map(member => ({
+  console.log('Membros encontrados:', membersData);
+
+  if (!membersData) {
+    console.log('Nenhum membro encontrado');
+    return [];
+  }
+
+  const formattedMembers = membersData.map(member => ({
     id: member.id,
     name: member.name,
     nickname: member.nickname || '',
@@ -37,7 +49,7 @@ export const fetchMembersFromDB = async () => {
     bank: member.bank,
     iban: member.iban,
     debitDate: member.debit_date,
-    plan: member.plan_id === '1' ? 'Basic' : member.plan_id === '2' ? 'Classic' : 'Business' as Member["plan"],
+    plan: member.plan_id === 1 ? 'Basic' : member.plan_id === 2 ? 'Classic' : 'Business',
     nextPaymentDue: member.debit_date,
     paymentHistory: member.payments?.map(payment => ({
       date: payment.payment_date,
@@ -50,7 +62,10 @@ export const fetchMembersFromDB = async () => {
       service: visit.service,
       barber: visit.barber
     }))
-  })) as Member[];
+  }));
+
+  console.log('Membros formatados:', formattedMembers);
+  return formattedMembers;
 };
 
 export const addMemberToDB = async (member: Omit<Member, "id">) => {
