@@ -59,11 +59,21 @@ export function SubscriberForm() {
         .from('plans')
         .select('id, title')
         .eq('title', data.plan)
-        .single();
+        .maybeSingle();
 
       if (planError) {
         console.error('Erro ao buscar plano:', planError);
         throw new Error('Erro ao buscar plano');
+      }
+
+      if (!plans) {
+        console.error('Plano não encontrado:', data.plan);
+        toast({
+          title: "Erro ao cadastrar assinante",
+          description: `Plano "${data.plan}" não encontrado. Por favor, selecione outro plano.`,
+          variant: "destructive",
+        });
+        return;
       }
 
       const planId = plans.id;
