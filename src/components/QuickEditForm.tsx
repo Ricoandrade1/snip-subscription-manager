@@ -12,6 +12,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Member } from "@/contexts/MemberContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -107,16 +114,18 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Plano</FormLabel>
-              <FormControl>
-                <select
-                  {...field}
-                  className="w-full p-2 border rounded-md"
-                >
-                  <option value="Basic">Basic</option>
-                  <option value="Classic">Classic</option>
-                  <option value="Business">Business</option>
-                </select>
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um plano" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="Basic">Basic</SelectItem>
+                  <SelectItem value="Classic">Classic</SelectItem>
+                  <SelectItem value="Business">Business</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
