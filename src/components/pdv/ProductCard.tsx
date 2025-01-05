@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Product } from "./types";
-import { Scissors, Package, Percent, DollarSign, Info } from "lucide-react";
+import { Scissors, Package, Percent, DollarSign } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
