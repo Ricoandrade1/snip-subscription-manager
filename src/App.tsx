@@ -14,11 +14,10 @@ import Categories from "./pages/Categories";
 import { MemberProvider } from "./contexts/MemberContext";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from "./integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { useEffect, useState } from "react";
+import { LoginForm } from "./components/auth/LoginForm";
 
 import "./App.css";
 
@@ -52,45 +51,6 @@ function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function LoginPage() {
-  const [session, setSession] = useState<any>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  if (session) {
-    return <Navigate to="/" />;
-  }
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold">Login</h2>
-          <p className="mt-2 text-gray-600">Entre com sua conta para continuar</p>
-        </div>
-        <Auth
-          supabaseClient={supabase}
-          appearance={{ theme: ThemeSupa }}
-          providers={[]}
-          theme="light"
-        />
-      </div>
-    </div>
-  );
-}
-
 function App() {
   return (
     <SessionContextProvider supabaseClient={supabase}>
@@ -98,7 +58,7 @@ function App() {
         <SidebarProvider>
           <Router>
             <Routes>
-              <Route path="/login" element={<LoginPage />} />
+              <Route path="/login" element={<LoginForm />} />
               <Route
                 path="/"
                 element={
