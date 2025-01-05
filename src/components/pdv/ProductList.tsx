@@ -117,26 +117,23 @@ export function ProductList({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="overflow-x-auto pb-4">
-        <div className="flex gap-4 min-w-max">
-          {isLoading ? (
-            <div className="w-full text-center">Carregando produtos...</div>
-          ) : products.length === 0 ? (
-            <div className="w-full text-center">Nenhum produto encontrado</div>
-          ) : (
-            products.map((product) => (
-              <div key={product.id} className="w-[300px]">
-                <ProductCard
-                  product={product}
-                  barbers={barbers}
-                  onSelect={onProductSelect}
-                />
-              </div>
-            ))
-          )}
+    <div className="space-y-6">
+      {isLoading ? (
+        <div className="text-center text-muted-foreground">Carregando produtos...</div>
+      ) : products.length === 0 ? (
+        <div className="text-center text-muted-foreground">Nenhum produto encontrado</div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              barbers={barbers}
+              onSelect={onProductSelect}
+            />
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }
