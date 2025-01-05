@@ -17,14 +17,7 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
   const [brands, setBrands] = useState<{ id: string; name: string }[]>([]);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  const form = useProductForm({
-    initialData,
-    onSuccess: () => {
-      toast.success(initialData ? "Produto atualizado com sucesso" : "Produto criado com sucesso");
-      onSuccess();
-    },
-  });
+  const form = useProductForm({ initialData });
 
   useEffect(() => {
     fetchBrandsAndCategories();
@@ -77,6 +70,7 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
         if (error) throw error;
       }
 
+      toast.success(initialData ? "Produto atualizado com sucesso" : "Produto criado com sucesso");
       onSuccess();
     } catch (error: any) {
       console.error("Error saving product:", error);
