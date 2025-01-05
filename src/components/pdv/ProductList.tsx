@@ -123,7 +123,7 @@ export function ProductList({
       ) : products.length === 0 ? (
         <div className="text-center text-muted-foreground">Nenhum produto encontrado</div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {products.map((product) => (
             <ProductCard
               key={product.id}
