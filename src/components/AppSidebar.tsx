@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import {
@@ -13,39 +13,15 @@ import {
 } from "@/components/ui/sidebar";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { menuItems } from "./sidebar/menuItems";
-import { SidebarMenuItemComponent } from "./sidebar/SidebarMenuItem";
+import { NavigationMenuItem } from "./sidebar/NavigationMenuItem";
 import { Button } from "./ui/button";
 
 export function AppSidebar() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { getMembersByPlan } = useMemberContext();
-  const [openSubmenus, setOpenSubmenus] = useState<string[]>([]);
   const { toggleSidebar } = useSidebar();
 
-  useEffect(() => {
-    const currentPath = location.pathname;
-    const activeMenuItem = menuItems.find(item => 
-      item.submenu?.some(subItem => currentPath === subItem.url) ||
-      currentPath === item.url
-    );
-    
-    if (activeMenuItem && !openSubmenus.includes(activeMenuItem.title)) {
-      setOpenSubmenus(prev => [...prev, activeMenuItem.title]);
-    }
-  }, [location.pathname]);
-
-  const toggleSubmenu = (title: string) => {
-    setOpenSubmenus(prev =>
-      prev.includes(title)
-        ? prev.filter(item => item !== title)
-        : [...prev, title]
-    );
-  };
-
-  const isActiveRoute = (url: string) => {
-    return location.pathname === url;
-  };
+  const isActiveRoute = (url: string) => location.pathname === url;
 
   return (
     <>
@@ -70,12 +46,10 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {menuItems.map((item) => (
-                  <SidebarMenuItemComponent
+                  <NavigationMenuItem
                     key={item.title}
                     item={item}
                     isActiveRoute={isActiveRoute}
-                    openSubmenus={openSubmenus}
-                    toggleSubmenu={toggleSubmenu}
                     getSubscriberCount={getMembersByPlan}
                   />
                 ))}

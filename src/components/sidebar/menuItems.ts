@@ -33,8 +33,8 @@ export const menuItems = [
     icon: Rss,
     url: "/social",
     submenu: [
-      { title: "Story", url: "/story", icon: Image },
-      { title: "Feed", url: "/feed", icon: Rss },
+      { title: "Story", url: "/story" },
+      { title: "Feed", url: "/feed" },
     ],
   },
   {
