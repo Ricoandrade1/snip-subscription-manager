@@ -50,13 +50,14 @@ export function PaymentDateField({
                 mode="single"
                 selected={field.value}
                 onSelect={(date) => {
-                  console.log("Data selecionada:", date);
-                  field.onChange(date);
+                  if (date) {
+                    field.onChange(date);
+                    console.log("Nova data selecionada:", date);
+                  }
                 }}
-                initialFocus
+                disabled={false}
                 locale={ptBR}
-                disabled={(date) => false}
-                className="rounded-md border"
+                initialFocus
               />
             </PopoverContent>
           </Popover>
