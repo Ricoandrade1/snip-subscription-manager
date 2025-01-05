@@ -1,11 +1,12 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { FilterInputs } from "./filters/FilterInputs";
+import { FilterBadges } from "./filters/FilterBadges";
 
 interface FilterState {
   name: string;
@@ -22,6 +23,7 @@ interface ProductFilterProps {
 }
 
 export function ProductFilter({ filters, onFilterChange }: ProductFilterProps) {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([]);
   const [brands, setBrands] = useState<Array<{ id: string; name: string }>>([]);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
@@ -107,112 +109,37 @@ export function ProductFilter({ filters, onFilterChange }: ProductFilterProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 bg-muted rounded-lg">
-        <div className="space-y-2">
-          <Label htmlFor="name">Nome</Label>
-          <Input
-            id="name"
-            placeholder="Buscar por nome..."
-            value={filters.name}
-            onChange={(e) => handleChange("name", e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="category">Categoria</Label>
-          <Select
-            value={filters.category}
-            onValueChange={(value) => handleChange("category", value)}
+        <FilterInputs
+          filters={filters}
+          categories={categories}
+          brands={brands}
+          onFilterChange={handleChange}
+        />
+        <div className="flex items-center justify-between space-x-4">
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="inStock"
+              checked={filters.inStock}
+              onCheckedChange={(checked) => handleChange("inStock", checked)}
+            />
+            <Label htmlFor="inStock">Apenas em estoque</Label>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/products")}
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecionar categoria" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="brand">Marca</Label>
-          <Select
-            value={filters.brand}
-            onValueChange={(value) => handleChange("brand", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecionar marca" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
-              {brands.map((brand) => (
-                <SelectItem key={brand.id} value={brand.id}>
-                  {brand.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="minPrice">Preço Mínimo</Label>
-          <Input
-            id="minPrice"
-            type="number"
-            placeholder="€"
-            value={filters.minPrice}
-            onChange={(e) => handleChange("minPrice", e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="maxPrice">Preço Máximo</Label>
-          <Input
-            id="maxPrice"
-            type="number"
-            placeholder="€"
-            value={filters.maxPrice}
-            onChange={(e) => handleChange("maxPrice", e.target.value)}
-          />
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="inStock"
-            checked={filters.inStock}
-            onCheckedChange={(checked) => handleChange("inStock", checked)}
-          />
-          <Label htmlFor="inStock">Apenas em estoque</Label>
+            <Plus className="h-4 w-4 mr-2" />
+            Novo Produto
+          </Button>
         </div>
       </div>
 
-      {activeFilters.length > 0 && (
-        <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-sm text-muted-foreground">Filtros ativos:</span>
-          {activeFilters.map((filter) => (
-            <Badge
-              key={filter}
-              variant="secondary"
-              className="flex items-center gap-1"
-            >
-              {filter}
-              <X
-                className="h-3 w-3 cursor-pointer"
-                onClick={() => clearFilter(filter)}
-              />
-            </Badge>
-          ))}
-          <button
-            onClick={clearAllFilters}
-            className="text-sm text-muted-foreground hover:text-primary"
-          >
-            Limpar todos
-          </button>
-        </div>
-      )}
+      <FilterBadges
+        activeFilters={activeFilters}
+        onClearFilter={clearFilter}
+        onClearAllFilters={clearAllFilters}
+      />
     </div>
   );
 }
