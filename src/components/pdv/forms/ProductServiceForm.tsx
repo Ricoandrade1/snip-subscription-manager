@@ -17,6 +17,8 @@ interface Product {
   brand?: string | null;
   category?: string | null;
   commission_rates?: Record<string, number>;
+  vat_rate?: number;
+  vat_included?: boolean;
 }
 
 interface Brand {

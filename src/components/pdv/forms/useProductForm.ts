@@ -14,6 +14,8 @@ interface Product {
   brand?: string | null;
   category?: string | null;
   commission_rates?: Record<string, number>;
+  vat_rate?: number;
+  vat_included?: boolean;
 }
 
 export function useProductForm(initialData?: Product, onSuccess?: () => void) {
@@ -29,6 +31,8 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
       brand: initialData?.brand ?? "",
       category: initialData?.category ?? "",
       commission_rates: initialData?.commission_rates ?? {},
+      vat_rate: initialData?.vat_rate?.toString() ?? "23",
+      vat_included: initialData?.vat_included ?? false,
     },
   });
 
@@ -43,6 +47,8 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
         brand_id: values.brand || null,
         category_id: values.category || null,
         commission_rates: values.commission_rates || {},
+        vat_rate: parseFloat(values.vat_rate),
+        vat_included: values.vat_included,
       };
 
       const { error } = initialData
