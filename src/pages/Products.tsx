@@ -4,15 +4,17 @@ import { ProductFilter } from "@/components/products/ProductFilter";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ProductServiceForm } from "@/components/pdv/ProductServiceForm";
-import { Plus } from "lucide-react";
+import { Grid, List, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Product } from "@/components/pdv/types";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export default function Products() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
     name: "",
@@ -56,7 +58,17 @@ export default function Products() {
     <div className="container py-2">
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Produtos</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold">Produtos</h1>
+            <ToggleGroup type="single" value={viewMode} onValueChange={(value) => value && setViewMode(value as "list" | "grid")}>
+              <ToggleGroupItem value="list" aria-label="Lista">
+                <List className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="grid" aria-label="Grade">
+                <Grid className="h-4 w-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open);
             if (!open) setSelectedProduct(null);
@@ -90,6 +102,7 @@ export default function Products() {
           filters={filters} 
           onProductSelect={handleViewDetails} 
           onEdit={handleEdit}
+          viewMode={viewMode}
         />
 
         {/* Product Details Dialog */}
