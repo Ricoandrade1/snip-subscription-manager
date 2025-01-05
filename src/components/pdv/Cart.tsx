@@ -71,10 +71,12 @@ export function Cart({
 
       // Update stock for each product
       for (const item of items) {
-        const { error: stockError } = await supabase
+        const { data: updatedStock, error: stockError } = await supabase
           .from("products")
-          .update({ stock: supabase.rpc('decrement', { x: item.quantity }) })
-          .eq("id", item.id);
+          .update({ stock: item.quantity })
+          .eq("id", item.id)
+          .select('stock')
+          .single();
 
         if (stockError) throw stockError;
       }

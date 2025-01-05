@@ -78,13 +78,15 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
     }
   };
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { error } = initialData
       ? await supabase
           .from("products")
-          .update(data)
+          .update(values)
           .eq("id", initialData.id)
-      : await supabase.from("products").insert([data]);
+      : await supabase
+          .from("products")
+          .insert([values]);
 
     if (error) {
       toast.error("Erro ao salvar item");
