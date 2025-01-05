@@ -20,18 +20,20 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     if (session) {
       fetchMembers();
-      setupRealtimeSubscription();
+      const channel = setupRealtimeSubscription();
+      
+      return () => {
+        supabase.removeChannel(channel);
+      };
     } else {
       setMembers([]);
       setIsLoading(false);
     }
-
-    return () => {
-      supabase.removeAllChannels();
-    };
   }, [session]);
 
   const setupRealtimeSubscription = () => {
+    console.log('Setting up realtime subscription...');
+    
     const channel = supabase
       .channel('db-changes')
       .on(
@@ -43,14 +45,80 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         },
         async (payload) => {
           console.log('Realtime change received:', payload);
-          await fetchMembers(); // Recarrega todos os membros para garantir dados atualizados
+          
+          if (payload.eventType === 'INSERT') {
+            const { data: newMember } = await supabase
+              .from('members')
+              .select(`
+                *,
+                plans (
+                  id,
+                  title,
+                  price
+                )
+              `)
+              .eq('id', payload.new.id)
+              .single();
+
+            if (newMember) {
+              setMembers(current => [...current, {
+                id: newMember.id,
+                name: newMember.name || '',
+                nickname: newMember.nickname || '',
+                phone: newMember.phone || '',
+                nif: newMember.nif || '',
+                plan_id: newMember.plan_id,
+                plan: newMember.plans?.title || "Basic",
+                created_at: newMember.created_at,
+                payment_date: newMember.payment_date,
+              }]);
+              toast.success('Novo membro adicionado');
+            }
+          }
+          
+          if (payload.eventType === 'UPDATE') {
+            const { data: updatedMember } = await supabase
+              .from('members')
+              .select(`
+                *,
+                plans (
+                  id,
+                  title,
+                  price
+                )
+              `)
+              .eq('id', payload.new.id)
+              .single();
+
+            if (updatedMember) {
+              setMembers(current => current.map(member => 
+                member.id === payload.new.id ? {
+                  id: updatedMember.id,
+                  name: updatedMember.name || '',
+                  nickname: updatedMember.nickname || '',
+                  phone: updatedMember.phone || '',
+                  nif: updatedMember.nif || '',
+                  plan_id: updatedMember.plan_id,
+                  plan: updatedMember.plans?.title || "Basic",
+                  created_at: updatedMember.created_at,
+                  payment_date: updatedMember.payment_date,
+                } : member
+              ));
+              toast.success('Membro atualizado');
+            }
+          }
+          
+          if (payload.eventType === 'DELETE') {
+            setMembers(current => current.filter(member => member.id !== payload.old.id));
+            toast.success('Membro removido');
+          }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+      });
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return channel;
   };
 
   const fetchMembers = async () => {

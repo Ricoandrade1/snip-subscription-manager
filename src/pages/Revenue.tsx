@@ -1,14 +1,78 @@
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PaymentHistoryTable } from "@/components/PaymentHistoryTable";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export default function Revenue() {
   const { members } = useMemberContext();
+  const [payments, setPayments] = useState<any[]>([]);
 
-  // Calcular pagamentos por plano
+  useEffect(() => {
+    // Set up realtime subscription for payments
+    const channel = supabase
+      .channel('payments-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'payments'
+        },
+        (payload) => {
+          console.log('Payment change received:', payload);
+          
+          if (payload.eventType === 'INSERT') {
+            setPayments(current => [...current, payload.new]);
+            toast.success('Novo pagamento registrado');
+          }
+          
+          if (payload.eventType === 'UPDATE') {
+            setPayments(current => 
+              current.map(payment => 
+                payment.id === payload.new.id ? payload.new : payment
+              )
+            );
+            toast.success('Pagamento atualizado');
+          }
+          
+          if (payload.eventType === 'DELETE') {
+            setPayments(current => 
+              current.filter(payment => payment.id !== payload.old.id)
+            );
+            toast.success('Pagamento removido');
+          }
+        }
+      )
+      .subscribe();
+
+    // Fetch initial payments
+    fetchPayments();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchPayments = async () => {
+    const { data, error } = await supabase
+      .from('payments')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      toast.error('Erro ao carregar pagamentos');
+      return;
+    }
+
+    setPayments(data || []);
+  };
+
+  // Calculate payments by plan
   const getPaymentsByPlan = () => {
     const planPayments = {
       Basic: { memberName: "Basic", plan: "Basic", amount: 0 },
@@ -26,7 +90,7 @@ export default function Revenue() {
     return Object.values(planPayments);
   };
 
-  // Calcular pagamentos mensais
+  // Calculate monthly payments
   const getMonthlyPayments = () => {
     return members.map((member) => ({
       memberName: member.name,
@@ -38,7 +102,7 @@ export default function Revenue() {
     }));
   };
 
-  // Calcular pagamentos anuais
+  // Calculate yearly payments
   const getYearlyPayments = () => {
     const yearlyTotal = members.reduce((acc, member) => {
       return acc + (member.plans?.price || 0) * 12;
