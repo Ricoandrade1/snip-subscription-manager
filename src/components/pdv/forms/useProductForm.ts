@@ -37,6 +37,13 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
   const onSubmit = async (values: ProductFormValues) => {
     try {
       setIsLoading(true);
+
+      // Check if user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Você precisa estar logado para salvar produtos");
+        return;
+      }
       
       const productData = {
         name: values.name,
@@ -65,7 +72,10 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
         error = insertError;
       }
 
-      if (error) throw error;
+      if (error) {
+        console.error("Database error:", error);
+        throw error;
+      }
 
       toast.success(
         initialData ? "Produto atualizado com sucesso" : "Produto criado com sucesso"
@@ -73,9 +83,9 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
       
       form.reset();
       onSuccess?.();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving product:", error);
-      toast.error("Erro ao salvar produto");
+      toast.error(error.message || "Erro ao salvar produto");
     } finally {
       setIsLoading(false);
     }
