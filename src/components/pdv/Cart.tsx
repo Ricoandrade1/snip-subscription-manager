@@ -9,6 +9,7 @@ interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  stock: number;
 }
 
 interface CartProps {
@@ -30,10 +31,18 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearCart }: Car
       return;
     }
 
+    // Verificar estoque antes de processar
+    for (const item of items) {
+      if (item.quantity > item.stock) {
+        toast.error(`Estoque insuficiente para ${item.name}`);
+        return;
+      }
+    }
+
     setIsProcessing(true);
 
     try {
-      // Create sale record
+      // Criar registro de venda
       const { data: sale, error: saleError } = await supabase
         .from("sales")
         .insert([
@@ -48,7 +57,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearCart }: Car
 
       if (saleError) throw saleError;
 
-      // Create sale items
+      // Criar itens da venda
       const saleItems = items.map((item) => ({
         sale_id: sale.id,
         product_id: item.id,
@@ -62,17 +71,9 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearCart }: Car
 
       if (itemsError) throw itemsError;
 
-      // Update product stock
+      // Atualizar estoque dos produtos
       for (const item of items) {
-        const { data: currentProduct, error: productError } = await supabase
-          .from("products")
-          .select("stock")
-          .eq("id", item.id)
-          .single();
-
-        if (productError) throw productError;
-
-        const newStock = currentProduct.stock - item.quantity;
+        const newStock = item.stock - item.quantity;
 
         const { error: updateError } = await supabase
           .from("products")
@@ -123,6 +124,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearCart }: Car
                 variant="outline"
                 size="icon"
                 onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                disabled={item.quantity >= item.stock}
               >
                 <Plus className="h-4 w-4" />
               </Button>
