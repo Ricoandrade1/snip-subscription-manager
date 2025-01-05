@@ -16,7 +16,7 @@ export default function Revenue() {
         id: 'basic-summary',
         memberName: "Basic",
         plan: "Basic",
-        amount: 0,
+        amount: members.filter(m => m.plan === "Basic").length * 30,
         date: new Date().toISOString(),
         status: "paid"
       },
@@ -24,7 +24,7 @@ export default function Revenue() {
         id: 'classic-summary',
         memberName: "Classic",
         plan: "Classic",
-        amount: 0,
+        amount: members.filter(m => m.plan === "Classic").length * 40,
         date: new Date().toISOString(),
         status: "paid"
       },
@@ -32,18 +32,11 @@ export default function Revenue() {
         id: 'business-summary',
         memberName: "Business",
         plan: "Business",
-        amount: 0,
+        amount: members.filter(m => m.plan === "Business").length * 50,
         date: new Date().toISOString(),
         status: "paid"
       },
     };
-
-    members.forEach((member) => {
-      const plan = member.plan;
-      if (plan && planPayments[plan]) {
-        planPayments[plan].amount += 30;
-      }
-    });
 
     return Object.values(planPayments);
   };
@@ -53,7 +46,7 @@ export default function Revenue() {
       id: member.id,
       memberName: member.name,
       plan: member.plan,
-      amount: 30,
+      amount: member.plan === "Basic" ? 30 : member.plan === "Classic" ? 40 : 50,
       date: member.payment_date || new Date().toISOString(),
       dueDate: member.due_date,
       status: member.payment_date ? "paid" : "pending"
@@ -61,7 +54,10 @@ export default function Revenue() {
   };
 
   const getYearlyPayments = (): Payment[] => {
-    const yearlyTotal = members.reduce((acc) => acc + 30 * 12, 0);
+    const yearlyTotal = members.reduce((acc, member) => {
+      const monthlyAmount = member.plan === "Basic" ? 30 : member.plan === "Classic" ? 40 : 50;
+      return acc + (monthlyAmount * 12);
+    }, 0);
 
     return [{
       id: 'yearly-summary',
