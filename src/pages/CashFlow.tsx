@@ -112,7 +112,7 @@ const CashFlow = () => {
             <CardTitle className="text-barber-gold">Produtos e Serviços</CardTitle>
           </CardHeader>
           <CardContent>
-            <ProductServiceGrid onItemSelect={() => {}} />
+            <ProductServiceGrid />
           </CardContent>
         </Card>
       </div>
