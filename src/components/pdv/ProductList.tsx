@@ -36,6 +36,7 @@ export function ProductList({
     fetchProducts();
     fetchBarbers();
 
+    // Subscribe to ALL changes on the products table
     const channel = supabase
       .channel('products-changes')
       .on(
@@ -45,8 +46,9 @@ export function ProductList({
           schema: 'public',
           table: 'products'
         },
-        () => {
-          fetchProducts();
+        (payload) => {
+          console.log('Real-time update received:', payload);
+          fetchProducts(); // Refresh the list whenever any change occurs
         }
       )
       .subscribe();
