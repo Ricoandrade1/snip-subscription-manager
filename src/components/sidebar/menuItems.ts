@@ -8,9 +8,15 @@ import {
   Building,
   Image,
   Rss,
+  Home,
 } from "lucide-react";
 
 export const menuItems = [
+  {
+    title: "Home",
+    icon: Home,
+    url: "/",
+  },
   {
     title: "Membros",
     icon: Users,
