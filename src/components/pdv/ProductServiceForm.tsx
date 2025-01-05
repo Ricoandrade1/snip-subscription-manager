@@ -1,14 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import { ProductBasicFields } from "./forms/ProductBasicFields";
+import { ProductCategoryFields } from "./forms/ProductCategoryFields";
+import { ProductCommissionFields } from "./forms/ProductCommissionFields";
+import { productFormSchema, type ProductFormValues } from "./forms/schema";
 
 interface Product {
   id: string;
@@ -18,28 +18,10 @@ interface Product {
   stock?: number;
   brand?: string | null;
   category?: string | null;
+  commission_rates?: Record<string, number>;
+  vat_rate?: number;
+  vat_included?: boolean;
 }
-
-interface Brand {
-  id: string;
-  name: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-}
-
-const formSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
-  description: z.string().optional(),
-  price: z.string().min(1, "Preço é obrigatório"),
-  stock: z.string().optional(),
-  brand: z.string().optional(),
-  category: z.string().optional(),
-});
-
-type FormValues = z.infer<typeof formSchema>;
 
 interface ProductServiceFormProps {
   initialData?: Product;
@@ -47,12 +29,10 @@ interface ProductServiceFormProps {
 }
 
 export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFormProps) {
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<ProductFormValues>({
+    resolver: zodResolver(productFormSchema),
     defaultValues: {
       name: initialData?.name ?? "",
       description: initialData?.description?.toString() ?? "",
@@ -60,33 +40,13 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
       stock: initialData?.stock?.toString() ?? "",
       brand: initialData?.brand ?? "",
       category: initialData?.category ?? "",
+      commission_rates: initialData?.commission_rates ?? {},
+      vat_rate: initialData?.vat_rate?.toString() ?? "23",
+      vat_included: initialData?.vat_included ?? false,
     },
   });
 
-  useEffect(() => {
-    fetchBrandsAndCategories();
-  }, []);
-
-  const fetchBrandsAndCategories = async () => {
-    try {
-      const [brandsResponse, categoriesResponse] = await Promise.all([
-        supabase.from("brands").select("*").order("name"),
-        supabase.from("categories").select("*").order("name"),
-      ]);
-
-      if (brandsResponse.data) {
-        setBrands(brandsResponse.data);
-      }
-      if (categoriesResponse.data) {
-        setCategories(categoriesResponse.data);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      toast.error("Erro ao carregar marcas e categorias");
-    }
-  };
-
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit = async (values: ProductFormValues) => {
     setIsLoading(true);
     try {
       const productData = {
@@ -96,6 +56,9 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
         stock: values.stock ? parseInt(values.stock) : 0,
         brand_id: values.brand || null,
         category_id: values.category || null,
+        commission_rates: values.commission_rates || {},
+        vat_rate: parseFloat(values.vat_rate),
+        vat_included: values.vat_included,
       };
 
       const { error } = initialData
@@ -123,125 +86,16 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome do Item</FormLabel>
-              <FormControl>
-                <Input placeholder="Digite o nome do item" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Descrição</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Adicione uma descrição do item"
-                  className="min-h-[80px]"
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Preço</FormLabel>
-              <FormControl>
-                <Input 
-                  type="number"
-                  step="0.01"
-                  placeholder="Digite o preço" 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="stock"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Quantidade em Estoque</FormLabel>
-              <FormControl>
-                <Input 
-                  type="number"
-                  placeholder="Digite a quantidade" 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="brand"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Marca</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma marca" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {brands.map((brand) => (
-                    <SelectItem key={brand.id} value={brand.id}>
-                      {brand.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Categoria</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma categoria" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            <ProductBasicFields form={form} />
+          </div>
+          <div className="space-y-6">
+            <ProductCategoryFields form={form} />
+            <ProductCommissionFields form={form} />
+          </div>
+        </div>
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isLoading}>
