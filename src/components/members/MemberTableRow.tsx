@@ -39,13 +39,13 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
     >
       <TableCell className="font-medium">{memberCode}</TableCell>
       <TableCell>{member.name}</TableCell>
+      <TableCell>{member.nickname || '-'}</TableCell>
       <TableCell>
         <Badge className={`${getPlanBadgeColor(member.plan)}`}>
           {member.plan}
         </Badge>
       </TableCell>
       <TableCell>{member.phone || '-'}</TableCell>
-      <TableCell>{member.nickname || '-'}</TableCell>
       <TableCell>{formatDate(member.created_at)}</TableCell>
     </TableRow>
   );
