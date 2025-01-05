@@ -1,22 +1,23 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
+import { BarberFormData } from "./BarberForm";
 
 interface PersonalInfoFieldsProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<BarberFormData>;
 }
 
 export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nome</FormLabel>
+            <FormLabel className="text-sm">Nome</FormLabel>
             <FormControl>
-              <Input placeholder="Nome completo" {...field} />
+              <Input placeholder="Nome completo" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -28,9 +29,9 @@ export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
         name="nickname"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Apelido</FormLabel>
+            <FormLabel className="text-sm">Apelido</FormLabel>
             <FormControl>
-              <Input placeholder="Apelido" {...field} />
+              <Input placeholder="Apelido" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -42,9 +43,9 @@ export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
         name="phone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Telefone</FormLabel>
+            <FormLabel className="text-sm">Telefone</FormLabel>
             <FormControl>
-              <Input placeholder="+351 912 345 678" {...field} />
+              <Input placeholder="+351 912 345 678" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -56,9 +57,9 @@ export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
         name="email"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Email</FormLabel>
+            <FormLabel className="text-sm">Email</FormLabel>
             <FormControl>
-              <Input type="email" placeholder="email@exemplo.com" {...field} />
+              <Input type="email" placeholder="email@exemplo.com" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -70,9 +71,9 @@ export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
         name="nif"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>NIF</FormLabel>
+            <FormLabel className="text-sm">NIF</FormLabel>
             <FormControl>
-              <Input placeholder="123456789" {...field} />
+              <Input placeholder="Número de Identificação Fiscal" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -84,9 +85,9 @@ export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
         name="birthDate"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Data de Nascimento</FormLabel>
+            <FormLabel className="text-sm">Data de Nascimento</FormLabel>
             <FormControl>
-              <Input type="date" {...field} />
+              <Input type="date" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -98,9 +99,9 @@ export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
         name="startDate"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Data de Início</FormLabel>
+            <FormLabel className="text-sm">Data de Início</FormLabel>
             <FormControl>
-              <Input type="date" {...field} />
+              <Input type="date" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
