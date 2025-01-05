@@ -6,11 +6,13 @@ import { Product, ProductListFilters } from "./types";
 
 interface ProductListProps {
   onProductSelect: (product: Product) => void;
+  onEdit?: (product: Product) => void;
   filters?: ProductListFilters;
 }
 
 export function ProductList({ 
   onProductSelect, 
+  onEdit,
   filters = { 
     name: "", 
     category: "", 
@@ -133,6 +135,7 @@ export function ProductList({
               product={product}
               barbers={barbers}
               onSelect={onProductSelect}
+              onEdit={onEdit}
             />
           ))}
         </div>
