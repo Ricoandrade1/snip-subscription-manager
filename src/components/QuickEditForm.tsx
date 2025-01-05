@@ -11,56 +11,46 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { Member } from "@/contexts/MemberContext";
 
 const formSchema = z.object({
-  title: z.string().min(2, "Título deve ter pelo menos 2 caracteres"),
-  price: z.coerce.number().min(0, "Preço deve ser maior que 0"),
-  features: z.string().min(2, "Características são obrigatórias"),
+  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  nickname: z.string().optional(),
+  phone: z.string().optional(),
+  plan: z.enum(["Basic", "Classic", "Business"]),
 });
 
 interface QuickEditFormProps {
-  initialData: {
-    title: string;
-    price: number;
-    features: string[];
-  };
-  onClose: () => void;
+  member: Member;
+  onSubmit: (data: Partial<Member>) => Promise<void>;
 }
 
-export function QuickEditForm({ initialData, onClose }: QuickEditFormProps) {
-  const { toast } = useToast();
+export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: initialData.title,
-      price: initialData.price,
-      features: initialData.features.join("\n"),
+      name: member.name,
+      nickname: member.nickname || "",
+      phone: member.phone || "",
+      plan: member.plan,
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    // Here you would typically update the plan data in your backend
-    console.log("Updated plan data:", data);
-    toast({
-      title: "Plano atualizado com sucesso!",
-      description: "As alterações foram salvas.",
-    });
-    onClose();
+  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+    await onSubmit(data);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="title"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Título do Plano</FormLabel>
+              <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input placeholder="Nome do plano" {...field} />
+                <Input placeholder="Nome completo" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -69,12 +59,12 @@ export function QuickEditForm({ initialData, onClose }: QuickEditFormProps) {
 
         <FormField
           control={form.control}
-          name="price"
+          name="nickname"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Preço (€)</FormLabel>
+              <FormLabel>Apelido</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="30" {...field} />
+                <Input placeholder="Apelido" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -83,16 +73,33 @@ export function QuickEditForm({ initialData, onClose }: QuickEditFormProps) {
 
         <FormField
           control={form.control}
-          name="features"
+          name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Características (uma por linha)</FormLabel>
+              <FormLabel>Telefone</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="Digite as características do plano"
-                  className="min-h-[100px]"
+                <Input placeholder="+351 912 345 678" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="plan"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Plano</FormLabel>
+              <FormControl>
+                <select
                   {...field}
-                />
+                  className="w-full p-2 border rounded-md"
+                >
+                  <option value="Basic">Basic</option>
+                  <option value="Classic">Classic</option>
+                  <option value="Business">Business</option>
+                </select>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -100,9 +107,6 @@ export function QuickEditForm({ initialData, onClose }: QuickEditFormProps) {
         />
 
         <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onClose}>
-            Cancelar
-          </Button>
           <Button type="submit">Salvar Alterações</Button>
         </div>
       </form>
