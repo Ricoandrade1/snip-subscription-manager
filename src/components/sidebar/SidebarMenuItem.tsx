@@ -36,10 +36,14 @@ export function SidebarMenuItemComponent({
           <CollapsibleTrigger asChild>
             <SidebarMenuButton asChild tooltip={item.title}>
               <div className="flex w-full items-center justify-between">
-                <div className="flex items-center gap-2">
+                <Link 
+                  to={item.url} 
+                  className="flex items-center gap-2"
+                  data-active={isActiveRoute(item.url)}
+                >
                   <item.icon className="h-4 w-4" />
                   <span>{item.title}</span>
-                </div>
+                </Link>
                 <ChevronDown
                   className={`h-4 w-4 transition-transform duration-200 ${
                     openSubmenus.includes(item.title) ? "rotate-180" : ""
@@ -58,14 +62,17 @@ export function SidebarMenuItemComponent({
                   >
                     <Link 
                       to={subItem.url}
-                      className="w-full flex justify-between items-center"
+                      className="w-full"
                     >
-                      <span>{subItem.title}</span>
-                      {subItem.count !== undefined && (
-                        <span className="ml-auto text-xs opacity-60">
-                          {subItem.count}
-                        </span>
-                      )}
+                      {subItem.title}
+                      {level === 1 && item.title === "Membros" &&
+                        subItem.title !== "Todos" && getSubscriberCount && (
+                          <span className="ml-auto text-xs opacity-60">
+                            {getSubscriberCount(
+                              subItem.title as "Basic" | "Classic" | "Business"
+                            )}
+                          </span>
+                        )}
                     </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>
@@ -84,7 +91,7 @@ export function SidebarMenuItemComponent({
         tooltip={item.title}
         data-active={isActiveRoute(item.url)}
       >
-        <Link to={item.url} className="flex items-center gap-2">
+        <Link to={item.url}>
           <item.icon className="h-4 w-4" />
           <span>{item.title}</span>
         </Link>
