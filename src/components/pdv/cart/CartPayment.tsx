@@ -4,9 +4,17 @@ import { Card } from "@/components/ui/card";
 import { Product } from "../types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { CreditCard, Wallet, Phone, X } from "lucide-react";
+import { CreditCard, Wallet, Phone, X, Users } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface CartPaymentProps {
   items: (Product & { quantity: number })[];
@@ -14,13 +22,62 @@ interface CartPaymentProps {
   onClearCart: () => void;
 }
 
+interface Seller {
+  id: string;
+  name: string;
+  commission_rate: number;
+}
+
 export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<string>("cash");
+  const [selectedSellers, setSelectedSellers] = useState<Seller[]>([]);
+  const [barbers, setBarbers] = useState<Seller[]>([]);
+
+  // Fetch barbers on component mount
+  useState(() => {
+    const fetchBarbers = async () => {
+      const { data, error } = await supabase
+        .from("barbers")
+        .select("id, name, commission_rate")
+        .eq("status", "active");
+
+      if (error) {
+        toast.error("Erro ao carregar barbeiros");
+        return;
+      }
+
+      if (data) {
+        setBarbers(data);
+      }
+    };
+
+    fetchBarbers();
+  }, []);
+
+  const handleSelectSeller = (seller: Seller) => {
+    setSelectedSellers((current) => {
+      const exists = current.find((s) => s.id === seller.id);
+      if (exists) {
+        return current.filter((s) => s.id !== seller.id);
+      }
+      return [...current, seller];
+    });
+  };
+
+  const calculateCommission = (seller: Seller) => {
+    const commission = (total * seller.commission_rate) / 100;
+    return commission;
+  };
 
   const handleFinishSale = async () => {
     if (items.length === 0) {
       toast.error("Adicione itens ao carrinho para finalizar a venda");
+      return;
+    }
+
+    if (selectedSellers.length === 0) {
+      toast.error("Selecione pelo menos um vendedor");
       return;
     }
 
@@ -33,7 +90,11 @@ export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
         .insert({
           total,
           payment_method: paymentMethod,
-          status: "completed"
+          status: "completed",
+          sellers: selectedSellers.map(s => ({
+            id: s.id,
+            commission: calculateCommission(s)
+          }))
         })
         .select()
         .single();
@@ -78,6 +139,54 @@ export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
 
   return (
     <Card className="p-4 space-y-4">
+      <div className="flex items-center justify-between">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full">
+              <Users className="mr-2 h-4 w-4" />
+              {selectedSellers.length === 0
+                ? "Selecionar Vendedor"
+                : `${selectedSellers.length} vendedor(es)`}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>Vendedores</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {barbers.map((barber) => (
+              <DropdownMenuItem
+                key={barber.id}
+                onClick={() => handleSelectSeller(barber)}
+                className="flex items-center justify-between"
+              >
+                <span>{barber.name}</span>
+                {selectedSellers.some((s) => s.id === barber.id) && (
+                  <span className="text-green-600">✓</span>
+                )}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {selectedSellers.length > 0 && (
+        <div className="space-y-2 pt-2 border-t">
+          <p className="text-sm font-medium">Comissões:</p>
+          {selectedSellers.map((seller) => (
+            <div key={seller.id} className="flex justify-between text-sm">
+              <span>{seller.name}</span>
+              <span>
+                {new Intl.NumberFormat("pt-PT", {
+                  style: "currency",
+                  currency: "EUR",
+                }).format(calculateCommission(seller))}
+                {" "}
+                ({seller.commission_rate}%)
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
       <RadioGroup
         value={paymentMethod}
         onValueChange={setPaymentMethod}
