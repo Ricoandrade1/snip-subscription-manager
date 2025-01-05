@@ -34,19 +34,24 @@ export function NavigationMenuItem({
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const isSubmenuActive = (submenuItem: { url: string }) => {
-    if (submenuItem.url === '/members') {
-      return location.pathname === '/members';
+  const isSubmenuActive = (submenuItem: { url: string; title: string }) => {
+    if (item.title === "Membros") {
+      if (submenuItem.title === "Todos") {
+        return location.pathname === "/members";
+      }
+      const planType = submenuItem.title.toLowerCase();
+      return location.pathname === `/members/${planType}`;
     }
     return location.pathname === submenuItem.url;
   };
 
   const hasActiveSubmenuItem = item.submenu?.some((subItem) => {
     if (item.title === "Membros") {
-      if (subItem.url === '/members') {
-        return location.pathname === '/members';
+      if (subItem.title === "Todos") {
+        return location.pathname === "/members";
       }
-      return location.pathname.startsWith(subItem.url);
+      const planType = subItem.title.toLowerCase();
+      return location.pathname === `/members/${planType}`;
     }
     return location.pathname === subItem.url;
   });
