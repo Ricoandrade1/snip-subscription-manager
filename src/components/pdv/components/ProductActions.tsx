@@ -17,8 +17,13 @@ interface ProductActionsProps {
 
 export function ProductActions({ product, onEdit }: ProductActionsProps) {
   const handleDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.preventDefault(); // Prevent any default behavior
+    e.stopPropagation(); // Stop event propagation
     
+    if (!confirm('Tem certeza que deseja excluir este produto?')) {
+      return;
+    }
+
     try {
       // Verificar vendas associadas
       const { data: saleItems, error: checkError } = await supabase
@@ -59,10 +64,10 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
       {onEdit && (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+          <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
@@ -71,13 +76,8 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
               <Pencil className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-            <DropdownMenuItem 
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(product);
-              }}
-            >
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onEdit(product)}>
               Editar produto
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -86,7 +86,7 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+        className="opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
         onClick={handleDelete}
       >
         <Trash2 className="h-4 w-4" />
