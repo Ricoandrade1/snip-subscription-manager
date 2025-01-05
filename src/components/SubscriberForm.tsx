@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { PersonalInfoFields } from "./PersonalInfoFields";
 import { PlanFields } from "./PlanFields";
+import { PaymentDateField } from "./PaymentDateField";
 import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
@@ -15,6 +16,7 @@ const formSchema = z.object({
   phone: z.string().optional(),
   nif: z.string().optional(),
   plan: z.enum(["Basic", "Classic", "Business"]).default("Basic"),
+  payment_date: z.date().optional(),
 });
 
 export type SubscriberFormData = z.infer<typeof formSchema>;
@@ -71,7 +73,8 @@ export function SubscriberForm() {
         nickname: data.nickname || "",
         phone: data.phone || "",
         nif: data.nif || "",
-        plan_id: planId
+        plan_id: planId,
+        payment_date: data.payment_date
       };
 
       await addMember(memberData);
@@ -101,6 +104,10 @@ export function SubscriberForm() {
 
         <div className="max-w-md mx-auto">
           <PlanFields form={form} />
+        </div>
+
+        <div className="max-w-md mx-auto">
+          <PaymentDateField form={form} />
         </div>
 
         <div className="flex justify-center">

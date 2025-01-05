@@ -1,6 +1,8 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Member } from "@/contexts/MemberContext";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface MemberTableRowProps {
   member: Member;
@@ -36,6 +38,11 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
         </Badge>
       </TableCell>
       <TableCell>{member.phone || '-'}</TableCell>
+      <TableCell>
+        {member.payment_date 
+          ? format(new Date(member.payment_date), "dd/MM/yyyy", { locale: ptBR })
+          : '-'}
+      </TableCell>
     </TableRow>
   );
 }

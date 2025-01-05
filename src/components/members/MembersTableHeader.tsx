@@ -9,6 +9,7 @@ export function MembersTableHeader() {
         <TableHead>Apelido</TableHead>
         <TableHead>Plano</TableHead>
         <TableHead>Telefone</TableHead>
+        <TableHead>Data de Pagamento</TableHead>
       </TableRow>
     </TableHeader>
   );
