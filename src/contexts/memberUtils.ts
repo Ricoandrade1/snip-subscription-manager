@@ -9,6 +9,11 @@ export const fetchMembersFromDB = async () => {
     .from('members')
     .select(`
       *,
+      plans (
+        title,
+        price,
+        features
+      ),
       payments (
         id,
         amount,
@@ -37,12 +42,6 @@ export const fetchMembersFromDB = async () => {
   }
 
   const formattedMembers = membersData.map(member => {
-    let planType: Member["plan"];
-    
-    if (member.plan_id === 1) planType = "Basic";
-    else if (member.plan_id === 2) planType = "Classic";
-    else planType = "Business";
-
     return {
       id: member.id,
       name: member.name,
@@ -53,10 +52,11 @@ export const fetchMembersFromDB = async () => {
       passport: member.passport || '',
       citizenCard: member.citizen_card || '',
       bi: member.bi || '',
-      bank: member.bank,
-      iban: member.iban,
+      bank: member.bank || '',
+      iban: member.iban || '',
       debitDate: member.debit_date,
-      plan: planType,
+      plan: member.plans?.title || "Basic",
+      created_at: member.created_at,
       nextPaymentDue: member.debit_date,
       paymentHistory: member.payments?.map(payment => ({
         date: payment.payment_date,
@@ -77,13 +77,17 @@ export const fetchMembersFromDB = async () => {
 };
 
 export const addMemberToDB = async (member: Omit<Member, "id">) => {
-  const { data: planData } = await supabase
+  // First, get the plan_id based on the plan title
+  const { data: planData, error: planError } = await supabase
     .from('plans')
     .select('id')
     .eq('title', member.plan)
     .single();
 
-  if (!planData) throw new Error('Plano não encontrado');
+  if (planError) {
+    console.error('Erro ao buscar plano:', planError);
+    throw planError;
+  }
 
   const { data, error } = await supabase
     .from('members')
