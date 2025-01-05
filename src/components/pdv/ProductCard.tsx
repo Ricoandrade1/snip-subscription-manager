@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Product } from "./types";
-import { Package, Scissors, Pencil } from "lucide-react";
+import { Package, Scissors, Pencil, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,6 +8,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProductCardProps {
   product: Product;
@@ -17,6 +19,22 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', product.id);
+
+      if (error) throw error;
+      toast.success('Produto excluído com sucesso');
+    } catch (error) {
+      console.error('Erro ao excluir produto:', error);
+      toast.error('Erro ao excluir produto');
+    }
+  };
+
   return (
     <Card
       className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer hover:bg-muted/50"
@@ -72,29 +90,39 @@ export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
               )}
             </div>
 
-            {onEdit && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                  <DropdownMenuItem 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(product);
-                    }}
-                  >
-                    Editar produto
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            <div className="flex gap-2">
+              {onEdit && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenuItem 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(product);
+                      }}
+                    >
+                      Editar produto
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
+                onClick={handleDelete}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
