@@ -7,6 +7,7 @@ export type Member = {
   plan_id: number | null;
   plan: "Basic" | "Classic" | "Business";
   created_at?: string;
+  due_date?: string;
 };
 
 export interface MemberContextType {
