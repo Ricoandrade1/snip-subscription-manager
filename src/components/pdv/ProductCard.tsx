@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { toast } from "sonner";
 import { Product } from "./types";
-import { Scissors, Package, Sparkles, Percent, Pencil } from "lucide-react";
+import { Package, Scissors, Pencil } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,92 +17,72 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
-  const isNew = new Date(product.created_at).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000;
-  const hasCommissions = product.commission_rates && Object.keys(product.commission_rates).length > 0;
-
   return (
     <Card
-      className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer ${
-        product.stock === 0 ? 'opacity-50' : ''
-      } ${isNew ? 'bg-[#FEF7CD]/30' : ''}`}
+      className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer hover:bg-muted/50"
       onClick={() => onSelect(product)}
     >
       <div className="p-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-1 flex-1 min-w-0">
-            <h3 className="font-medium leading-none truncate">{product.name}</h3>
-            {product.description && (
-              <p className="text-sm text-muted-foreground line-clamp-2">
-                {product.description}
-              </p>
-            )}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="rounded-full bg-muted p-2">
+              {product.is_service ? (
+                <Scissors className="h-5 w-5 text-primary" />
+              ) : (
+                <Package className="h-5 w-5 text-primary" />
+              )}
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-medium text-lg leading-none">{product.name}</h3>
+              {product.description && (
+                <p className="text-sm text-muted-foreground line-clamp-1">
+                  {product.description}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div className="flex gap-2 flex-shrink-0">
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="font-semibold">
+                {new Intl.NumberFormat("pt-PT", {
+                  style: "currency",
+                  currency: "EUR",
+                }).format(product.price)}
+              </p>
+              {!product.is_service && (
+                <p className="text-sm text-muted-foreground">
+                  Stock: {product.stock}
+                </p>
+              )}
+            </div>
+
             {onEdit && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="rounded-full bg-gray-500/10 p-2 text-gray-600 hover:bg-gray-500/20 active:bg-gray-500/30 transition-colors"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuContent align="end">
                   <DropdownMenuItem 
                     onClick={(e) => {
                       e.stopPropagation();
                       onEdit(product);
                     }}
-                    className="cursor-pointer flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100"
                   >
-                    <Pencil className="h-4 w-4" />
-                    <span>Editar produto</span>
+                    Editar produto
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            {hasCommissions && (
-              <div className="rounded-full bg-green-500/10 p-2 text-green-600" title="Tem comissões">
-                <Percent className="h-4 w-4" />
-              </div>
-            )}
-            {product.is_service ? (
-              <div className="rounded-full bg-purple-500/10 p-2 text-purple-500">
-                <Scissors className="h-4 w-4" />
-              </div>
-            ) : (
-              <div className="rounded-full bg-blue-500/10 p-2 text-blue-500">
-                <Package className="h-4 w-4" />
-              </div>
-            )}
           </div>
-        </div>
-
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-lg font-bold">
-            {new Intl.NumberFormat("pt-PT", {
-              style: "currency",
-              currency: "EUR",
-            }).format(product.price)}
-          </span>
-          {!product.is_service && (
-            <span className="text-sm text-muted-foreground">
-              Estoque: {product.stock}
-            </span>
-          )}
         </div>
       </div>
-
-      {isNew && (
-        <div className="absolute left-2 top-2">
-          <div className="rounded-full bg-yellow-500/10 p-2 text-yellow-600">
-            <Sparkles className="h-4 w-4" />
-          </div>
-        </div>
-      )}
     </Card>
   );
 }

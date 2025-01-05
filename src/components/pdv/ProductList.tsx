@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ProductCard } from "./ProductCard";
 import { Product, ProductListFilters } from "./types";
+import { Separator } from "@/components/ui/separator";
 
 interface ProductListProps {
   onProductSelect: (product: Product) => void;
@@ -73,7 +74,7 @@ export function ProductList({
       let query = supabase
         .from("products")
         .select("*, brands(name), categories(name)")
-        .order("name");
+        .order('name');
 
       if (filters.name) {
         query = query.ilike("name", `%${filters.name}%`);
@@ -121,25 +122,37 @@ export function ProductList({
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-24 bg-muted animate-pulse rounded-lg" />
+        ))}
+      </div>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="text-center p-8 bg-muted/50 rounded-lg">
+        <p className="text-muted-foreground">Nenhum produto encontrado</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-4">
-      {isLoading ? (
-        <div className="text-center text-muted-foreground">Carregando produtos...</div>
-      ) : products.length === 0 ? (
-        <div className="text-center text-muted-foreground">Nenhum produto encontrado</div>
-      ) : (
-        <div className="space-y-4">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              barbers={barbers}
-              onSelect={onProductSelect}
-              onEdit={onEdit}
-            />
-          ))}
+    <div className="space-y-2">
+      {products.map((product, index) => (
+        <div key={product.id}>
+          <ProductCard
+            product={product}
+            barbers={barbers}
+            onSelect={onProductSelect}
+            onEdit={onEdit}
+          />
+          {index < products.length - 1 && <Separator className="my-2" />}
         </div>
-      )}
+      ))}
     </div>
   );
 }
