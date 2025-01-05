@@ -12,6 +12,7 @@ export type Member = {
   debitDate: string;
   phone: string;
   plan: "Basic" | "Classic" | "Business";
+  created_at?: string;
   nextPaymentDue?: string;
   paymentHistory?: {
     date: string;

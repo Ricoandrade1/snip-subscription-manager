@@ -21,8 +21,8 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     const samePlanMembers = members
       .filter(m => m.plan === member.plan)
       .sort((a, b) => {
-        const dateA = new Date(a.created_at || '');
-        const dateB = new Date(b.created_at || '');
+        const dateA = new Date(a.created_at || '1970-01-01');
+        const dateB = new Date(b.created_at || '1970-01-01');
         return dateA.getTime() - dateB.getTime();
       });
     
