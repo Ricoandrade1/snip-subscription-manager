@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
+import { Json } from "@/integrations/supabase/types";
 
 interface Product {
   id: string;
@@ -96,7 +97,15 @@ export function ProductList({ onProductSelect, filters = { name: "", category: "
         throw error;
       }
 
-      setProducts(data || []);
+      // Convert commission_rates from Json type to Record<string, number>
+      const formattedProducts: Product[] = (data || []).map(product => ({
+        ...product,
+        commission_rates: product.commission_rates ? 
+          JSON.parse(JSON.stringify(product.commission_rates)) as Record<string, number> : 
+          undefined
+      }));
+
+      setProducts(formattedProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
       toast.error("Erro ao carregar produtos");
