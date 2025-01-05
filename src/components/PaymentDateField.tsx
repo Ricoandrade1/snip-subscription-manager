@@ -49,10 +49,13 @@ export function PaymentDateField({
               <Calendar
                 mode="single"
                 selected={field.value}
-                onSelect={field.onChange}
+                onSelect={(date) => {
+                  console.log("Data selecionada:", date);
+                  field.onChange(date);
+                }}
                 initialFocus
                 locale={ptBR}
-                disabled={false}
+                disabled={(date) => false}
                 className="rounded-md border"
               />
             </PopoverContent>
