@@ -25,27 +25,6 @@ export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<string>("cash");
   const [selectedSellers, setSelectedSellers] = useState<Seller[]>([]);
-  const [barbers, setBarbers] = useState<Seller[]>([]);
-
-  useEffect(() => {
-    const fetchBarbers = async () => {
-      const { data, error } = await supabase
-        .from("barbers")
-        .select("id, name, commission_rate")
-        .eq("status", "active");
-
-      if (error) {
-        toast.error("Erro ao carregar barbeiros");
-        return;
-      }
-
-      if (data) {
-        setBarbers(data);
-      }
-    };
-
-    fetchBarbers();
-  }, []);
 
   const handleSelectSeller = (seller: Seller) => {
     setSelectedSellers((current) => {
@@ -55,11 +34,6 @@ export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
       }
       return [...current, seller];
     });
-  };
-
-  const calculateCommission = (seller: Seller) => {
-    const commission = (total * seller.commission_rate) / 100;
-    return commission;
   };
 
   const handleFinishSale = async () => {
@@ -84,7 +58,7 @@ export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
           status: "completed",
           sellers: selectedSellers.map(s => ({
             id: s.id,
-            commission: calculateCommission(s)
+            commission: (total * s.commission_rate) / 100
           }))
         })
         .select()
@@ -129,7 +103,6 @@ export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
   return (
     <Card className="p-4 space-y-4">
       <SellerSelector
-        sellers={barbers}
         selectedSellers={selectedSellers}
         onSelectSeller={handleSelectSeller}
       />
