@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -21,7 +20,12 @@ export function AppSidebar() {
   const { getMembersByPlan } = useMemberContext();
   const { toggleSidebar } = useSidebar();
 
-  const isActiveRoute = (url: string) => location.pathname === url;
+  const isActiveRoute = (url: string) => {
+    if (url === '/members') {
+      return location.pathname === '/members' || location.pathname.startsWith('/members/');
+    }
+    return location.pathname === url;
+  };
 
   return (
     <>

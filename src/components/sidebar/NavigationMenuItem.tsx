@@ -34,10 +34,13 @@ export function NavigationMenuItem({
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Automatically open submenu if current route is inside it
   useEffect(() => {
-    if (item.submenu?.some(subItem => location.pathname === subItem.url)) {
-      setIsOpen(true);
+    if (item.submenu) {
+      const hasActiveSubmenuItem = item.submenu.some(subItem => 
+        location.pathname === subItem.url || 
+        (subItem.url === '/members' && location.pathname.startsWith('/members/'))
+      );
+      setIsOpen(hasActiveSubmenuItem);
     }
   }, [location.pathname, item.submenu]);
 
@@ -46,10 +49,6 @@ export function NavigationMenuItem({
   };
 
   if (item.submenu) {
-    const hasActiveSubmenuItem = item.submenu.some(subItem => 
-      location.pathname === subItem.url
-    );
-
     return (
       <SidebarMenuItem>
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -75,7 +74,10 @@ export function NavigationMenuItem({
                   <button 
                     onClick={() => handleNavigation(subItem.url)}
                     className={`w-full flex items-center justify-between p-2 rounded-md hover:bg-muted ${
-                      location.pathname === subItem.url ? 'bg-muted' : ''
+                      location.pathname === subItem.url || 
+                      (subItem.url === '/members' && location.pathname.startsWith('/members/'))
+                        ? 'bg-muted' 
+                        : ''
                     }`}
                   >
                     <span>{subItem.title}</span>
