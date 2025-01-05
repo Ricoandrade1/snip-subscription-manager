@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Product } from "./types";
-import { Scissors, Package } from "lucide-react";
+import { Scissors, Package, Sparkles } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
@@ -10,11 +10,14 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onSelect }: ProductCardProps) {
+  // Consider a product "new" if it was created in the last 7 days
+  const isNew = new Date(product.created_at).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000;
+
   return (
     <Card
       className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer ${
         product.stock === 0 ? 'opacity-50' : ''
-      }`}
+      } ${isNew ? 'bg-[#FEF7CD]/30' : ''}`}
       onClick={() => {
         if (product.stock > 0 || product.is_service) {
           onSelect(product);
@@ -23,6 +26,14 @@ export function ProductCard({ product, onSelect }: ProductCardProps) {
         }
       }}
     >
+      {isNew && (
+        <div className="absolute left-2 top-2 z-10">
+          <div className="rounded-full bg-yellow-500/10 p-2 text-yellow-600">
+            <Sparkles className="h-4 w-4" />
+          </div>
+        </div>
+      )}
+
       <div className="absolute right-2 top-2 z-10">
         {product.is_service ? (
           <div className="rounded-full bg-purple-500/10 p-2 text-purple-500">
@@ -50,7 +61,14 @@ export function ProductCard({ product, onSelect }: ProductCardProps) {
       </div>
 
       <div className="p-3 space-y-1">
-        <h3 className="font-medium leading-none truncate">{product.name}</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="font-medium leading-none truncate">{product.name}</h3>
+          {isNew && (
+            <span className="text-xs font-medium text-yellow-600 bg-yellow-100 px-2 py-0.5 rounded-full">
+              Novo
+            </span>
+          )}
+        </div>
         <div className="flex items-center justify-between">
           <span className="text-lg font-bold">
             {new Intl.NumberFormat("pt-PT", {
