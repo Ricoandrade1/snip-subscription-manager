@@ -38,20 +38,28 @@ export default function Revenue() {
   }, []);
 
   const fetchPayments = async () => {
-    const { data, error } = await supabase
+    // Updated query to use proper joins
+    const { data: paymentsData, error } = await supabase
       .from('payments')
-      .select('*, members(name, plans(title))')
-      .order('created_at', { ascending: false });
+      .select(`
+        *,
+        member:members(
+          name,
+          plan:plans(
+            title
+          )
+        )
+      `);
 
     if (error) {
       toast.error('Erro ao carregar pagamentos');
       return;
     }
 
-    const formattedPayments: Payment[] = (data || []).map(payment => ({
+    const formattedPayments: Payment[] = (paymentsData || []).map(payment => ({
       id: payment.id,
-      memberName: payment.members?.name || '',
-      plan: (payment.members?.plans?.title as "Basic" | "Classic" | "Business") || "Basic",
+      memberName: payment.member?.name || '',
+      plan: (payment.member?.plan?.title as "Basic" | "Classic" | "Business") || "Basic",
       amount: payment.amount,
       date: payment.payment_date,
       status: payment.status as "paid" | "pending" | "overdue",
@@ -95,7 +103,7 @@ export default function Revenue() {
     members.forEach((member) => {
       const plan = member.plan;
       if (plan && planPayments[plan]) {
-        planPayments[plan].amount += 30; // Default amount, should be fetched from plans table
+        planPayments[plan].amount += 30;
       }
     });
 
@@ -107,7 +115,7 @@ export default function Revenue() {
       id: member.id,
       memberName: member.name,
       plan: member.plan,
-      amount: 30, // Default amount, should be fetched from plans table
+      amount: 30,
       date: member.payment_date || new Date().toISOString(),
       dueDate: member.due_date,
       status: member.payment_date ? "paid" : "pending"
