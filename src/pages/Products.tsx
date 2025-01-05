@@ -12,6 +12,7 @@ import { Product } from "@/components/pdv/types";
 export default function Products() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
     name: "",
@@ -44,6 +45,11 @@ export default function Products() {
   const handleEdit = (product: Product) => {
     setSelectedProduct(product);
     setIsDialogOpen(true);
+  };
+
+  const handleViewDetails = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDetailsOpen(true);
   };
 
   return (
@@ -79,11 +85,79 @@ export default function Products() {
         </div>
 
         <ProductFilter filters={filters} onFilterChange={setFilters} />
+        
         <ProductList 
           filters={filters} 
-          onProductSelect={() => {}} 
+          onProductSelect={handleViewDetails} 
           onEdit={handleEdit}
         />
+
+        {/* Product Details Dialog */}
+        <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Detalhes do Produto</DialogTitle>
+            </DialogHeader>
+            {selectedProduct && (
+              <div className="space-y-4">
+                <div className="grid gap-2">
+                  <div>
+                    <h3 className="font-medium">Nome</h3>
+                    <p>{selectedProduct.name}</p>
+                  </div>
+                  {selectedProduct.description && (
+                    <div>
+                      <h3 className="font-medium">Descrição</h3>
+                      <p>{selectedProduct.description}</p>
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="font-medium">Preço</h3>
+                    <p>
+                      {new Intl.NumberFormat("pt-PT", {
+                        style: "currency",
+                        currency: "EUR",
+                      }).format(selectedProduct.price)}
+                    </p>
+                  </div>
+                  {!selectedProduct.is_service && (
+                    <div>
+                      <h3 className="font-medium">Estoque</h3>
+                      <p>{selectedProduct.stock}</p>
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="font-medium">Tipo</h3>
+                    <p>{selectedProduct.is_service ? "Serviço" : "Produto"}</p>
+                  </div>
+                  {selectedProduct.brands && (
+                    <div>
+                      <h3 className="font-medium">Marca</h3>
+                      <p>{selectedProduct.brands.name}</p>
+                    </div>
+                  )}
+                  {selectedProduct.categories && (
+                    <div>
+                      <h3 className="font-medium">Categoria</h3>
+                      <p>{selectedProduct.categories.name}</p>
+                    </div>
+                  )}
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>
+                    Fechar
+                  </Button>
+                  <Button onClick={() => {
+                    setIsDetailsOpen(false);
+                    handleEdit(selectedProduct);
+                  }}>
+                    Editar
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
