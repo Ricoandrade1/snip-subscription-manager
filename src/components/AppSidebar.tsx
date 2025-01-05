@@ -27,12 +27,11 @@ export function AppSidebar() {
     const currentPath = location.pathname;
     const activeMenuItem = menuItems.find(item => 
       item.submenu?.some(subItem => {
-        if (subItem.url === "/members" && currentPath === "/members") {
+        if (currentPath === "/members" && subItem.url === "/members") {
           return true;
         }
-        if (subItem.url.startsWith("/members/")) {
-          const planRoute = subItem.url.split("/").pop();
-          return currentPath.includes(planRoute || "");
+        if (currentPath.startsWith("/members/") && subItem.url.startsWith("/members/")) {
+          return currentPath === subItem.url;
         }
         return currentPath === subItem.url;
       }) ||
@@ -55,7 +54,10 @@ export function AppSidebar() {
   const isActiveRoute = (url: string) => {
     const currentPath = location.pathname;
     if (url === "/members") {
-      return currentPath.includes("/members");
+      return currentPath === "/members";
+    }
+    if (url.startsWith("/members/")) {
+      return currentPath === url;
     }
     return currentPath === url;
   };

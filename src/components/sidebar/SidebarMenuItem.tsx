@@ -35,15 +35,12 @@ export function SidebarMenuItemComponent({
   const isSubmenuItemActive = (url: string) => {
     const currentPath = location.pathname;
     
-    // Handle the "Todos" case
     if (url === "/members" && currentPath === "/members") {
       return true;
     }
     
-    // Handle plan-specific routes
     if (url.startsWith("/members/")) {
-      const planRoute = url.split("/").pop(); // Gets "basic", "classic", or "business"
-      return currentPath.includes(planRoute || "");
+      return currentPath === url;
     }
     
     return currentPath === url;
