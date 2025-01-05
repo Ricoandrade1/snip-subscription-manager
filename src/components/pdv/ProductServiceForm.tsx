@@ -22,8 +22,10 @@ const formSchema = z.object({
   image_url: z.string().optional(),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 interface ProductServiceFormProps {
-  initialData?: any;
+  initialData?: FormValues & { id: string };
   onSuccess: () => void;
 }
 
@@ -41,17 +43,17 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: initialData?.name || "",
-      price: initialData?.price || 0,
-      description: initialData?.description || "",
-      is_service: initialData?.is_service || false,
-      stock: initialData?.stock || 0,
-      brand_id: initialData?.brand_id || undefined,
-      category_id: initialData?.category_id || undefined,
-      image_url: initialData?.image_url || "",
+      name: initialData?.name ?? "",
+      price: initialData?.price ?? 0,
+      description: initialData?.description ?? "",
+      is_service: initialData?.is_service ?? false,
+      stock: initialData?.stock ?? 0,
+      brand_id: initialData?.brand_id,
+      category_id: initialData?.category_id,
+      image_url: initialData?.image_url ?? "",
     },
   });
 
@@ -78,25 +80,29 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const { error } = initialData
-      ? await supabase
-          .from("products")
-          .update(values)
-          .eq("id", initialData.id)
-      : await supabase
-          .from("products")
-          .insert([values]);
+  const onSubmit = async (values: FormValues) => {
+    try {
+      const { error } = initialData
+        ? await supabase
+            .from("products")
+            .update(values)
+            .eq("id", initialData.id)
+        : await supabase
+            .from("products")
+            .insert(values);
 
-    if (error) {
+      if (error) {
+        throw error;
+      }
+
+      toast.success(
+        initialData ? "Item atualizado com sucesso" : "Item criado com sucesso"
+      );
+      onSuccess();
+    } catch (error) {
+      console.error("Error saving item:", error);
       toast.error("Erro ao salvar item");
-      return;
     }
-
-    toast.success(
-      initialData ? "Item atualizado com sucesso" : "Item criado com sucesso"
-    );
-    onSuccess();
   };
 
   return (
