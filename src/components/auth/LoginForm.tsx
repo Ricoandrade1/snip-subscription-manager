@@ -100,7 +100,6 @@ export const LoginForm = () => {
                 loading_button_label: 'Entrando...',
                 social_provider_text: 'Entrar com {{provider}}',
                 link_text: 'Já tem uma conta? Entre',
-                password_recovery_text: 'Esqueceu sua senha?',
               },
               sign_up: {
                 email_label: 'Email',
@@ -109,6 +108,13 @@ export const LoginForm = () => {
                 loading_button_label: 'Criando conta...',
                 social_provider_text: 'Criar conta com {{provider}}',
                 link_text: 'Não tem uma conta? Cadastre-se',
+              },
+              forgotten_password: {
+                email_label: 'Email',
+                password_label: 'Senha',
+                button_label: 'Enviar instruções',
+                loading_button_label: 'Enviando instruções...',
+                link_text: 'Esqueceu sua senha?',
               },
             },
           }}

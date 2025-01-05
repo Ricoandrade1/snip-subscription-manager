@@ -61,7 +61,7 @@ export default function ResetPassword() {
       <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
         <Auth
           supabaseClient={supabase}
-          view="reset-password"
+          view="forgotten_password"
           appearance={{
             theme: customTheme,
             style: {
@@ -86,12 +86,13 @@ export default function ResetPassword() {
           }}
           localization={{
             variables: {
-              reset_password: {
+              forgotten_password: {
                 email_label: 'Email',
                 password_label: 'Nova senha',
                 button_label: 'Enviar instruções',
                 loading_button_label: 'Enviando...',
                 confirmation_text: 'Verifique seu email para redefinir sua senha',
+                link_text: 'Esqueceu sua senha?',
               },
             },
           }}
