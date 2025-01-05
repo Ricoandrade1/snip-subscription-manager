@@ -24,6 +24,20 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
     }
   };
 
+  const getPaymentStatus = () => {
+    if (!member.payment_date) return { label: "Pendente", color: "bg-yellow-500" };
+    
+    const paymentDate = new Date(member.payment_date);
+    const today = new Date();
+    
+    if (paymentDate < today) {
+      return { label: "Atrasado", color: "bg-red-500" };
+    }
+    return { label: "Em dia", color: "bg-green-500" };
+  };
+
+  const status = getPaymentStatus();
+
   return (
     <TableRow 
       className="cursor-pointer hover:bg-muted/50"
@@ -33,15 +47,22 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
       <TableCell>{member.name}</TableCell>
       <TableCell>{member.nickname || '-'}</TableCell>
       <TableCell>
-        <Badge className={`${getPlanBadgeColor(member.plan)}`}>
-          {member.plan}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge className={`${getPlanBadgeColor(member.plan)}`}>
+            {member.plan}
+          </Badge>
+        </div>
       </TableCell>
       <TableCell>{member.phone || '-'}</TableCell>
       <TableCell>
         {member.payment_date 
           ? format(new Date(member.payment_date), "dd/MM/yyyy", { locale: ptBR })
           : '-'}
+      </TableCell>
+      <TableCell>
+        <Badge className={status.color}>
+          {status.label}
+        </Badge>
       </TableCell>
     </TableRow>
   );
