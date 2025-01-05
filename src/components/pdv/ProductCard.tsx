@@ -9,6 +9,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, barbers, onSelect }: ProductCardProps) {
+  // Calculate VAT based on product's own VAT rate and inclusion setting
   const vatAmount = product.price * (product.vat_rate / 100);
   const totalWithVat = product.vat_included ? product.price : product.price + vatAmount;
   const priceWithoutVat = product.vat_included ? product.price - vatAmount : product.price;
