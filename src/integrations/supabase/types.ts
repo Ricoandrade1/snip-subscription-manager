@@ -22,6 +22,7 @@ export type Database = {
           nickname: string | null
           nif: string
           phone: string
+          roles: Database["public"]["Enums"]["user_authority"][] | null
           schedule: Json | null
           specialties: string[]
           start_date: string
@@ -40,6 +41,7 @@ export type Database = {
           nickname?: string | null
           nif: string
           phone: string
+          roles?: Database["public"]["Enums"]["user_authority"][] | null
           schedule?: Json | null
           specialties: string[]
           start_date: string
@@ -58,6 +60,7 @@ export type Database = {
           nickname?: string | null
           nif?: string
           phone?: string
+          roles?: Database["public"]["Enums"]["user_authority"][] | null
           schedule?: Json | null
           specialties?: string[]
           start_date?: string
@@ -446,7 +449,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      user_authority: "admin" | "seller" | "manager" | "barber" | "owner"
     }
     CompositeTypes: {
       [_ in never]: never
