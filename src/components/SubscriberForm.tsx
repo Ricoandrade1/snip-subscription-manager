@@ -1,14 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { PersonalInfoFields } from "./PersonalInfoFields";
 import { DocumentFields } from "./DocumentFields";
 import { BankingFields } from "./BankingFields";
+import { PlanFields } from "./PlanFields";
 import type { Member } from "@/contexts/MemberContext";
 
 const formSchema = z.object({
@@ -85,48 +85,7 @@ export function SubscriberForm() {
           <BankingFields form={form} />
         </div>
 
-        <FormField
-          control={form.control}
-          name="plan"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Plano</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="Basic" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Basic - Somente Barba (30€)
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="Classic" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Classic - Somente Cabelo (40€)
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="Business" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Business - Cabelo e Barba (50€)
-                    </FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <PlanFields form={form} />
 
         <Button type="submit" className="w-full">
           Cadastrar Assinante
