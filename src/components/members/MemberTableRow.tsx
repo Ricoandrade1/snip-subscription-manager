@@ -1,6 +1,8 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Member } from "@/contexts/MemberContext";
+import { addMonths, format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface MemberTableRowProps {
   member: Member;
@@ -22,14 +24,11 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
     }
   };
 
-  const formatDate = (dateString: string | undefined) => {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
+  const getDueDate = (createdAt: string | undefined) => {
+    if (!createdAt) return '-';
+    const creationDate = new Date(createdAt);
+    const dueDate = addMonths(creationDate, 1); // Due date is 1 month after creation
+    return format(dueDate, 'dd/MM/yyyy', { locale: ptBR });
   };
 
   return (
@@ -46,7 +45,7 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
         </Badge>
       </TableCell>
       <TableCell>{member.phone || '-'}</TableCell>
-      <TableCell>{formatDate(member.created_at)}</TableCell>
+      <TableCell>{getDueDate(member.created_at)}</TableCell>
     </TableRow>
   );
 }
