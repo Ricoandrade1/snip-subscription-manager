@@ -4,7 +4,7 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProductBasicFields } from "./ProductBasicFields";
 import { ProductCategoryFields } from "./ProductCategoryFields";
 import { ProductCommissionFields } from "./ProductCommissionFields";
@@ -21,6 +21,16 @@ interface Product {
   commission_rates?: Record<string, number>;
 }
 
+interface Brand {
+  id: string;
+  name: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+}
+
 interface ProductServiceFormProps {
   initialData?: Product;
   onSuccess: () => void;
@@ -28,6 +38,8 @@ interface ProductServiceFormProps {
 
 export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -41,6 +53,29 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
       commission_rates: initialData?.commission_rates ?? {},
     },
   });
+
+  useEffect(() => {
+    fetchBrandsAndCategories();
+  }, []);
+
+  const fetchBrandsAndCategories = async () => {
+    try {
+      const [brandsResponse, categoriesResponse] = await Promise.all([
+        supabase.from("brands").select("*").order("name"),
+        supabase.from("categories").select("*").order("name"),
+      ]);
+
+      if (brandsResponse.data) {
+        setBrands(brandsResponse.data);
+      }
+      if (categoriesResponse.data) {
+        setCategories(categoriesResponse.data);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Erro ao carregar marcas e categorias");
+    }
+  };
 
   const onSubmit = async (values: ProductFormValues) => {
     setIsLoading(true);
@@ -86,7 +121,11 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
             <ProductBasicFields form={form} />
           </div>
           <div className="space-y-6">
-            <ProductCategoryFields form={form} />
+            <ProductCategoryFields 
+              form={form} 
+              brands={brands}
+              categories={categories}
+            />
             <ProductCommissionFields form={form} />
           </div>
         </div>

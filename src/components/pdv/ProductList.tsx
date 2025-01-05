@@ -10,6 +10,13 @@ interface Product {
   stock: number;
   brand_id: string | null;
   category_id: string | null;
+  brands?: {
+    name: string;
+  };
+  categories?: {
+    name: string;
+  };
+  commission_rates?: Record<string, number>;
 }
 
 interface ProductListProps {

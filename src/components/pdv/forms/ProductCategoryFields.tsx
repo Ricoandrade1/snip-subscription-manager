@@ -21,7 +21,8 @@ interface ProductCategoryFieldsProps {
 
 export function ProductCategoryFields({ form, brands, categories }: ProductCategoryFieldsProps) {
   return (
-    <>
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium">Categorização</h3>
       <FormField
         control={form.control}
         name="brand"
@@ -71,6 +72,6 @@ export function ProductCategoryFields({ form, brands, categories }: ProductCateg
           </FormItem>
         )}
       />
-    </>
+    </div>
   );
 }
