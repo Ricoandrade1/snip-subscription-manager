@@ -36,7 +36,8 @@ export function NavigationMenuItem({
 
   // Verifica se algum item do submenu está ativo
   const hasActiveSubmenuItem = item.submenu?.some(
-    (subItem) => location.pathname === subItem.url
+    (subItem) => location.pathname === subItem.url || 
+    (item.title === "Membros" && location.pathname.startsWith('/members'))
   );
 
   // Mantém o submenu aberto se algum item estiver ativo
@@ -76,7 +77,10 @@ export function NavigationMenuItem({
                   <button
                     onClick={() => handleNavigation(subItem.url)}
                     className={`w-full flex items-center justify-between p-2 rounded-md hover:bg-muted ${
-                      location.pathname === subItem.url ? "bg-muted" : ""
+                      location.pathname === subItem.url || 
+                      (subItem.url === '/members' && location.pathname.startsWith('/members/'))
+                        ? "bg-muted"
+                        : ""
                     }`}
                   >
                     <span>{subItem.title}</span>
