@@ -9,10 +9,8 @@ import {
   Store,
   UserCog,
   Calendar,
-  CalendarDays,
-  CalendarRange,
-  Wallet,
   Scissors,
+  Wallet,
 } from "lucide-react";
 
 export const menuItems = [
@@ -20,6 +18,11 @@ export const menuItems = [
     title: "Dashboard",
     icon: LayoutDashboard,
     url: "/",
+  },
+  {
+    title: "Barbeiros",
+    icon: Scissors,
+    url: "/barbers",
   },
   {
     title: "Movimentos de Caixa",
@@ -30,11 +33,6 @@ export const menuItems = [
     title: "Produtos",
     icon: Package,
     url: "/products",
-  },
-  {
-    title: "Barbeiros",
-    icon: Scissors,
-    url: "/barbers",
   },
   {
     title: "Clientes",
@@ -71,17 +69,6 @@ export const menuItems = [
     title: "Utilizadores",
     icon: UserCog,
     url: "/users",
-  },
-  {
-    title: "Relatórios",
-    icon: Calendar,
-    url: "/reports",
-    submenu: [
-      { title: "Diário", url: "/reports/daily" },
-      { title: "Por Hora", url: "/reports/hourly" },
-      { title: "Dias da Semana", url: "/reports/weekly" },
-      { title: "Mensal", url: "/reports/monthly" },
-    ],
   },
   {
     title: "Gestor de Conta",

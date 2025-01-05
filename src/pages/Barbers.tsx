@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,82 +8,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { BarberForm } from "@/components/barber-form/BarberForm";
-import { UserPlus, MapPin } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useToast } from "@/components/ui/use-toast";
-
-interface Barber {
-  id: string;
-  name: string;
-  phone: string;
-  specialties: string[];
-  location_name?: string;
-}
-
-interface Location {
-  id: string;
-  name: string;
-  barbers: string[];
-}
+import { BarberList } from "@/components/barber-list/BarberList";
+import { UserPlus } from "lucide-react";
 
 export default function Barbers() {
-  const [barbers, setBarbers] = useState<Barber[]>([]);
-  const [locations, setLocations] = useState<Location[]>([]);
   const [open, setOpen] = useState(false);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    fetchBarbers();
-    fetchLocations();
-  }, []);
-
-  const fetchBarbers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('barbers')
-        .select('*');
-      
-      if (error) throw error;
-      setBarbers(data || []);
-    } catch (error) {
-      console.error('Error fetching barbers:', error);
-      toast({
-        title: "Erro ao carregar barbeiros",
-        description: "Não foi possível carregar a lista de barbeiros.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const fetchLocations = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('locations')
-        .select('*');
-      
-      if (error) throw error;
-      setLocations(data || []);
-    } catch (error) {
-      console.error('Error fetching locations:', error);
-      toast({
-        title: "Erro ao carregar barbearias",
-        description: "Não foi possível carregar a lista de barbearias.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleSuccess = () => {
     setOpen(false);
-    fetchBarbers();
   };
 
   return (
@@ -115,52 +47,7 @@ export default function Barbers() {
         </header>
 
         <div className="bg-barber-dark rounded-lg p-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Telefone</TableHead>
-                <TableHead>Especialidades</TableHead>
-                <TableHead>Barbearia</TableHead>
-                <TableHead>Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {barbers.map((barber) => (
-                <TableRow key={barber.id}>
-                  <TableCell>{barber.name}</TableCell>
-                  <TableCell>{barber.phone}</TableCell>
-                  <TableCell>{barber.specialties.join(", ")}</TableCell>
-                  <TableCell>{barber.location_name || "Não associado"}</TableCell>
-                  <TableCell>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <MapPin className="h-4 w-4 mr-2" />
-                          Associar
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Associar à Barbearia</DialogTitle>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                          {locations.map((location) => (
-                            <Button
-                              key={location.id}
-                              variant="outline"
-                            >
-                              {location.name}
-                            </Button>
-                          ))}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <BarberList />
         </div>
       </div>
     </div>
