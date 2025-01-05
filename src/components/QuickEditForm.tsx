@@ -64,129 +64,153 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome</FormLabel>
-              <FormControl>
-                <Input placeholder="Nome completo" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="nickname"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Apelido</FormLabel>
-              <FormControl>
-                <Input placeholder="Apelido" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Telefone</FormLabel>
-              <FormControl>
-                <Input placeholder="+351 912 345 678" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="nif"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>NIF</FormLabel>
-              <FormControl>
-                <Input placeholder="Número de Identificação Fiscal" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="plan"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Plano</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-barber-light">Nome</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um plano" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="Basic">Basic</SelectItem>
-                  <SelectItem value="Classic">Classic</SelectItem>
-                  <SelectItem value="Business">Business</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="due_date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Data de Vencimento</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP", { locale: ptBR })
-                      ) : (
-                        <span>Selecione uma data</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date < new Date(new Date().setHours(0, 0, 0, 0))
-                    }
-                    initialFocus
+                  <Input 
+                    placeholder="Nome completo" 
+                    {...field}
+                    className="bg-barber-gray border-barber-gold/20 focus:border-barber-gold"
                   />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="nickname"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-barber-light">Apelido</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Apelido" 
+                    {...field}
+                    className="bg-barber-gray border-barber-gold/20 focus:border-barber-gold"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-barber-light">Telefone</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="+351 912 345 678" 
+                    {...field}
+                    className="bg-barber-gray border-barber-gold/20 focus:border-barber-gold"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="nif"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-barber-light">NIF</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Número de Identificação Fiscal" 
+                    {...field}
+                    className="bg-barber-gray border-barber-gold/20 focus:border-barber-gold"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="plan"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-barber-light">Plano</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger className="bg-barber-gray border-barber-gold/20 focus:border-barber-gold">
+                      <SelectValue placeholder="Selecione um plano" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="bg-barber-gray border-barber-gold/20">
+                    <SelectItem value="Basic" className="text-barber-light hover:bg-barber-gold/10">Basic</SelectItem>
+                    <SelectItem value="Classic" className="text-barber-light hover:bg-barber-gold/10">Classic</SelectItem>
+                    <SelectItem value="Business" className="text-barber-light hover:bg-barber-gold/10">Business</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="due_date"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel className="text-barber-light">Data de Vencimento</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full pl-3 text-left font-normal bg-barber-gray border-barber-gold/20 hover:bg-barber-gold/10",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP", { locale: ptBR })
+                        ) : (
+                          <span>Selecione uma data</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-barber-gray border-barber-gold/20" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date < new Date(new Date().setHours(0, 0, 0, 0))
+                      }
+                      initialFocus
+                      className="bg-barber-gray text-barber-light"
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <div className="flex justify-end space-x-2">
-          <Button type="submit">Salvar Alterações</Button>
+          <Button 
+            type="submit"
+            className="bg-barber-gold hover:bg-barber-gold/90 text-barber-black font-semibold"
+          >
+            Salvar Alterações
+          </Button>
         </div>
       </form>
     </Form>
