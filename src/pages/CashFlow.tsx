@@ -1,122 +1,93 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { ProductServiceGrid } from "@/components/pdv/ProductServiceGrid";
-import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useState } from "react";
+import { ProductList } from "@/components/pdv/ProductList";
+import { Cart } from "@/components/pdv/Cart";
+import { Product } from "@/components/pdv/types";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
-interface DebtInfo {
-  member_name: string;
-  amount: number;
-  due_date: string;
-  days_overdue: number;
-}
+export default function CashFlow() {
+  const [cartItems, setCartItems] = useState<(Product & { quantity: number })[]>([]);
+  const [filters, setFilters] = useState({
+    name: "",
+    category: "",
+    brand: "",
+    minPrice: "",
+    maxPrice: "",
+    inStock: false,
+  });
 
-const CashFlow = () => {
-  const [debts, setDebts] = useState<DebtInfo[]>([]);
-
-  useEffect(() => {
-    fetchDebts();
-  }, []);
-
-  const fetchDebts = async () => {
-    const { data, error } = await supabase
-      .from('payments')
-      .select(`
-        amount,
-        payment_date,
-        member:members (
-          name
-        )
-      `)
-      .eq('status', 'overdue');
-
-    if (error) {
-      toast.error("Erro ao carregar dívidas");
-      return;
-    }
-
-    const formattedDebts = data.map(debt => {
-      const dueDate = new Date(debt.payment_date);
-      const today = new Date();
-      const diffTime = Math.abs(today.getTime() - dueDate.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      return {
-        member_name: debt.member?.name || 'Cliente não encontrado',
-        amount: debt.amount,
-        due_date: debt.payment_date,
-        days_overdue: diffDays
-      };
+  const handleProductSelect = (product: Product) => {
+    setCartItems((currentItems) => {
+      const existingItem = currentItems.find((item) => item.id === product.id);
+      
+      if (existingItem) {
+        return currentItems.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      
+      return [...currentItems, { ...product, quantity: 1 }];
     });
-
-    setDebts(formattedDebts);
   };
 
-  const totalDebt = debts.reduce((acc, debt) => acc + debt.amount, 0);
+  const handleUpdateQuantity = (id: string, quantity: number) => {
+    if (quantity < 1) return;
+    
+    setCartItems((currentItems) =>
+      currentItems.map((item) =>
+        item.id === id ? { ...item, quantity } : item
+      )
+    );
+  };
+
+  const handleRemoveItem = (id: string) => {
+    setCartItems((currentItems) =>
+      currentItems.filter((item) => item.id !== id)
+    );
+  };
+
+  const handleClearCart = () => {
+    setCartItems([]);
+  };
 
   return (
-    <div className="container py-6 space-y-6">
-      <h1 className="text-2xl font-bold text-barber-gold">Fluxo de Caixa</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="bg-barber-black border-barber-gray">
-          <CardHeader>
-            <CardTitle className="text-barber-gold">Dívidas em Atraso</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="text-2xl font-bold text-barber-light">
-                {new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'EUR'
-                }).format(totalDebt)}
-              </div>
-              
-              <div className="space-y-2">
-                {debts.map((debt, index) => (
-                  <div 
-                    key={index} 
-                    className="p-4 rounded-lg bg-barber-gray border border-barber-gray/50"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium text-barber-light">{debt.member_name}</h3>
-                        <p className="text-sm text-barber-light/60">
-                          Vencimento: {format(new Date(debt.due_date), 'dd/MM/yyyy', { locale: ptBR })}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium text-barber-light">
-                          {new Intl.NumberFormat('pt-BR', {
-                            style: 'currency',
-                            currency: 'EUR'
-                          }).format(debt.amount)}
-                        </p>
-                        <p className="text-sm text-red-500">
-                          {debt.days_overdue} dias em atraso
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+    <div className="container py-6 h-[calc(100vh-4rem)] overflow-hidden">
+      <div className="flex h-full gap-6">
+        {/* Products Section */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="mb-6 space-y-4">
+            <h1 className="text-2xl font-bold">PDV</h1>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Buscar produtos..."
+                value={filters.name}
+                onChange={(e) => setFilters({ ...filters, name: e.target.value })}
+                className="pl-10"
+              />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto pr-6 -mr-6">
+            <ProductList
+              filters={filters}
+              onProductSelect={handleProductSelect}
+            />
+          </div>
+        </div>
 
-        <Card className="bg-barber-black border-barber-gray">
-          <CardHeader>
-            <CardTitle className="text-barber-gold">Produtos e Serviços</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ProductServiceGrid />
-          </CardContent>
-        </Card>
+        {/* Cart Section */}
+        <div className="w-[400px] flex-shrink-0">
+          <Cart
+            items={cartItems}
+            onUpdateQuantity={handleUpdateQuantity}
+            onRemoveItem={handleRemoveItem}
+            onClearCart={handleClearCart}
+          />
+        </div>
       </div>
     </div>
   );
-};
-
-export default CashFlow;
+}
