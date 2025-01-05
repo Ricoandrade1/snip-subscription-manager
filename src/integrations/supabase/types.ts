@@ -104,51 +104,27 @@ export type Database = {
       }
       members: {
         Row: {
-          bank: string | null
-          bi: string | null
-          birth_date: string | null
-          citizen_card: string | null
           created_at: string | null
-          debit_date: string | null
-          iban: string | null
           id: string
           name: string
           nickname: string | null
-          nif: string | null
-          passport: string | null
-          phone: string
+          phone: string | null
           plan_id: number | null
         }
         Insert: {
-          bank?: string | null
-          bi?: string | null
-          birth_date?: string | null
-          citizen_card?: string | null
           created_at?: string | null
-          debit_date?: string | null
-          iban?: string | null
           id?: string
           name: string
           nickname?: string | null
-          nif?: string | null
-          passport?: string | null
-          phone: string
+          phone?: string | null
           plan_id?: number | null
         }
         Update: {
-          bank?: string | null
-          bi?: string | null
-          birth_date?: string | null
-          citizen_card?: string | null
           created_at?: string | null
-          debit_date?: string | null
-          iban?: string | null
           id?: string
           name?: string
           nickname?: string | null
-          nif?: string | null
-          passport?: string | null
-          phone?: string
+          phone?: string | null
           plan_id?: number | null
         }
         Relationships: [
@@ -189,31 +165,23 @@ export type Database = {
           receipt_url?: string | null
           status?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "payments_member_id_fkey"
-            columns: ["member_id"]
-            isOneToOne: false
-            referencedRelation: "members"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       plans: {
         Row: {
-          features: Json | null
+          features: string[] | null
           id: number
           price: number
           title: string
         }
         Insert: {
-          features?: Json | null
+          features?: string[] | null
           id?: number
           price: number
           title: string
         }
         Update: {
-          features?: Json | null
+          features?: string[] | null
           id?: number
           price?: number
           title?: string
@@ -266,15 +234,7 @@ export type Database = {
           service?: string
           visit_date?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "visits_member_id_fkey"
-            columns: ["member_id"]
-            isOneToOne: false
-            referencedRelation: "members"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {

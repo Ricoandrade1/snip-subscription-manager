@@ -6,24 +6,13 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { PersonalInfoFields } from "./PersonalInfoFields";
-import { DocumentFields } from "./DocumentFields";
-import { BankingFields } from "./BankingFields";
 import { PlanFields } from "./PlanFields";
-import type { Member } from "@/contexts/MemberContext";
 import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   nickname: z.string().optional(),
   phone: z.string().optional(),
-  nif: z.string().optional(),
-  birthDate: z.string().optional(),
-  passport: z.string().optional(),
-  citizenCard: z.string().optional(),
-  bi: z.string().optional(),
-  bank: z.string().optional(),
-  iban: z.string().optional(),
-  debitDate: z.string().optional(),
   plan: z.enum(["Basic", "Classic", "Business"]).default("Basic"),
 });
 
@@ -31,7 +20,7 @@ export type SubscriberFormData = z.infer<typeof formSchema>;
 
 export function SubscriberForm() {
   const { toast } = useToast();
-  const { members, addMember } = useMemberContext();
+  const { addMember } = useMemberContext();
   
   const form = useForm<SubscriberFormData>({
     resolver: zodResolver(formSchema),
@@ -40,14 +29,6 @@ export function SubscriberForm() {
       name: "",
       nickname: "",
       phone: "",
-      birthDate: "",
-      bank: "",
-      iban: "",
-      debitDate: "",
-      nif: "",
-      passport: "",
-      citizenCard: "",
-      bi: "",
     },
   });
 
@@ -55,13 +36,10 @@ export function SubscriberForm() {
     try {
       console.log('Dados do formulário:', data);
       
-      // Primeiro, vamos verificar se o plano existe
       const { data: plansData, error: planError } = await supabase
         .from('plans')
         .select('id, title')
         .eq('title', data.plan);
-
-      console.log('Resultado da busca de planos:', { plansData, planError });
 
       if (planError) {
         console.error('Erro ao buscar plano:', planError);
@@ -77,7 +55,7 @@ export function SubscriberForm() {
         console.error('Plano não encontrado:', data.plan);
         toast({
           title: "Erro ao cadastrar assinante",
-          description: `Plano "${data.plan}" não encontrado. Por favor, selecione outro plano.`,
+          description: `Plano "${data.plan}" não encontrado.`,
           variant: "destructive",
         });
         return;
@@ -86,29 +64,18 @@ export function SubscriberForm() {
       const planId = plansData[0].id;
       console.log('Plano encontrado:', plansData[0]);
 
-      const memberData: Omit<Member, "id"> = {
+      const memberData = {
         name: data.name,
         nickname: data.nickname || "",
         phone: data.phone || "",
-        nif: data.nif || "",
-        birthDate: data.birthDate || "",
-        passport: data.passport || "",
-        citizenCard: data.citizenCard || "",
-        bi: data.bi || "",
-        bank: data.bank || "",
-        iban: data.iban || "",
-        debitDate: data.debitDate || "",
-        plan: data.plan,
         plan_id: planId
       };
 
       await addMember(memberData);
-
-      const currentSubscribers = members.filter(member => member.plan === data.plan).length;
       
       toast({
         title: "Assinante cadastrado com sucesso!",
-        description: `Número único: ${data.plan} ${String(currentSubscribers + 1).padStart(4, '0')}`,
+        description: `Membro ${data.name} cadastrado no plano ${data.plan}.`,
       });
       
       form.reset();
@@ -124,17 +91,9 @@ export function SubscriberForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="max-w-3xl mx-auto p-4 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-4">
-            <PersonalInfoFields form={form} />
-          </div>
-          <div className="space-y-4">
-            <DocumentFields form={form} />
-          </div>
-          <div className="space-y-4">
-            <BankingFields form={form} />
-          </div>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <PersonalInfoFields form={form} />
         </div>
 
         <div className="max-w-md mx-auto">

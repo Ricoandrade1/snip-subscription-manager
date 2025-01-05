@@ -51,20 +51,6 @@ export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
           </FormItem>
         )}
       />
-
-      <FormField
-        control={form.control}
-        name="birthDate"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm">Data de Nascimento</FormLabel>
-            <FormControl>
-              <Input type="date" {...field} className="h-8" />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
     </>
   );
 }
