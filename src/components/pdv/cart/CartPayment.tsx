@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Product } from "../types";
@@ -35,7 +35,7 @@ export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
   const [barbers, setBarbers] = useState<Seller[]>([]);
 
   // Fetch barbers on component mount
-  useState(() => {
+  useEffect(() => {
     const fetchBarbers = async () => {
       const { data, error } = await supabase
         .from("barbers")
