@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Product } from "../types";
@@ -91,6 +91,7 @@ export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
 
       if (itemsError) throw itemsError;
 
+      // Update product stock
       for (const item of items) {
         if (!item.is_service) {
           const { error: stockError } = await supabase

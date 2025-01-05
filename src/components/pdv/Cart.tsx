@@ -23,7 +23,7 @@ export function Cart({
     <Card className="h-full flex flex-col">
       <CartHeader itemCount={items.length} />
       
-      <div className="flex-1 overflow-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {items.length === 0 ? (
           <div className="h-full flex items-center justify-center text-muted-foreground">
             Carrinho vazio
@@ -40,7 +40,7 @@ export function Cart({
         )}
       </div>
 
-      <div className="p-4 border-t">
+      <div className="p-4 border-t flex-shrink-0">
         <CartPayment
           items={items}
           total={total}

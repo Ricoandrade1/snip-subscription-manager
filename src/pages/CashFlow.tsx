@@ -3,6 +3,7 @@ import { ProductList } from "@/components/pdv/ProductList";
 import { Cart } from "@/components/pdv/Cart";
 import { Product } from "@/components/pdv/types";
 import { ProductFilter } from "@/components/products/ProductFilter";
+import { toast } from "sonner";
 
 export default function CashFlow() {
   const [cartItems, setCartItems] = useState<(Product & { quantity: number })[]>([]);
@@ -49,6 +50,15 @@ export default function CashFlow() {
 
   const handleClearCart = () => {
     setCartItems([]);
+    toast.success("Carrinho limpo com sucesso!");
+  };
+
+  const handleFinishSale = async () => {
+    if (cartItems.length === 0) {
+      toast.error("Adicione itens ao carrinho para finalizar a venda");
+      return;
+    }
+    // Cart component will handle the sale finalization
   };
 
   return (
