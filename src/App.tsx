@@ -11,13 +11,13 @@ import CashFlow from "@/pages/CashFlow";
 import Schedule from "@/pages/Schedule";
 import Feed from "@/pages/Feed";
 import Story from "@/pages/Story";
-
-import "./App.css";
+import ResetPassword from "@/pages/ResetPassword";
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginForm />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/" element={<Index />} />
       <Route path="/members" element={<Members />} />
       <Route path="/products" element={<Products />} />

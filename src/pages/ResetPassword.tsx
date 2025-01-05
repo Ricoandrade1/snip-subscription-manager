@@ -36,7 +36,7 @@ const customTheme = {
   },
 };
 
-export const LoginForm = () => {
+export default function ResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,27 +48,20 @@ export const LoginForm = () => {
     };
 
     checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        navigate('/');
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, [navigate]);
 
   return (
     <div className="w-full max-w-[420px] mx-auto p-4">
       <div className="mb-8 text-center">
-        <h1 className="text-2xl font-medium mb-2">Bem-vindo</h1>
+        <h1 className="text-2xl font-medium mb-2">Redefinir senha</h1>
         <p className="text-sm text-gray-600">
-          Faça login para continuar
+          Digite seu email para receber as instruções
         </p>
       </div>
       <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
         <Auth
           supabaseClient={supabase}
+          view="reset-password"
           appearance={{
             theme: customTheme,
             style: {
@@ -93,28 +86,17 @@ export const LoginForm = () => {
           }}
           localization={{
             variables: {
-              sign_in: {
+              reset_password: {
                 email_label: 'Email',
-                password_label: 'Senha',
-                button_label: 'Entrar',
-                loading_button_label: 'Entrando...',
-                social_provider_text: 'Entrar com {{provider}}',
-                link_text: 'Já tem uma conta? Entre',
-                password_recovery_text: 'Esqueceu sua senha?',
-              },
-              sign_up: {
-                email_label: 'Email',
-                password_label: 'Senha',
-                button_label: 'Criar conta',
-                loading_button_label: 'Criando conta...',
-                social_provider_text: 'Criar conta com {{provider}}',
-                link_text: 'Não tem uma conta? Cadastre-se',
+                password_label: 'Nova senha',
+                button_label: 'Enviar instruções',
+                loading_button_label: 'Enviando...',
+                confirmation_text: 'Verifique seu email para redefinir sua senha',
               },
             },
           }}
-          providers={[]}
         />
       </div>
     </div>
   );
-};
+}
