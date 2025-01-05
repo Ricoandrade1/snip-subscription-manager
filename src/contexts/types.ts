@@ -19,3 +19,13 @@ export interface MemberContextType {
   getMembersByPlan: (plan: Member["plan"]) => number;
   isLoading: boolean;
 }
+
+export type Payment = {
+  id: string;
+  memberName: string;
+  plan: "Basic" | "Classic" | "Business";
+  amount: number;
+  date: string;
+  dueDate?: string;
+  status: "paid" | "pending" | "overdue";
+};

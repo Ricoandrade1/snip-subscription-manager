@@ -34,7 +34,7 @@ export const fetchMembersFromDB = async () => {
     phone: member.phone || '',
     nif: member.nif || '',
     plan_id: member.plan_id,
-    plan: member.plans?.title || "Basic",
+    plan: member.plans?.title as Member["plan"] || "Basic",
     created_at: member.created_at,
     payment_date: member.payment_date,
   })) as Member[];
@@ -65,7 +65,6 @@ export const addMemberToDB = async (member: Omit<Member, "id" | "plan">) => {
 
 export const updateMemberInDB = async (id: string, member: Partial<Member>) => {
   try {
-    // Primeiro, buscar o plan_id baseado no título do plano
     if (member.plan) {
       const { data: planData, error: planError } = await supabase
         .from('plans')
@@ -78,7 +77,6 @@ export const updateMemberInDB = async (id: string, member: Partial<Member>) => {
         throw planError;
       }
 
-      // Atualizar o member com o plan_id correto
       const updateData = {
         name: member.name,
         nickname: member.nickname,
