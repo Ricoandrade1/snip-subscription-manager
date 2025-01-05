@@ -1,38 +1,25 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Json } from "@/integrations/supabase/types";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  stock: number;
-  brand_id: string | null;
-  category_id: string | null;
-  brands?: {
-    name: string;
-  };
-  categories?: {
-    name: string;
-  };
-  commission_rates?: Record<string, number>;
-}
+import { ProductCard } from "./ProductCard";
+import { Product, ProductListFilters } from "./types";
 
 interface ProductListProps {
   onProductSelect: (product: Product) => void;
-  filters?: {
-    name: string;
-    category: string;
-    brand: string;
-    minPrice: string;
-    maxPrice: string;
-    inStock: boolean;
-  };
+  filters?: ProductListFilters;
 }
 
-export function ProductList({ onProductSelect, filters = { name: "", category: "", brand: "", minPrice: "", maxPrice: "", inStock: false } }: ProductListProps) {
+export function ProductList({ 
+  onProductSelect, 
+  filters = { 
+    name: "", 
+    category: "", 
+    brand: "", 
+    minPrice: "", 
+    maxPrice: "", 
+    inStock: false 
+  } 
+}: ProductListProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [barbers, setBarbers] = useState<{ id: string; name: string }[]>([]);
@@ -113,7 +100,6 @@ export function ProductList({ onProductSelect, filters = { name: "", category: "
         throw error;
       }
 
-      // Convert commission_rates from Json type to Record<string, number>
       const formattedProducts: Product[] = (data || []).map(product => ({
         ...product,
         commission_rates: product.commission_rates ? 
@@ -132,69 +118,24 @@ export function ProductList({ onProductSelect, filters = { name: "", category: "
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {isLoading ? (
-          <div className="col-span-full text-center">Carregando produtos...</div>
-        ) : products.length === 0 ? (
-          <div className="col-span-full text-center">Nenhum produto encontrado</div>
-        ) : (
-          products.map((product) => (
-            <Card
-              key={product.id}
-              className={`p-4 cursor-pointer hover:bg-muted/50 transition-colors ${
-                product.stock === 0 ? 'opacity-50' : ''
-              }`}
-              onClick={() => {
-                if (product.stock > 0) {
-                  onProductSelect(product);
-                } else {
-                  toast.error("Produto sem estoque");
-                }
-              }}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="text-sm font-medium">{product.name}</div>
-                  <div className="text-2xl font-bold text-barber-gold">
-                    {new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "EUR",
-                    }).format(product.price)}
-                  </div>
-                  <div className={`text-xs ${
-                    product.stock === 0 ? 'text-red-500' : 'text-muted-foreground'
-                  }`}>
-                    Estoque: {product.stock}
-                  </div>
-                  {product.brands && (
-                    <div className="text-xs text-muted-foreground">
-                      Marca: {product.brands.name}
-                    </div>
-                  )}
-                  {product.categories && (
-                    <div className="text-xs text-muted-foreground">
-                      Categoria: {product.categories.name}
-                    </div>
-                  )}
-                </div>
-                {product.commission_rates && Object.keys(product.commission_rates).length > 0 && (
-                  <div className="text-xs text-muted-foreground">
-                    <div className="font-medium">Comissões:</div>
-                    {Object.entries(product.commission_rates).map(([barberId, rate]) => {
-                      const barber = barbers.find(b => b.id === barberId);
-                      return (
-                        <div key={barberId} className="flex justify-between gap-2">
-                          <span>{barber?.name || 'Barbeiro'}:</span>
-                          <span>{rate}%</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+      <div className="overflow-x-auto pb-4">
+        <div className="flex gap-4 min-w-max">
+          {isLoading ? (
+            <div className="w-full text-center">Carregando produtos...</div>
+          ) : products.length === 0 ? (
+            <div className="w-full text-center">Nenhum produto encontrado</div>
+          ) : (
+            products.map((product) => (
+              <div key={product.id} className="w-[300px]">
+                <ProductCard
+                  product={product}
+                  barbers={barbers}
+                  onSelect={onProductSelect}
+                />
               </div>
-            </Card>
-          ))
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
