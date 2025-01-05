@@ -3,11 +3,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Database } from "@/integrations/supabase/types";
+
+type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
 interface Barber {
   id: string;
   name: string;
-  roles: string[];
+  roles: UserAuthority[];
 }
 
 interface RoleManagerProps {
@@ -15,7 +18,7 @@ interface RoleManagerProps {
   onSuccess: () => void;
 }
 
-const availableRoles = [
+const availableRoles: { id: UserAuthority; label: string }[] = [
   { id: "admin", label: "Administrador" },
   { id: "seller", label: "Vendedor" },
   { id: "manager", label: "Gerente" },
@@ -24,10 +27,10 @@ const availableRoles = [
 ];
 
 export function RoleManager({ barber, onSuccess }: RoleManagerProps) {
-  const [selectedRoles, setSelectedRoles] = useState<string[]>(barber.roles || []);
+  const [selectedRoles, setSelectedRoles] = useState<UserAuthority[]>(barber.roles || []);
   const { toast } = useToast();
 
-  const handleRoleToggle = (roleId: string) => {
+  const handleRoleToggle = (roleId: UserAuthority) => {
     setSelectedRoles((current) => {
       if (current.includes(roleId)) {
         return current.filter((r) => r !== roleId);
