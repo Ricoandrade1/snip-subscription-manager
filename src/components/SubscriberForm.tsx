@@ -13,7 +13,7 @@ import type { Member } from "@/contexts/MemberContext";
 import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
-  name: z.string().optional(),
+  name: z.string().min(1, "Nome é obrigatório"),
   nickname: z.string().optional(),
   phone: z.string().optional(),
   nif: z.string().optional(),
@@ -53,23 +53,27 @@ export function SubscriberForm() {
 
   const handleSubmit = async (data: SubscriberFormData) => {
     try {
-      console.log('Buscando plano:', data.plan);
+      console.log('Dados do formulário:', data);
       
       // Primeiro, vamos verificar se o plano existe
-      const { data: plans, error: planError } = await supabase
+      const { data: plansData, error: planError } = await supabase
         .from('plans')
         .select('id, title')
-        .eq('title', data.plan)
-        .maybeSingle();
+        .eq('title', data.plan);
 
-      console.log('Resultado da busca:', { plans, planError });
+      console.log('Resultado da busca de planos:', { plansData, planError });
 
       if (planError) {
         console.error('Erro ao buscar plano:', planError);
-        throw new Error('Erro ao buscar plano');
+        toast({
+          title: "Erro ao cadastrar assinante",
+          description: "Erro ao buscar plano. Por favor, tente novamente.",
+          variant: "destructive",
+        });
+        return;
       }
 
-      if (!plans) {
+      if (!plansData || plansData.length === 0) {
         console.error('Plano não encontrado:', data.plan);
         toast({
           title: "Erro ao cadastrar assinante",
@@ -79,11 +83,11 @@ export function SubscriberForm() {
         return;
       }
 
-      const planId = plans.id;
-      console.log('Plano encontrado:', plans);
+      const planId = plansData[0].id;
+      console.log('Plano encontrado:', plansData[0]);
 
       const memberData: Omit<Member, "id"> = {
-        name: data.name || "",
+        name: data.name,
         nickname: data.nickname || "",
         phone: data.phone || "",
         nif: data.nif || "",
