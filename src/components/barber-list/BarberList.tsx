@@ -36,7 +36,11 @@ export function BarberList() {
         .select('id, name, phone, email, specialties, commission_rate, status')
         .order('name');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error details:', error);
+        throw error;
+      }
+      
       setBarbers(data || []);
     } catch (error) {
       console.error('Error fetching barbers:', error);
