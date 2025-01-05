@@ -22,7 +22,7 @@ export interface MemberContextType {
 
 export type Payment = {
   id: string;
-  member_id: string;  // Changed from optional to required
+  member_id: string;
   memberName: string;
   plan: "Basic" | "Classic" | "Business";
   amount: number;
@@ -31,5 +31,5 @@ export type Payment = {
   status: "paid" | "pending" | "overdue";
   receipt_url?: string;
   created_at?: string;
-  payment_date?: string;
+  payment_date: string; // Changed from optional to required
 };
