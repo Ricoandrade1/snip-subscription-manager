@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Separator } from "@/components/ui/separator";
-import { X, CreditCard, Wallet, Banknote } from "lucide-react";
+import { CartHeader } from "./cart/CartHeader";
+import { CartItem } from "./cart/CartItem";
+import { CartPayment } from "./cart/CartPayment";
 
 interface CartProps {
   items: {
@@ -40,7 +38,6 @@ export function Cart({
     setIsProcessing(true);
 
     try {
-      // Create the sale
       const { data: sale, error: saleError } = await supabase
         .from("sales")
         .insert([
@@ -55,7 +52,6 @@ export function Cart({
 
       if (saleError) throw saleError;
 
-      // Create sale items and update stock
       const saleItems = items.map((item) => ({
         sale_id: sale.id,
         product_id: item.id,
@@ -69,7 +65,6 @@ export function Cart({
 
       if (itemsError) throw itemsError;
 
-      // Update stock for each product
       for (const item of items) {
         const { error: stockError } = await supabase
           .from("products")
@@ -89,30 +84,10 @@ export function Cart({
     }
   };
 
-  const getPaymentIcon = (method: string) => {
-    switch (method) {
-      case "money":
-        return <Banknote className="h-4 w-4" />;
-      case "card":
-        return <CreditCard className="h-4 w-4" />;
-      case "mbway":
-        return <Wallet className="h-4 w-4" />;
-      default:
-        return null;
-    }
-  };
-
   return (
     <Card className="p-6">
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Carrinho</h2>
-          {items.length > 0 && (
-            <Button variant="outline" onClick={onClearCart}>
-              Limpar
-            </Button>
-          )}
-        </div>
+        <CartHeader onClear={onClearCart} hasItems={items.length > 0} />
 
         {items.length === 0 ? (
           <div className="text-center text-muted-foreground py-8">
@@ -121,98 +96,22 @@ export function Cart({
         ) : (
           <div className="space-y-4">
             {items.map((item) => (
-              <div
+              <CartItem
                 key={item.id}
-                className="flex justify-between items-center gap-4"
-              >
-                <div className="flex-1">
-                  <div className="font-medium">{item.name}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {new Intl.NumberFormat("pt-PT", {
-                      style: "currency",
-                      currency: "EUR",
-                    }).format(item.price)}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    min="1"
-                    value={item.quantity}
-                    onChange={(e) =>
-                      onUpdateQuantity(item.id, parseInt(e.target.value))
-                    }
-                    className="w-20"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onRemoveItem(item.id)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+                {...item}
+                onUpdateQuantity={onUpdateQuantity}
+                onRemove={onRemoveItem}
+              />
             ))}
 
-            <Separator />
-
-            <div className="space-y-4">
-              <div className="flex justify-between text-lg font-bold">
-                <span>Total</span>
-                <span>
-                  {new Intl.NumberFormat("pt-PT", {
-                    style: "currency",
-                    currency: "EUR",
-                  }).format(total)}
-                </span>
-              </div>
-
-              <Select
-                value={paymentMethod}
-                onValueChange={setPaymentMethod}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Forma de pagamento" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="money">
-                    <div className="flex items-center gap-2">
-                      <Banknote className="h-4 w-4" />
-                      Dinheiro
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="card">
-                    <div className="flex items-center gap-2">
-                      <CreditCard className="h-4 w-4" />
-                      Cartão
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="mbway">
-                    <div className="flex items-center gap-2">
-                      <Wallet className="h-4 w-4" />
-                      MBWay
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  variant="outline"
-                  onClick={onClearCart}
-                  disabled={isProcessing}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  onClick={handleFinishSale}
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? "Processando..." : "Finalizar Venda"}
-                </Button>
-              </div>
-            </div>
+            <CartPayment
+              total={total}
+              paymentMethod={paymentMethod}
+              isProcessing={isProcessing}
+              onPaymentMethodChange={setPaymentMethod}
+              onFinish={handleFinishSale}
+              onCancel={onClearCart}
+            />
           </div>
         )}
       </div>
