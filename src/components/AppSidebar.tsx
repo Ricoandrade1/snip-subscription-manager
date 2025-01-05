@@ -21,8 +21,9 @@ export function AppSidebar() {
   const { toggleSidebar } = useSidebar();
 
   const isActiveRoute = (url: string) => {
+    // Verifica se é a rota de membros ou suas subrotas
     if (url === '/members') {
-      return location.pathname === '/members' || location.pathname.startsWith('/members/');
+      return location.pathname.startsWith('/members');
     }
     return location.pathname === url;
   };

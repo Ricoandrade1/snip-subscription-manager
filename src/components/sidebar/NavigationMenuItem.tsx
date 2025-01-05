@@ -34,15 +34,17 @@ export function NavigationMenuItem({
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
+  // Verifica se algum item do submenu está ativo
+  const hasActiveSubmenuItem = item.submenu?.some(
+    (subItem) => location.pathname === subItem.url
+  );
+
+  // Mantém o submenu aberto se algum item estiver ativo
   useEffect(() => {
-    if (item.submenu) {
-      const hasActiveSubmenuItem = item.submenu.some(subItem => 
-        location.pathname === subItem.url || 
-        (subItem.url === '/members' && location.pathname.startsWith('/members/'))
-      );
-      setIsOpen(hasActiveSubmenuItem);
+    if (hasActiveSubmenuItem) {
+      setIsOpen(true);
     }
-  }, [location.pathname, item.submenu]);
+  }, [location.pathname, hasActiveSubmenuItem]);
 
   const handleNavigation = (url: string) => {
     navigate(url);
@@ -71,18 +73,16 @@ export function NavigationMenuItem({
             <SidebarMenuSub>
               {item.submenu.map((subItem) => (
                 <SidebarMenuSubItem key={subItem.title}>
-                  <button 
+                  <button
                     onClick={() => handleNavigation(subItem.url)}
                     className={`w-full flex items-center justify-between p-2 rounded-md hover:bg-muted ${
-                      location.pathname === subItem.url || 
-                      (subItem.url === '/members' && location.pathname.startsWith('/members/'))
-                        ? 'bg-muted' 
-                        : ''
+                      location.pathname === subItem.url ? "bg-muted" : ""
                     }`}
                   >
                     <span>{subItem.title}</span>
                     {item.title === "Membros" &&
-                      subItem.title !== "Todos" && getSubscriberCount && (
+                      subItem.title !== "Todos" &&
+                      getSubscriberCount && (
                         <span className="ml-auto text-xs opacity-60">
                           {getSubscriberCount(
                             subItem.title as "Basic" | "Classic" | "Business"
@@ -104,7 +104,7 @@ export function NavigationMenuItem({
       <button
         onClick={() => handleNavigation(item.url)}
         className={`flex items-center gap-2 p-2 w-full rounded-md hover:bg-muted ${
-          isActiveRoute(item.url) ? 'bg-muted' : ''
+          isActiveRoute(item.url) ? "bg-muted" : ""
         }`}
       >
         <item.icon className="h-4 w-4" />
