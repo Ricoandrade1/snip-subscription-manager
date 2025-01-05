@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import {
   SidebarMenuItem as BaseSidebarMenuItem,
@@ -25,21 +25,10 @@ export function SidebarMenuItemComponent({
   getSubscriberCount,
   level = 0,
 }: MenuItemProps) {
-  const handleTabChange = (value: string) => {
-    switch (value) {
-      case "Basic":
-        window.location.href = "/members/basic";
-        break;
-      case "Classic":
-        window.location.href = "/members/classic";
-        break;
-      case "Business":
-        window.location.href = "/members/business";
-        break;
-      default:
-        window.location.href = "/members";
-        break;
-    }
+  const navigate = useNavigate();
+
+  const handleTabChange = (url: string) => {
+    navigate(url);
   };
 
   if (item.submenu) {
@@ -69,7 +58,7 @@ export function SidebarMenuItemComponent({
               {item.submenu.map((subItem: any) => (
                 <SidebarMenuSubItem key={subItem.title}>
                   <SidebarMenuButton 
-                    onClick={() => handleTabChange(subItem.title)}
+                    onClick={() => handleTabChange(subItem.url)}
                     className="w-full flex items-center justify-between p-2 rounded-md hover:bg-muted"
                     data-active={isActiveRoute(subItem.url)}
                   >
