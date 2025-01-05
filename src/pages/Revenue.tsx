@@ -9,6 +9,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Payment } from "@/contexts/types";
 
+interface PaymentWithRelations {
+  id: string;
+  amount: number;
+  status: string;
+  payment_date: string;
+  receipt_url: string | null;
+  created_at: string | null;
+  member_id: string | null;
+  member: {
+    name: string;
+    plan: {
+      title: string;
+    } | null;
+  } | null;
+}
+
 export default function Revenue() {
   const { members } = useMemberContext();
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -38,25 +54,25 @@ export default function Revenue() {
   }, []);
 
   const fetchPayments = async () => {
-    // Updated query to use proper joins
     const { data: paymentsData, error } = await supabase
       .from('payments')
       .select(`
         *,
-        member:members(
+        member:members (
           name,
-          plan:plans(
+          plan:plans (
             title
           )
         )
       `);
 
     if (error) {
+      console.error('Error fetching payments:', error);
       toast.error('Erro ao carregar pagamentos');
       return;
     }
 
-    const formattedPayments: Payment[] = (paymentsData || []).map(payment => ({
+    const formattedPayments: Payment[] = (paymentsData as PaymentWithRelations[] || []).map(payment => ({
       id: payment.id,
       memberName: payment.member?.name || '',
       plan: (payment.member?.plan?.title as "Basic" | "Classic" | "Business") || "Basic",
