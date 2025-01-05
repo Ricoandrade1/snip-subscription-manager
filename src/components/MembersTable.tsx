@@ -1,14 +1,11 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { useState } from "react";
 import type { Member } from "@/contexts/MemberContext";
 import { EditMemberDialog } from "./EditMemberDialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Label } from "@/components/ui/label";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Badge } from "@/components/ui/badge";
+import { MembersFilter } from "./members/MembersFilter";
+import { MemberTableRow } from "./members/MemberTableRow";
 
 interface MembersTableProps {
   planFilter?: "Basic" | "Classic" | "Business";
@@ -70,24 +67,6 @@ export function MembersTable({ planFilter }: MembersTableProps) {
       return aCode.localeCompare(bCode);
     });
 
-  const handleMemberClick = (member: Member) => {
-    setSelectedMember(member);
-    setDialogOpen(true);
-  };
-
-  const getPlanBadgeColor = (plan: string) => {
-    switch (plan) {
-      case "Basic":
-        return "bg-blue-500";
-      case "Classic":
-        return "bg-purple-500";
-      case "Business":
-        return "bg-amber-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -103,53 +82,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-muted rounded-lg">
-        <div className="space-y-2">
-          <Label htmlFor="name-filter">Nome</Label>
-          <Input
-            id="name-filter"
-            placeholder="Filtrar por nome..."
-            value={filters.name}
-            onChange={(e) => handleFilterChange('name', e.target.value)}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="phone-filter">Telefone</Label>
-          <Input
-            id="phone-filter"
-            placeholder="Filtrar por telefone..."
-            value={filters.phone}
-            onChange={(e) => handleFilterChange('phone', e.target.value)}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="nif-filter">NIF</Label>
-          <Input
-            id="nif-filter"
-            placeholder="Filtrar por NIF..."
-            value={filters.nif}
-            onChange={(e) => handleFilterChange('nif', e.target.value)}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="birth-date-filter">Data de Nascimento</Label>
-          <Input
-            id="birth-date-filter"
-            type="date"
-            value={filters.birthDate}
-            onChange={(e) => handleFilterChange('birthDate', e.target.value)}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="iban-filter">IBAN</Label>
-          <Input
-            id="iban-filter"
-            placeholder="Filtrar por IBAN..."
-            value={filters.iban}
-            onChange={(e) => handleFilterChange('iban', e.target.value)}
-          />
-        </div>
-      </div>
+      <MembersFilter filters={filters} onFilterChange={handleFilterChange} />
 
       <Table>
         <TableHeader>
@@ -166,26 +99,15 @@ export function MembersTable({ planFilter }: MembersTableProps) {
         </TableHeader>
         <TableBody>
           {filteredMembers.map((member) => (
-            <TableRow 
-              key={member.id} 
-              className="cursor-pointer hover:bg-muted/50"
-              onClick={() => handleMemberClick(member)}
-            >
-              <TableCell className="font-medium">{getMemberCode(member)}</TableCell>
-              <TableCell>{member.name}</TableCell>
-              <TableCell>
-                <Badge className={`${getPlanBadgeColor(member.plan)}`}>
-                  {member.plan}
-                </Badge>
-              </TableCell>
-              <TableCell>{member.phone}</TableCell>
-              <TableCell>{member.nif}</TableCell>
-              <TableCell>
-                {member.birthDate ? format(new Date(member.birthDate), 'dd/MM/yyyy', { locale: ptBR }) : '-'}
-              </TableCell>
-              <TableCell>{member.bank}</TableCell>
-              <TableCell>{member.iban}</TableCell>
-            </TableRow>
+            <MemberTableRow
+              key={member.id}
+              member={member}
+              memberCode={getMemberCode(member)}
+              onClick={() => {
+                setSelectedMember(member);
+                setDialogOpen(true);
+              }}
+            />
           ))}
         </TableBody>
       </Table>
