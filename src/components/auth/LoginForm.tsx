@@ -6,32 +6,47 @@ import { useNavigate } from "react-router-dom";
 const customTheme = {
   default: {
     colors: {
-      brand: 'hsl(var(--barber-black))',
-      brandAccent: 'hsl(var(--barber-gold))',
+      brand: '#BF9B30',
+      brandAccent: '#1A1A1A',
       brandButtonText: 'white',
-      defaultButtonBackground: '#ffffff',
-      defaultButtonBackgroundHover: '#eaeaea',
-      defaultButtonBorder: 'lightgray',
-      defaultButtonText: '#000000',
-      dividerBackground: '#e9e9e9',
-      inputBackground: 'transparent',
-      inputBorder: 'lightgray',
-      inputBorderHover: 'hsl(var(--barber-gold))',
-      inputBorderFocus: 'hsl(var(--barber-gold))',
-      inputText: '#000000',
-      inputLabelText: '#666666',
+      defaultButtonBackground: '#1A1A1A',
+      defaultButtonBackgroundHover: '#2A2A2A',
+      defaultButtonBorder: '#BF9B30',
+      defaultButtonText: '#F5F5F5',
+      dividerBackground: '#2A2A2A',
+      inputBackground: '#1A1A1A',
+      inputBorder: '#2A2A2A',
+      inputBorderHover: '#BF9B30',
+      inputBorderFocus: '#BF9B30',
+      inputText: '#F5F5F5',
+      inputLabelText: '#F5F5F5',
       inputPlaceholder: '#666666',
     },
     space: {
       spaceSmall: '4px',
       spaceMedium: '8px',
-      spaceLarge: '12px',
+      spaceLarge: '16px',
     },
     fonts: {
       bodyFontFamily: `Montserrat, sans-serif`,
       buttonFontFamily: `Montserrat, sans-serif`,
       inputFontFamily: `Montserrat, sans-serif`,
       labelFontFamily: `Montserrat, sans-serif`,
+    },
+    fontSizes: {
+      baseBodySize: '14px',
+      baseInputSize: '14px',
+      baseLabelSize: '14px',
+      baseButtonSize: '14px',
+    },
+    borderWidths: {
+      buttonBorderWidth: '1px',
+      inputBorderWidth: '1px',
+    },
+    radii: {
+      borderRadiusButton: '6px',
+      buttonBorderRadius: '6px',
+      inputBorderRadius: '6px',
     },
   },
 };
@@ -59,20 +74,31 @@ export const LoginForm = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-barber-light p-4">
-      <div className="w-full max-w-[420px]">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-semibold mb-2 text-barber-black">Bem-vindo</h1>
-          <p className="text-sm text-gray-600 mb-2">
-            Faça login para continuar
+    <div className="min-h-screen flex flex-col items-center justify-center bg-barber-black p-4">
+      <div className="w-full max-w-[420px] space-y-8">
+        {/* Logo ou Título */}
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold text-barber-gold">
+            Barber Pro
+          </h1>
+          <p className="text-barber-light/60 text-sm">
+            Faça login para acessar o sistema
           </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-sm text-blue-700">
-            <p className="font-medium mb-1">Credenciais de teste:</p>
+        </div>
+
+        {/* Credenciais de Teste */}
+        <div className="bg-barber-gray/50 border border-barber-gray rounded-lg p-4">
+          <p className="text-barber-gold font-medium text-sm mb-2">
+            Credenciais de teste:
+          </p>
+          <div className="space-y-1 text-sm text-barber-light/80">
             <p>Email: admin@example.com</p>
             <p>Senha: 1234</p>
           </div>
         </div>
-        <div className="bg-white rounded-lg p-8 shadow-lg border border-gray-100">
+
+        {/* Formulário de Login */}
+        <div className="bg-barber-gray/30 backdrop-blur-sm rounded-lg p-6 border border-barber-gray/50">
           <Auth
             supabaseClient={supabase}
             appearance={{
@@ -80,17 +106,18 @@ export const LoginForm = () => {
               style: {
                 button: {
                   fontWeight: '500',
-                  padding: '10px 16px',
+                  padding: '12px 16px',
                   transition: 'all 0.2s ease',
                 },
                 anchor: {
-                  color: '#666666',
+                  color: '#BF9B30',
                   textDecoration: 'none',
                   fontSize: '14px',
                 },
                 message: {
                   fontSize: '14px',
                   margin: '12px 0',
+                  color: '#F5F5F5',
                 },
                 container: {
                   width: '100%',
