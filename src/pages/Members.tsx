@@ -14,7 +14,7 @@ interface MembersProps {
 }
 
 export default function Members({ planType }: MembersProps) {
-  const { members } = useMemberContext();
+  const { members, getMembersByPlan } = useMemberContext();
   const navigate = useNavigate();
   const location = useLocation();
   const session = useSession();
@@ -50,6 +50,10 @@ export default function Members({ planType }: MembersProps) {
     }
   };
 
+  const basicCount = getMembersByPlan("Basic");
+  const classicCount = getMembersByPlan("Classic");
+  const businessCount = getMembersByPlan("Business");
+
   if (!session) {
     return null;
   }
@@ -83,13 +87,13 @@ export default function Members({ planType }: MembersProps) {
               Todos ({members.length})
             </TabsTrigger>
             <TabsTrigger value="basic" className="text-barber-light">
-              Basic ({members.filter(m => m.plan === "Basic").length})
+              Basic ({basicCount})
             </TabsTrigger>
             <TabsTrigger value="classic" className="text-barber-light">
-              Classic ({members.filter(m => m.plan === "Classic").length})
+              Classic ({classicCount})
             </TabsTrigger>
             <TabsTrigger value="business" className="text-barber-light">
-              Business ({members.filter(m => m.plan === "Business").length})
+              Business ({businessCount})
             </TabsTrigger>
           </TabsList>
 
