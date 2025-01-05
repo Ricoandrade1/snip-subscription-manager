@@ -33,7 +33,7 @@ export function BarberList() {
     try {
       const { data, error } = await supabase
         .from('barbers')
-        .select('*')
+        .select('id, name, phone, email, specialties, commission_rate, status')
         .order('name');
       
       if (error) throw error;
