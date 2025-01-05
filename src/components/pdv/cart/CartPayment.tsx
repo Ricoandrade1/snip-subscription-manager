@@ -25,6 +25,7 @@ export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<string>("cash");
   const [selectedSellers, setSelectedSellers] = useState<Seller[]>([]);
+  const [sellerCommissions, setSellerCommissions] = useState<Record<string, number>>({});
 
   const handleSelectSeller = (seller: Seller) => {
     setSelectedSellers((current) => {
@@ -32,8 +33,19 @@ export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
       if (exists) {
         return current.filter((s) => s.id !== seller.id);
       }
+      setSellerCommissions(prev => ({
+        ...prev,
+        [seller.id]: seller.commission_rate
+      }));
       return [...current, seller];
     });
+  };
+
+  const handleCommissionChange = (sellerId: string, newRate: number) => {
+    setSellerCommissions(prev => ({
+      ...prev,
+      [sellerId]: newRate
+    }));
   };
 
   const handleFinishSale = async () => {
@@ -58,7 +70,7 @@ export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
           status: "completed",
           sellers: selectedSellers.map(s => ({
             id: s.id,
-            commission: (total * s.commission_rate) / 100
+            commission: (total * sellerCommissions[s.id]) / 100
           }))
         })
         .select()
@@ -110,6 +122,8 @@ export function CartPayment({ items, total, onClearCart }: CartPaymentProps) {
       <CommissionDisplay
         selectedSellers={selectedSellers}
         total={total}
+        commissionRates={sellerCommissions}
+        onCommissionChange={handleCommissionChange}
       />
 
       <PaymentMethodSelector

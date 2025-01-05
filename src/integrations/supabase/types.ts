@@ -381,6 +381,7 @@ export type Database = {
           created_at: string
           id: string
           payment_method: string
+          sellers: Json | null
           status: string
           total: number
           updated_at: string
@@ -389,6 +390,7 @@ export type Database = {
           created_at?: string
           id?: string
           payment_method: string
+          sellers?: Json | null
           status?: string
           total: number
           updated_at?: string
@@ -397,6 +399,7 @@ export type Database = {
           created_at?: string
           id?: string
           payment_method?: string
+          sellers?: Json | null
           status?: string
           total?: number
           updated_at?: string
