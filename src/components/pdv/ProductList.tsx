@@ -107,7 +107,6 @@ export function ProductList({
     fetchProducts();
     fetchBarbers();
 
-    // Subscribe to changes on the products table
     const channel = supabase
       .channel('products-changes')
       .on(
@@ -117,9 +116,15 @@ export function ProductList({
           schema: 'public',
           table: 'products'
         },
-        () => {
-          // Fetch products immediately after any change
-          fetchProducts();
+        (payload) => {
+          console.log('Received change:', payload);
+          if (payload.eventType === 'DELETE') {
+            setProducts(prevProducts => 
+              prevProducts.filter(product => product.id !== payload.old.id)
+            );
+          } else {
+            fetchProducts();
+          }
         }
       )
       .subscribe();

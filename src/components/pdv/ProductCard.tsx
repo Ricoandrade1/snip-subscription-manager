@@ -150,7 +150,10 @@ export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={handleDelete}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete();
+                          }}
                           className="bg-destructive hover:bg-destructive/90"
                           disabled={isDeleting}
                         >
