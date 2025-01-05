@@ -52,6 +52,7 @@ export function PaymentDateField({
                 onSelect={field.onChange}
                 initialFocus
                 locale={ptBR}
+                disabled={false}
                 className="rounded-md border"
               />
             </PopoverContent>
