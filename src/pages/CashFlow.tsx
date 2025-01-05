@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ProductServiceForm } from "@/components/pdv/forms/ProductServiceForm";
 import { ProductServiceGrid } from "@/components/pdv/ProductServiceGrid";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
