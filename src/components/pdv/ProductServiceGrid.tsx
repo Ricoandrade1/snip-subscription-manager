@@ -17,8 +17,9 @@ export function ProductServiceGrid() {
   useEffect(() => {
     fetchItems();
 
+    // Subscribe to ALL changes on the products table
     const channel = supabase
-      .channel('items-changes')
+      .channel('products-changes')
       .on(
         'postgres_changes',
         {
@@ -26,8 +27,9 @@ export function ProductServiceGrid() {
           schema: 'public',
           table: 'products'
         },
-        () => {
-          fetchItems();
+        (payload) => {
+          console.log('Real-time update received:', payload);
+          fetchItems(); // Refresh the list whenever any change occurs
         }
       )
       .subscribe();
@@ -61,27 +63,6 @@ export function ProductServiceGrid() {
     } catch (error) {
       console.error("Error in fetchItems:", error);
       toast.error("Erro ao carregar itens");
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        console.error("Error deleting item:", error);
-        toast.error("Erro ao deletar item");
-        return;
-      }
-
-      toast.success("Item deletado com sucesso");
-      fetchItems();
-    } catch (error) {
-      console.error("Error in handleDelete:", error);
-      toast.error("Erro ao deletar item");
     }
   };
 
