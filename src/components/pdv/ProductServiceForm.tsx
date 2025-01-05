@@ -8,6 +8,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description?: string | null;
+  stock?: number;
+  brand?: string | null;
+  category?: string | null;
+}
+
 const formSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
@@ -20,7 +30,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 interface ProductServiceFormProps {
-  initialData?: FormValues & { id: string };
+  initialData?: Product;
   onSuccess: () => void;
 }
 
@@ -29,7 +39,7 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: initialData?.name ?? "",
-      description: initialData?.description ?? "",
+      description: initialData?.description?.toString() ?? "",
       price: initialData?.price?.toString() ?? "",
       stock: initialData?.stock?.toString() ?? "",
       brand: initialData?.brand ?? "",
