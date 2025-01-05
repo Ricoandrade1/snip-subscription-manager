@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ProductServiceForm } from "./ProductServiceForm";
 import { toast } from "sonner";
 import { Product } from "./types";
+import { ProductCard } from "./ProductCard";
 
 export function ProductServiceGrid() {
   const [items, setItems] = useState<Product[]>([]);
@@ -84,6 +85,11 @@ export function ProductServiceGrid() {
     }
   };
 
+  const handleEdit = (product: Product) => {
+    setSelectedItem(product);
+    setIsDialogOpen(true);
+  };
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       <div className="flex justify-between items-center">
@@ -114,71 +120,13 @@ export function ProductServiceGrid() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {items.map((item) => (
-          <Card key={item.id} className="p-4 relative group">
-            <div className="absolute top-2 right-2 space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  setSelectedItem(item);
-                  setIsDialogOpen(true);
-                }}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleDelete(item.id)}
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
-            </div>
-            {item.image_url ? (
-              <img
-                src={item.image_url}
-                alt={item.name}
-                className="w-full h-32 object-cover rounded-md mb-2"
-              />
-            ) : (
-              <div className="w-full h-32 bg-muted rounded-md mb-2 flex items-center justify-center">
-                Sem imagem
-              </div>
-            )}
-            <div className="space-y-2">
-              <h3 className="font-medium truncate">{item.name}</h3>
-              {item.description && (
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {item.description}
-                </p>
-              )}
-              <div className="flex flex-col gap-1">
-                {item.brands?.name && (
-                  <span className="text-sm text-muted-foreground">
-                    Marca: {item.brands.name}
-                  </span>
-                )}
-                {item.categories?.name && (
-                  <span className="text-sm text-muted-foreground">
-                    Categoria: {item.categories.name}
-                  </span>
-                )}
-              </div>
-              <div className="flex justify-between items-center pt-2">
-                <span className="font-bold">
-                  {new Intl.NumberFormat("pt-PT", {
-                    style: "currency",
-                    currency: "EUR",
-                  }).format(item.price)}
-                </span>
-                {!item.is_service && (
-                  <span className="text-sm text-muted-foreground">
-                    Estoque: {item.stock}
-                  </span>
-                )}
-              </div>
-            </div>
-          </Card>
+          <ProductCard
+            key={item.id}
+            product={item}
+            barbers={[]}
+            onSelect={() => {}}
+            onEdit={handleEdit}
+          />
         ))}
       </div>
     </div>
