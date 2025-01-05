@@ -1,92 +1,14 @@
-import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PaymentHistoryTable } from "@/components/PaymentHistoryTable";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { Payment } from "@/contexts/types";
-
-interface PaymentWithRelations {
-  id: string;
-  amount: number;
-  status: string;
-  payment_date: string;
-  receipt_url: string | null;
-  created_at: string | null;
-  member_id: string | null;
-  member: {
-    name: string;
-    plan: {
-      title: string;
-    } | null;
-  } | null;
-}
+import { PaymentSummary } from "@/components/revenue/PaymentSummary";
+import { usePayments } from "@/components/revenue/usePayments";
 
 export default function Revenue() {
   const { members } = useMemberContext();
-  const [payments, setPayments] = useState<Payment[]>([]);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel('payments-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'payments'
-        },
-        (payload) => {
-          console.log('Payment change received:', payload);
-          fetchPayments();
-        }
-      )
-      .subscribe();
-
-    fetchPayments();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const fetchPayments = async () => {
-    const { data: paymentsData, error } = await supabase
-      .from('payments')
-      .select(`
-        *,
-        member:members (
-          name,
-          plan:plans (
-            title
-          )
-        )
-      `);
-
-    if (error) {
-      console.error('Error fetching payments:', error);
-      toast.error('Erro ao carregar pagamentos');
-      return;
-    }
-
-    const formattedPayments: Payment[] = (paymentsData as PaymentWithRelations[] || []).map(payment => ({
-      id: payment.id,
-      memberName: payment.member?.name || '',
-      plan: (payment.member?.plan?.title as "Basic" | "Classic" | "Business") || "Basic",
-      amount: payment.amount,
-      date: payment.payment_date,
-      status: payment.status as "paid" | "pending" | "overdue",
-      member_id: payment.member_id,
-      receipt_url: payment.receipt_url,
-      created_at: payment.created_at,
-      payment_date: payment.payment_date
-    }));
-
-    setPayments(formattedPayments);
-  };
+  const { payments } = usePayments();
 
   const getPaymentsByPlan = () => {
     const planPayments: Record<string, Payment> = {
@@ -165,37 +87,16 @@ export default function Revenue() {
             <TabsTrigger value="by-plan">Por Plano</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="monthly" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Receita Mensal</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <PaymentHistoryTable payments={getMonthlyPayments()} />
-              </CardContent>
-            </Card>
+          <TabsContent value="monthly">
+            <PaymentSummary title="Receita Mensal" payments={getMonthlyPayments()} />
           </TabsContent>
 
-          <TabsContent value="yearly" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Receita Anual</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <PaymentHistoryTable payments={getYearlyPayments()} />
-              </CardContent>
-            </Card>
+          <TabsContent value="yearly">
+            <PaymentSummary title="Receita Anual" payments={getYearlyPayments()} />
           </TabsContent>
 
-          <TabsContent value="by-plan" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Receita por Plano</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <PaymentHistoryTable payments={getPaymentsByPlan()} />
-              </CardContent>
-            </Card>
+          <TabsContent value="by-plan">
+            <PaymentSummary title="Receita por Plano" payments={getPaymentsByPlan()} />
           </TabsContent>
         </Tabs>
       </div>

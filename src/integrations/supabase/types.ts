@@ -174,7 +174,15 @@ export type Database = {
           receipt_url?: string | null
           status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "payments_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       plans: {
         Row: {
