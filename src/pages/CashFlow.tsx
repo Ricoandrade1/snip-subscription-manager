@@ -66,7 +66,7 @@ export default function CashFlow() {
                 Novo Produto
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>Novo Produto</DialogTitle>
               </DialogHeader>
