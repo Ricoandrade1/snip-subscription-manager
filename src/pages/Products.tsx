@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Product } from "@/components/pdv/types";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function Products() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -85,13 +86,17 @@ export default function Products() {
                   {selectedProduct ? "Editar Produto" : "Novo Produto"}
                 </DialogTitle>
               </DialogHeader>
-              <ProductServiceForm
-                initialData={selectedProduct}
-                onSuccess={() => {
-                  setIsDialogOpen(false);
-                  setSelectedProduct(null);
-                }}
-              />
+              <ScrollArea className="max-h-[80vh]">
+                <div className="p-1">
+                  <ProductServiceForm
+                    initialData={selectedProduct}
+                    onSuccess={() => {
+                      setIsDialogOpen(false);
+                      setSelectedProduct(null);
+                    }}
+                  />
+                </div>
+              </ScrollArea>
             </DialogContent>
           </Dialog>
         </div>
@@ -111,64 +116,66 @@ export default function Products() {
             <DialogHeader>
               <DialogTitle>Detalhes do Produto</DialogTitle>
             </DialogHeader>
-            {selectedProduct && (
-              <div className="space-y-4">
-                <div className="grid gap-2">
-                  <div>
-                    <h3 className="font-medium">Nome</h3>
-                    <p>{selectedProduct.name}</p>
+            <ScrollArea className="max-h-[60vh]">
+              {selectedProduct && (
+                <div className="space-y-4 p-1">
+                  <div className="grid gap-2">
+                    <div>
+                      <h3 className="font-medium">Nome</h3>
+                      <p>{selectedProduct.name}</p>
+                    </div>
+                    {selectedProduct.description && (
+                      <div>
+                        <h3 className="font-medium">Descrição</h3>
+                        <p>{selectedProduct.description}</p>
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="font-medium">Preço</h3>
+                      <p>
+                        {new Intl.NumberFormat("pt-PT", {
+                          style: "currency",
+                          currency: "EUR",
+                        }).format(selectedProduct.price)}
+                      </p>
+                    </div>
+                    {!selectedProduct.is_service && (
+                      <div>
+                        <h3 className="font-medium">Estoque</h3>
+                        <p>{selectedProduct.stock}</p>
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="font-medium">Tipo</h3>
+                      <p>{selectedProduct.is_service ? "Serviço" : "Produto"}</p>
+                    </div>
+                    {selectedProduct.brands && (
+                      <div>
+                        <h3 className="font-medium">Marca</h3>
+                        <p>{selectedProduct.brands.name}</p>
+                      </div>
+                    )}
+                    {selectedProduct.categories && (
+                      <div>
+                        <h3 className="font-medium">Categoria</h3>
+                        <p>{selectedProduct.categories.name}</p>
+                      </div>
+                    )}
                   </div>
-                  {selectedProduct.description && (
-                    <div>
-                      <h3 className="font-medium">Descrição</h3>
-                      <p>{selectedProduct.description}</p>
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="font-medium">Preço</h3>
-                    <p>
-                      {new Intl.NumberFormat("pt-PT", {
-                        style: "currency",
-                        currency: "EUR",
-                      }).format(selectedProduct.price)}
-                    </p>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>
+                      Fechar
+                    </Button>
+                    <Button onClick={() => {
+                      setIsDetailsOpen(false);
+                      handleEdit(selectedProduct);
+                    }}>
+                      Editar
+                    </Button>
                   </div>
-                  {!selectedProduct.is_service && (
-                    <div>
-                      <h3 className="font-medium">Estoque</h3>
-                      <p>{selectedProduct.stock}</p>
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="font-medium">Tipo</h3>
-                    <p>{selectedProduct.is_service ? "Serviço" : "Produto"}</p>
-                  </div>
-                  {selectedProduct.brands && (
-                    <div>
-                      <h3 className="font-medium">Marca</h3>
-                      <p>{selectedProduct.brands.name}</p>
-                    </div>
-                  )}
-                  {selectedProduct.categories && (
-                    <div>
-                      <h3 className="font-medium">Categoria</h3>
-                      <p>{selectedProduct.categories.name}</p>
-                    </div>
-                  )}
                 </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>
-                    Fechar
-                  </Button>
-                  <Button onClick={() => {
-                    setIsDetailsOpen(false);
-                    handleEdit(selectedProduct);
-                  }}>
-                    Editar
-                  </Button>
-                </div>
-              </div>
-            )}
+              )}
+            </ScrollArea>
           </DialogContent>
         </Dialog>
       </div>
