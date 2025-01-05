@@ -16,6 +16,8 @@ export interface Product {
   commission_rates?: Record<string, number>;
   image_url?: string | null;
   description?: string | null;
+  vat_rate: number;
+  vat_included: boolean;
 }
 
 export interface ProductListFilters {

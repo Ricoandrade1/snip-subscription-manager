@@ -257,6 +257,8 @@ export type Database = {
           price: number
           stock: number
           updated_at: string
+          vat_included: boolean | null
+          vat_rate: number | null
         }
         Insert: {
           allowed_users?: string[] | null
@@ -273,6 +275,8 @@ export type Database = {
           price: number
           stock?: number
           updated_at?: string
+          vat_included?: boolean | null
+          vat_rate?: number | null
         }
         Update: {
           allowed_users?: string[] | null
@@ -289,6 +293,8 @@ export type Database = {
           price?: number
           stock?: number
           updated_at?: string
+          vat_included?: boolean | null
+          vat_rate?: number | null
         }
         Relationships: [
           {

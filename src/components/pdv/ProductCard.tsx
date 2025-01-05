@@ -9,6 +9,10 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, barbers, onSelect }: ProductCardProps) {
+  const vatAmount = product.price * (product.vat_rate / 100);
+  const totalWithVat = product.vat_included ? product.price : product.price + vatAmount;
+  const priceWithoutVat = product.vat_included ? product.price - vatAmount : product.price;
+
   return (
     <Card
       className={`p-4 cursor-pointer hover:bg-muted/50 transition-colors flex flex-col justify-between h-full ${
@@ -36,14 +40,40 @@ export function ProductCard({ product, barbers, onSelect }: ProductCardProps) {
       
       <div className="space-y-2">
         <div className="text-lg font-medium">{product.name}</div>
-        <div className="text-2xl font-bold text-barber-gold">
-          {new Intl.NumberFormat("pt-BR", {
-            style: "currency",
-            currency: "EUR",
-          }).format(product.price)}
+        
+        <div className="space-y-1 text-sm">
+          <div className="flex justify-between text-muted-foreground">
+            <span>Preço sem IVA:</span>
+            <span>
+              {new Intl.NumberFormat("pt-PT", {
+                style: "currency",
+                currency: "EUR",
+              }).format(priceWithoutVat)}
+            </span>
+          </div>
+          
+          <div className="flex justify-between text-muted-foreground">
+            <span>IVA ({product.vat_rate}%):</span>
+            <span>
+              {new Intl.NumberFormat("pt-PT", {
+                style: "currency",
+                currency: "EUR",
+              }).format(vatAmount)}
+            </span>
+          </div>
+          
+          <div className="flex justify-between font-bold pt-1 border-t">
+            <span>Total com IVA:</span>
+            <span>
+              {new Intl.NumberFormat("pt-PT", {
+                style: "currency",
+                currency: "EUR",
+              }).format(totalWithVat)}
+            </span>
+          </div>
         </div>
         
-        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground mt-2">
           <div className={`${product.stock === 0 ? 'text-red-500' : ''}`}>
             Estoque: {product.stock}
           </div>
