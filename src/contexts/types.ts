@@ -11,6 +11,7 @@ export type Member = {
   iban: string;
   debitDate: string;
   phone: string;
+  plan_id: number;
   plan: "Basic" | "Classic" | "Business";
   created_at?: string;
   nextPaymentDue?: string;

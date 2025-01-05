@@ -58,20 +58,16 @@ export function SubscriberForm() {
       const { data: plans, error: planError } = await supabase
         .from('plans')
         .select('id, title')
-        .eq('title', data.plan);
+        .eq('title', data.plan)
+        .single();
 
       if (planError) {
         console.error('Erro ao buscar plano:', planError);
         throw new Error('Erro ao buscar plano');
       }
 
-      if (!plans || plans.length === 0) {
-        console.error('Plano não encontrado:', data.plan);
-        throw new Error(`Plano "${data.plan}" não encontrado`);
-      }
-
-      const planId = plans[0].id;
-      console.log('Plano encontrado:', plans[0]);
+      const planId = plans.id;
+      console.log('Plano encontrado:', plans);
 
       const memberData: Omit<Member, "id"> = {
         name: data.name || "",
@@ -85,20 +81,11 @@ export function SubscriberForm() {
         bank: data.bank || "",
         iban: data.iban || "",
         debitDate: data.debitDate || "",
-        plan: data.plan
+        plan: data.plan,
+        plan_id: planId
       };
 
-      const { error: insertError } = await supabase
-        .from('members')
-        .insert([{
-          ...memberData,
-          plan_id: planId
-        }]);
-
-      if (insertError) {
-        console.error('Erro ao inserir membro:', insertError);
-        throw insertError;
-      }
+      await addMember(memberData);
 
       const currentSubscribers = members.filter(member => member.plan === data.plan).length;
       

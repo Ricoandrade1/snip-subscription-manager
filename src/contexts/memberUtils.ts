@@ -10,6 +10,7 @@ export const fetchMembersFromDB = async () => {
     .select(`
       *,
       plans (
+        id,
         title,
         price,
         features
@@ -55,6 +56,7 @@ export const fetchMembersFromDB = async () => {
       bank: member.bank || '',
       iban: member.iban || '',
       debitDate: member.debit_date || '',
+      plan_id: member.plan_id,
       plan: member.plans?.title || "Basic",
       created_at: member.created_at,
       nextPaymentDue: member.debit_date,
@@ -80,7 +82,6 @@ export const addMemberToDB = async (member: Omit<Member, "id">) => {
   try {
     console.log('Buscando plano:', member.plan);
     
-    // Changed from .single() to .maybeSingle() to handle no results gracefully
     const { data: planData, error: planError } = await supabase
       .from('plans')
       .select('id')
