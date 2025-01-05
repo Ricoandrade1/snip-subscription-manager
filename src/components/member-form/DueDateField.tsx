@@ -33,7 +33,7 @@ export function DueDateField({ form }: DueDateFieldProps) {
                   )}
                 >
                   {field.value ? (
-                    format(field.value, "dd/MM/yyyy", { locale: ptBR })
+                    format(field.value, "dd/MM/yyyy")
                   ) : (
                     <span>Selecione uma data</span>
                   )}
@@ -51,6 +51,14 @@ export function DueDateField({ form }: DueDateFieldProps) {
                 }
                 initialFocus
                 locale={ptBR}
+                formatters={{
+                  formatCaption: (date, options) => {
+                    return format(date, "MM/yyyy", { locale: ptBR });
+                  },
+                  formatDay: (date) => {
+                    return format(date, "dd");
+                  },
+                }}
                 className="rounded-md border-barber-gold/20 bg-barber-gray text-barber-light"
                 classNames={{
                   months: "space-y-4",
