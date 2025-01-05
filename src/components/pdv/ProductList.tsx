@@ -35,9 +35,11 @@ interface ProductListProps {
 export function ProductList({ onProductSelect, filters = { name: "", category: "", brand: "", minPrice: "", maxPrice: "", inStock: false } }: ProductListProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [barbers, setBarbers] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
     fetchProducts();
+    fetchBarbers();
 
     const channel = supabase
       .channel('products-changes')
@@ -58,6 +60,20 @@ export function ProductList({ onProductSelect, filters = { name: "", category: "
       supabase.removeChannel(channel);
     };
   }, [filters]);
+
+  const fetchBarbers = async () => {
+    const { data, error } = await supabase
+      .from("barbers")
+      .select("id, name")
+      .order("name");
+
+    if (error) {
+      console.error("Error fetching barbers:", error);
+      return;
+    }
+
+    setBarbers(data || []);
+  };
 
   const fetchProducts = async () => {
     try {
@@ -164,9 +180,15 @@ export function ProductList({ onProductSelect, filters = { name: "", category: "
                 {product.commission_rates && Object.keys(product.commission_rates).length > 0 && (
                   <div className="text-xs text-muted-foreground">
                     <div className="font-medium">Comissões:</div>
-                    {Object.entries(product.commission_rates).map(([barberId, rate]) => (
-                      <div key={barberId}>{rate}%</div>
-                    ))}
+                    {Object.entries(product.commission_rates).map(([barberId, rate]) => {
+                      const barber = barbers.find(b => b.id === barberId);
+                      return (
+                        <div key={barberId} className="flex justify-between gap-2">
+                          <span>{barber?.name || 'Barbeiro'}:</span>
+                          <span>{rate}%</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
