@@ -33,7 +33,7 @@ export function DueDateField({ form }: DueDateFieldProps) {
                   )}
                 >
                   {field.value ? (
-                    format(field.value, "PPP", { locale: ptBR })
+                    format(field.value, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
                   ) : (
                     <span>Selecione uma data</span>
                   )}
@@ -50,6 +50,7 @@ export function DueDateField({ form }: DueDateFieldProps) {
                   date < new Date(new Date().setHours(0, 0, 0, 0))
                 }
                 initialFocus
+                locale={ptBR}
                 className="rounded-md border-barber-gold/20 bg-barber-gray text-barber-light"
                 classNames={{
                   months: "space-y-4",
