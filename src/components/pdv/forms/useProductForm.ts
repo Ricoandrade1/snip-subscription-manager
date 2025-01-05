@@ -46,12 +46,12 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
         stock: values.stock ? parseInt(values.stock) : 0,
         brand_id: values.brand || null,
         category_id: values.category || null,
-        commission_rates: values.commission_rates || {},
+        commission_rates: values.commission_rates,
         vat_rate: parseFloat(values.vat_rate),
         vat_included: values.vat_included,
       };
 
-      console.log("Saving product with commission rates:", productData.commission_rates);
+      console.log("Saving product with data:", productData);
 
       const { error } = initialData
         ? await supabase

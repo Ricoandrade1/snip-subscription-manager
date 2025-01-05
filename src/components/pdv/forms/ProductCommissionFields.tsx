@@ -31,17 +31,32 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
     
     if (data) {
       setBarbers(data);
+      
+      // Initialize commission rates if they don't exist
+      const currentRates = form.getValues("commission_rates") || {};
+      const initializedRates = { ...currentRates };
+      
+      data.forEach(barber => {
+        if (!(barber.id in initializedRates)) {
+          initializedRates[barber.id] = 0;
+        }
+      });
+      
+      form.setValue("commission_rates", initializedRates);
     }
   };
 
   const handleCommissionChange = (barberId: string, value: string) => {
     const numValue = value === "" ? 0 : parseFloat(value);
-    if (!isNaN(numValue)) {
-      const currentRates = form.getValues("commission_rates") || {};
-      form.setValue("commission_rates", {
-        ...currentRates,
-        [barberId]: numValue
-      }, { shouldValidate: true });
+    if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
+      console.log("Setting commission rate for barber", barberId, "to", numValue);
+      const currentRates = { ...form.getValues("commission_rates") } || {};
+      currentRates[barberId] = numValue;
+      form.setValue("commission_rates", currentRates, { 
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true
+      });
     }
   };
 
@@ -68,7 +83,7 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
                         min="0"
                         max="100"
                         placeholder="% comissão"
-                        value={field.value ?? ""}
+                        value={field.value || 0}
                         onChange={(e) => handleCommissionChange(barber.id, e.target.value)}
                         className="w-24"
                       />
