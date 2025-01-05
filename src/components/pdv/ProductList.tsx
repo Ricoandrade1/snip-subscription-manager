@@ -107,7 +107,7 @@ export function ProductList({
     fetchProducts();
     fetchBarbers();
 
-    // Subscribe to ALL changes on the products table with debounce
+    // Subscribe to changes on the products table
     const channel = supabase
       .channel('products-changes')
       .on(
@@ -117,18 +117,15 @@ export function ProductList({
           schema: 'public',
           table: 'products'
         },
-        (payload) => {
-          console.log('Real-time update received:', payload);
-          // Add a small delay to ensure the database has processed the change
-          setTimeout(() => {
-            fetchProducts();
-          }, 100);
+        () => {
+          // Fetch products immediately after any change
+          fetchProducts();
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      channel.unsubscribe();
     };
   }, [filters]);
 
