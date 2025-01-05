@@ -36,14 +36,10 @@ export function SidebarMenuItemComponent({
           <CollapsibleTrigger asChild>
             <SidebarMenuButton asChild tooltip={item.title}>
               <div className="flex w-full items-center justify-between">
-                <Link 
-                  to={item.url} 
-                  className="flex items-center gap-2"
-                  data-active={isActiveRoute(item.url)}
-                >
+                <div className="flex items-center gap-2">
                   <item.icon className="h-4 w-4" />
                   <span>{item.title}</span>
-                </Link>
+                </div>
                 <ChevronDown
                   className={`h-4 w-4 transition-transform duration-200 ${
                     openSubmenus.includes(item.title) ? "rotate-180" : ""
@@ -88,7 +84,7 @@ export function SidebarMenuItemComponent({
         tooltip={item.title}
         data-active={isActiveRoute(item.url)}
       >
-        <Link to={item.url}>
+        <Link to={item.url} className="flex items-center gap-2">
           <item.icon className="h-4 w-4" />
           <span>{item.title}</span>
         </Link>
