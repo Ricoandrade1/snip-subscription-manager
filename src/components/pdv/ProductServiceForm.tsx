@@ -4,12 +4,17 @@ import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const formSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
-  price: z.coerce.number().min(0, "Preço deve ser maior que 0"),
+  name: z.string(),
+  description: z.string().optional(),
+  price: z.string(),
+  stock: z.string().optional(),
+  brand: z.string().optional(),
+  category: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -24,7 +29,11 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: initialData?.name ?? "",
-      price: initialData?.price ?? 0,
+      description: initialData?.description ?? "",
+      price: initialData?.price?.toString() ?? "",
+      stock: initialData?.stock?.toString() ?? "",
+      brand: initialData?.brand ?? "",
+      category: initialData?.category ?? "",
     },
   });
 
@@ -32,7 +41,11 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
     try {
       const productData = {
         name: values.name,
-        price: values.price,
+        description: values.description,
+        price: values.price ? parseFloat(values.price) : 0,
+        stock: values.stock ? parseInt(values.stock) : 0,
+        brand: values.brand || null,
+        category: values.category || null,
       };
 
       const { error } = initialData
@@ -66,9 +79,27 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome</FormLabel>
+              <FormLabel>Nome do Item</FormLabel>
               <FormControl>
-                <Input placeholder="Nome do item" {...field} />
+                <Input placeholder="Digite o nome do item" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Descrição</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Adicione uma descrição do item"
+                  className="min-h-[80px]"
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -80,9 +111,51 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Preço (€)</FormLabel>
+              <FormLabel>Preço</FormLabel>
               <FormControl>
-                <Input type="number" step="0.01" {...field} />
+                <Input placeholder="Digite o preço" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="stock"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Quantidade em Estoque</FormLabel>
+              <FormControl>
+                <Input placeholder="Digite a quantidade" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="brand"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Marca</FormLabel>
+              <FormControl>
+                <Input placeholder="Digite a marca" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Categoria</FormLabel>
+              <FormControl>
+                <Input placeholder="Digite a categoria" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
