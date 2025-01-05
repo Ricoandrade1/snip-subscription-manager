@@ -1,14 +1,19 @@
 import {
-  Users,
-  BarChart3,
-  Calendar,
-  Truck,
-  Package,
-  Scissors,
-  Building,
-  Image,
-  Rss,
   LayoutDashboard,
+  DollarSign,
+  Users,
+  Package,
+  ArrowUpDown,
+  Building,
+  Tags,
+  Grid,
+  Store,
+  UserCog,
+  Clock,
+  Calendar,
+  CalendarDays,
+  CalendarRange,
+  Wallet,
 } from "lucide-react";
 
 export const menuItems = [
@@ -18,7 +23,22 @@ export const menuItems = [
     url: "/",
   },
   {
-    title: "Membros",
+    title: "Movimentos de Caixa",
+    icon: DollarSign,
+    url: "/cash-flow",
+  },
+  {
+    title: "Produtos",
+    icon: Package,
+    url: "/products",
+  },
+  {
+    title: "Variações",
+    icon: ArrowUpDown,
+    url: "/variations",
+  },
+  {
+    title: "Clientes",
     icon: Users,
     url: "/members",
     submenu: [
@@ -29,47 +49,44 @@ export const menuItems = [
     ],
   },
   {
-    title: "Receita",
-    icon: BarChart3,
-    url: "/revenue",
-  },
-  {
-    title: "Social Media",
-    icon: Rss,
-    url: "/social",
-    submenu: [
-      { title: "Story", url: "/story" },
-      { title: "Feed", url: "/feed" },
-    ],
-  },
-  {
-    title: "Agenda",
-    icon: Calendar,
-    url: "/schedule",
-  },
-  {
     title: "Fornecedores",
-    icon: Truck,
+    icon: Building,
     url: "/suppliers",
+  },
+  {
+    title: "Marcas",
+    icon: Tags,
+    url: "/brands",
+  },
+  {
+    title: "Categorias",
+    icon: Grid,
+    url: "/categories",
+  },
+  {
+    title: "Lojas",
+    icon: Store,
+    url: "/stores",
+  },
+  {
+    title: "Utilizadores",
+    icon: UserCog,
+    url: "/users",
+  },
+  {
+    title: "Relatórios",
+    icon: Calendar,
+    url: "/reports",
     submenu: [
-      { title: "Registrar", url: "/suppliers/register" },
-      { title: "Receber", url: "/suppliers/receive" },
-      { title: "Pagar", url: "/suppliers/pay" },
+      { title: "Diário", url: "/reports/daily" },
+      { title: "Por Hora", url: "/reports/hourly" },
+      { title: "Dias da Semana", url: "/reports/weekly" },
+      { title: "Mensal", url: "/reports/monthly" },
     ],
   },
   {
-    title: "Produtos",
-    icon: Package,
-    url: "/products",
-  },
-  {
-    title: "Barbeiros",
-    icon: Scissors,
-    url: "/barbers",
-  },
-  {
-    title: "Barbearia",
-    icon: Building,
-    url: "/locations",
+    title: "Gestor de Conta",
+    icon: Wallet,
+    url: "/account",
   },
 ];
