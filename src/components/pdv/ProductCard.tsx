@@ -36,18 +36,22 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      console.log('Deleting product:', product.id);
+      console.log('Attempting to delete product:', product.id);
+      
       const { error } = await supabase
         .from("products")
         .delete()
         .eq("id", product.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error deleting product:", error);
+        throw error;
+      }
 
+      console.log('Product deleted successfully');
       onDelete?.(product.id);
       setIsDeleteDialogOpen(false);
       toast.success("Produto removido com sucesso");
@@ -59,10 +63,15 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
     }
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onSelect(product);
+  };
+
   return (
     <Card
       className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer hover:bg-muted/50"
-      onClick={() => onSelect(product)}
+      onClick={handleCardClick}
     >
       <div className="p-4">
         <div className="flex items-center justify-between gap-4">
@@ -161,7 +170,7 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
                         <AlertDialogAction
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDelete(e);
+                            handleDelete();
                           }}
                           className="bg-destructive hover:bg-destructive/90"
                           disabled={isDeleting}
