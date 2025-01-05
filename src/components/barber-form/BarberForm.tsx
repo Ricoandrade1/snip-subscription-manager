@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Form } from "@/components/ui/form";
@@ -26,10 +27,11 @@ const formSchema = z.object({
 type BarberFormData = z.infer<typeof formSchema>;
 
 interface BarberFormProps {
+  barberId?: string;
   onSuccess?: () => void;
 }
 
-export function BarberForm({ onSuccess }: BarberFormProps) {
+export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
   const { toast } = useToast();
 
   const form = useForm<BarberFormData>({
@@ -49,9 +51,49 @@ export function BarberForm({ onSuccess }: BarberFormProps) {
     },
   });
 
+  useEffect(() => {
+    if (barberId) {
+      loadBarberData();
+    }
+  }, [barberId]);
+
+  const loadBarberData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('barbers')
+        .select('*')
+        .eq('id', barberId)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        form.reset({
+          name: data.name,
+          nickname: data.nickname || "",
+          phone: data.phone,
+          email: data.email || "",
+          nif: data.nif,
+          birthDate: data.birth_date,
+          startDate: data.start_date,
+          specialties: data.specialties,
+          commissionRate: data.commission_rate,
+          bankName: data.bank_name,
+          iban: data.iban,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erro ao carregar dados",
+        description: "Não foi possível carregar os dados do barbeiro.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const onSubmit = async (data: BarberFormData) => {
     try {
-      const { error } = await supabase.from('barbers').insert([{
+      const barberData = {
         name: data.name,
         nickname: data.nickname,
         phone: data.phone,
@@ -63,23 +105,38 @@ export function BarberForm({ onSuccess }: BarberFormProps) {
         commission_rate: data.commissionRate,
         bank_name: data.bankName,
         iban: data.iban,
-      }]);
+      };
+
+      let error;
+      if (barberId) {
+        ({ error } = await supabase
+          .from('barbers')
+          .update(barberData)
+          .eq('id', barberId));
+      } else {
+        ({ error } = await supabase
+          .from('barbers')
+          .insert([barberData]));
+      }
 
       if (error) throw error;
 
       toast({
-        title: "Barbeiro cadastrado com sucesso!",
-        description: "O novo barbeiro foi adicionado à equipe.",
+        title: barberId ? "Barbeiro atualizado com sucesso!" : "Barbeiro cadastrado com sucesso!",
+        description: barberId ? "Os dados do barbeiro foram atualizados." : "O novo barbeiro foi adicionado à equipe.",
       });
       
-      form.reset();
+      if (!barberId) {
+        form.reset();
+      }
+      
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
       toast({
-        title: "Erro ao cadastrar barbeiro",
-        description: "Ocorreu um erro ao tentar cadastrar o barbeiro.",
+        title: barberId ? "Erro ao atualizar barbeiro" : "Erro ao cadastrar barbeiro",
+        description: "Ocorreu um erro ao tentar salvar os dados do barbeiro.",
         variant: "destructive",
       });
     }
@@ -96,7 +153,7 @@ export function BarberForm({ onSuccess }: BarberFormProps) {
         <SpecialtiesFields form={form} />
 
         <Button type="submit" className="w-full">
-          Cadastrar Barbeiro
+          {barberId ? "Atualizar Barbeiro" : "Cadastrar Barbeiro"}
         </Button>
       </form>
     </Form>

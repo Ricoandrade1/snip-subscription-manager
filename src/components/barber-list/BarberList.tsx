@@ -10,6 +10,16 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { BarberForm } from "../barber-form/BarberForm";
 
 interface Barber {
   id: string;
@@ -23,6 +33,7 @@ interface Barber {
 
 export function BarberList() {
   const [barbers, setBarbers] = useState<Barber[]>([]);
+  const [editingBarber, setEditingBarber] = useState<Barber | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -52,6 +63,11 @@ export function BarberList() {
     }
   };
 
+  const handleEditSuccess = () => {
+    setEditingBarber(null);
+    fetchBarbers();
+  };
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -63,6 +79,7 @@ export function BarberList() {
             <TableHead>Especialidades</TableHead>
             <TableHead>Comissão (%)</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -87,6 +104,30 @@ export function BarberList() {
                 >
                   {barber.status === 'active' ? 'Ativo' : 'Inativo'}
                 </Badge>
+              </TableCell>
+              <TableCell>
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => setEditingBarber(barber)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent className="max-w-2xl">
+                    <SheetHeader>
+                      <SheetTitle>Editar Barbeiro</SheetTitle>
+                    </SheetHeader>
+                    {editingBarber && (
+                      <BarberForm 
+                        barberId={editingBarber.id} 
+                        onSuccess={handleEditSuccess}
+                      />
+                    )}
+                  </SheetContent>
+                </Sheet>
               </TableCell>
             </TableRow>
           ))}
