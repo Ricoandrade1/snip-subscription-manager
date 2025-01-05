@@ -74,7 +74,7 @@ export function SubscriberForm() {
         phone: data.phone || "",
         nif: data.nif || "",
         plan_id: planId,
-        payment_date: data.payment_date
+        payment_date: data.payment_date ? data.payment_date.toISOString() : null
       };
 
       await addMember(memberData);

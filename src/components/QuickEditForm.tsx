@@ -22,11 +22,16 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       phone: member.phone || "",
       nif: member.nif || "",
       plan: member.plan,
+      payment_date: member.payment_date ? new Date(member.payment_date) : undefined,
     },
   });
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-    await onSubmit(data);
+    const formattedData = {
+      ...data,
+      payment_date: data.payment_date?.toISOString() || null,
+    };
+    await onSubmit(formattedData);
   };
 
   return (
