@@ -9,8 +9,8 @@ export const formSchema = z.object({
   passport: z.string().optional(),
   citizenCard: z.string().optional(),
   bi: z.string().optional(),
-  bank: z.string().min(2, "Nome do banco é obrigatório").optional(),
-  iban: z.string().min(15, "IBAN inválido").optional(),
+  bank: z.string().optional(),
+  iban: z.string().optional(),
   debitDate: z.string().optional(),
-  plan: z.enum(["Basic", "Classic", "Business"]),
+  plan: z.enum(["Basic", "Classic", "Business"]).default("Basic"),
 });

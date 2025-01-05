@@ -44,17 +44,17 @@ export const fetchMembersFromDB = async () => {
   const formattedMembers = membersData.map(member => {
     return {
       id: member.id,
-      name: member.name,
+      name: member.name || '',
       nickname: member.nickname || '',
-      phone: member.phone,
+      phone: member.phone || '',
       nif: member.nif || '',
-      birthDate: member.birth_date,
+      birthDate: member.birth_date || '',
       passport: member.passport || '',
       citizenCard: member.citizen_card || '',
       bi: member.bi || '',
       bank: member.bank || '',
       iban: member.iban || '',
-      debitDate: member.debit_date,
+      debitDate: member.debit_date || '',
       plan: member.plans?.title || "Basic",
       created_at: member.created_at,
       nextPaymentDue: member.debit_date,
@@ -63,12 +63,12 @@ export const fetchMembersFromDB = async () => {
         amount: payment.amount,
         status: payment.status,
         receiptUrl: payment.receipt_url || undefined
-      })),
+      })) || [],
       visits: member.visits?.map(visit => ({
         date: visit.visit_date,
         service: visit.service,
         barber: visit.barber
-      }))
+      })) || []
     } as Member;
   });
 
@@ -77,46 +77,56 @@ export const fetchMembersFromDB = async () => {
 };
 
 export const addMemberToDB = async (member: Omit<Member, "id">) => {
-  console.log('Buscando plano:', member.plan);
-  
-  const { data: planData, error: planError } = await supabase
-    .from('plans')
-    .select('id')
-    .eq('title', member.plan)
-    .maybeSingle();  // Changed from .single() to .maybeSingle()
+  try {
+    console.log('Buscando plano:', member.plan);
+    
+    const { data: planData, error: planError } = await supabase
+      .from('plans')
+      .select('id')
+      .eq('title', member.plan)
+      .single();
 
-  if (planError || !planData) {
-    console.error('Erro ao buscar plano:', planError || 'Plano não encontrado');
-    throw new Error(planError?.message || 'Plano não encontrado');
-  }
+    if (planError) {
+      console.error('Erro ao buscar plano:', planError);
+      throw new Error('Erro ao buscar plano');
+    }
 
-  console.log('Plano encontrado:', planData);
+    if (!planData) {
+      console.error('Plano não encontrado');
+      throw new Error('Plano não encontrado');
+    }
 
-  const { data, error } = await supabase
-    .from('members')
-    .insert([{
-      name: member.name,
-      nickname: member.nickname,
-      phone: member.phone,
-      nif: member.nif,
-      birth_date: member.birthDate,
-      passport: member.passport,
-      citizen_card: member.citizenCard,
-      bi: member.bi,
-      bank: member.bank,
-      iban: member.iban,
-      debit_date: member.debitDate,
-      plan_id: planData.id
-    }])
-    .select()
-    .single();
+    console.log('Plano encontrado:', planData);
 
-  if (error) {
-    console.error('Erro ao inserir membro:', error);
+    const { data, error } = await supabase
+      .from('members')
+      .insert([{
+        name: member.name || '',
+        nickname: member.nickname || '',
+        phone: member.phone || '',
+        nif: member.nif || '',
+        birth_date: member.birthDate || null,
+        passport: member.passport || '',
+        citizen_card: member.citizenCard || '',
+        bi: member.bi || '',
+        bank: member.bank || '',
+        iban: member.iban || '',
+        debit_date: member.debitDate || null,
+        plan_id: planData.id
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Erro ao inserir membro:', error);
+      throw error;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Erro ao adicionar membro:', error);
     throw error;
   }
-  
-  return data;
 };
 
 export const updateMemberInDB = async (id: string, member: Partial<Member>) => {

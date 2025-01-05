@@ -25,7 +25,7 @@ const formSchema = z.object({
   bank: z.string().optional(),
   iban: z.string().optional(),
   debitDate: z.string().optional(),
-  plan: z.enum(["Basic", "Classic", "Business"]),
+  plan: z.enum(["Basic", "Classic", "Business"]).default("Basic"),
 });
 
 export type SubscriberFormData = z.infer<typeof formSchema>;
@@ -53,50 +53,59 @@ export function SubscriberForm() {
     },
   });
 
-  const handleSubmit = (data: SubscriberFormData) => {
-    const memberData: Omit<Member, "id"> = {
-      name: data.name || "",
-      nickname: data.nickname || "",
-      phone: data.phone || "",
-      nif: data.nif || "",
-      birthDate: data.birthDate || "",
-      passport: data.passport || "",
-      citizenCard: data.citizenCard || "",
-      bi: data.bi || "",
-      bank: data.bank || "",
-      iban: data.iban || "",
-      debitDate: data.debitDate || "",
-      plan: data.plan
-    };
+  const handleSubmit = async (data: SubscriberFormData) => {
+    try {
+      const memberData: Omit<Member, "id"> = {
+        name: data.name || "",
+        nickname: data.nickname || "",
+        phone: data.phone || "",
+        nif: data.nif || "",
+        birthDate: data.birthDate || "",
+        passport: data.passport || "",
+        citizenCard: data.citizenCard || "",
+        bi: data.bi || "",
+        bank: data.bank || "",
+        iban: data.iban || "",
+        debitDate: data.debitDate || "",
+        plan: data.plan
+      };
 
-    // Check for missing required fields
-    const missingFields = [];
-    if (!data.name) missingFields.push("Nome");
-    if (!data.phone) missingFields.push("Telefone");
-    if (!data.bank) missingFields.push("Banco");
-    if (!data.iban) missingFields.push("IBAN");
+      // Check for missing required fields
+      const missingFields = [];
+      if (!data.name) missingFields.push("Nome");
+      if (!data.phone) missingFields.push("Telefone");
+      if (!data.bank) missingFields.push("Banco");
+      if (!data.iban) missingFields.push("IBAN");
 
-    // If there are missing fields and allowIncomplete is false, show error
-    if (missingFields.length > 0 && !allowIncomplete) {
+      // If there are missing fields and allowIncomplete is false, show error
+      if (missingFields.length > 0 && !allowIncomplete) {
+        toast({
+          title: "Campos obrigatórios em falta",
+          description: `Por favor, preencha os seguintes campos: ${missingFields.join(", ")}`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Proceed with member creation
+      await addMember(memberData);
+      const currentSubscribers = members.filter(member => member.plan === data.plan).length;
+      
       toast({
-        title: "Campos obrigatórios em falta",
-        description: `Por favor, preencha os seguintes campos: ${missingFields.join(", ")}`,
+        title: missingFields.length > 0 ? "Assinante cadastrado com campos pendentes" : "Assinante cadastrado com sucesso!",
+        description: `${missingFields.length > 0 ? `Campos pendentes: ${missingFields.join(", ")}. ` : ""}Número único: ${data.plan} ${String(currentSubscribers + 1).padStart(2, '0')}`,
+        variant: missingFields.length > 0 ? "destructive" : "default",
+      });
+      
+      form.reset();
+    } catch (error) {
+      console.error('Erro ao adicionar membro:', error);
+      toast({
+        title: "Erro ao cadastrar assinante",
+        description: "Ocorreu um erro ao cadastrar o assinante. Por favor, tente novamente.",
         variant: "destructive",
       });
-      return;
     }
-
-    // Proceed with member creation
-    addMember(memberData);
-    const currentSubscribers = members.filter(member => member.plan === data.plan).length;
-    
-    toast({
-      title: missingFields.length > 0 ? "Assinante cadastrado com campos pendentes" : "Assinante cadastrado com sucesso!",
-      description: `${missingFields.length > 0 ? `Campos pendentes: ${missingFields.join(", ")}. ` : ""}Número único: ${data.plan} ${String(currentSubscribers + 1).padStart(2, '0')}`,
-      variant: missingFields.length > 0 ? "destructive" : "default",
-    });
-    
-    form.reset();
   };
 
   return (
