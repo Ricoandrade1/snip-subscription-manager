@@ -35,6 +35,8 @@ export const fetchMembersFromDB = async () => {
     plan_id: member.plan_id,
     plan: member.plans?.title || "Basic",
     created_at: member.created_at,
+    due_date: member.due_date,
+    payment_date: member.payment_date,
   })) as Member[];
 
   console.log('Membros formatados:', formattedMembers);

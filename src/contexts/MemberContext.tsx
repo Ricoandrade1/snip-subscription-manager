@@ -8,6 +8,7 @@ import {
   deleteMemberFromDB 
 } from './memberUtils';
 import { useSession } from '@supabase/auth-helpers-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const MemberContext = createContext<MemberContextType | undefined>(undefined);
 
@@ -19,11 +20,63 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     if (session) {
       fetchMembers();
+      setupRealtimeSubscription();
     } else {
       setMembers([]);
       setIsLoading(false);
     }
+
+    return () => {
+      supabase.removeAllChannels();
+    };
   }, [session]);
+
+  const setupRealtimeSubscription = () => {
+    const channel = supabase
+      .channel('db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'members'
+        },
+        async (payload) => {
+          console.log('Realtime change received:', payload);
+          
+          switch (payload.eventType) {
+            case 'INSERT':
+              const newMember = payload.new as Member;
+              setMembers(prev => [...prev, newMember]);
+              toast.success('Novo membro adicionado');
+              break;
+            
+            case 'UPDATE':
+              const updatedMember = payload.new as Member;
+              setMembers(prev => 
+                prev.map(member => 
+                  member.id === updatedMember.id ? updatedMember : member
+                )
+              );
+              toast.success('Membro atualizado');
+              break;
+            
+            case 'DELETE':
+              const deletedMember = payload.old as Member;
+              setMembers(prev => 
+                prev.filter(member => member.id !== deletedMember.id)
+              );
+              toast.success('Membro removido');
+              break;
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
 
   const fetchMembers = async () => {
     try {
