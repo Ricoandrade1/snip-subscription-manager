@@ -25,6 +25,23 @@ export function SidebarMenuItemComponent({
   getSubscriberCount,
   level = 0,
 }: MenuItemProps) {
+  const handleTabChange = (value: string) => {
+    switch (value) {
+      case "Basic":
+        window.location.href = "/members/basic";
+        break;
+      case "Classic":
+        window.location.href = "/members/classic";
+        break;
+      case "Business":
+        window.location.href = "/members/business";
+        break;
+      default:
+        window.location.href = "/members";
+        break;
+    }
+  };
+
   if (item.submenu) {
     return (
       <BaseSidebarMenuItem>
@@ -51,22 +68,20 @@ export function SidebarMenuItemComponent({
             <SidebarMenuSub>
               {item.submenu.map((subItem: any) => (
                 <SidebarMenuSubItem key={subItem.title}>
-                  <SidebarMenuButton asChild>
-                    <Link 
-                      to={subItem.url}
-                      className="w-full flex items-center justify-between p-2 rounded-md hover:bg-muted"
-                      data-active={isActiveRoute(subItem.url)}
-                    >
-                      <span>{subItem.title}</span>
-                      {level === 0 && item.title === "Membros" &&
-                        subItem.title !== "Todos" && getSubscriberCount && (
-                          <span className="ml-auto text-xs opacity-60">
-                            {getSubscriberCount(
-                              subItem.title as "Basic" | "Classic" | "Business"
-                            )}
-                          </span>
-                        )}
-                    </Link>
+                  <SidebarMenuButton 
+                    onClick={() => handleTabChange(subItem.title)}
+                    className="w-full flex items-center justify-between p-2 rounded-md hover:bg-muted"
+                    data-active={isActiveRoute(subItem.url)}
+                  >
+                    <span>{subItem.title}</span>
+                    {level === 0 && item.title === "Membros" &&
+                      subItem.title !== "Todos" && getSubscriberCount && (
+                        <span className="ml-auto text-xs opacity-60">
+                          {getSubscriberCount(
+                            subItem.title as "Basic" | "Classic" | "Business"
+                          )}
+                        </span>
+                      )}
                   </SidebarMenuButton>
                 </SidebarMenuSubItem>
               ))}
