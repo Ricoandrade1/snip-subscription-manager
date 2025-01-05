@@ -1,19 +1,16 @@
-import { Button } from "@/components/ui/button";
+import { ShoppingCart } from "lucide-react";
 
 interface CartHeaderProps {
-  onClear: () => void;
-  hasItems: boolean;
+  itemCount: number;
 }
 
-export function CartHeader({ onClear, hasItems }: CartHeaderProps) {
+export function CartHeader({ itemCount }: CartHeaderProps) {
   return (
-    <div className="flex justify-between items-center">
-      <h2 className="text-2xl font-bold">Carrinho</h2>
-      {hasItems && (
-        <Button variant="outline" onClick={onClear}>
-          Limpar
-        </Button>
-      )}
+    <div className="p-4 border-b flex items-center gap-2">
+      <ShoppingCart className="h-5 w-5" />
+      <h2 className="font-semibold">
+        Carrinho {itemCount > 0 && `(${itemCount})`}
+      </h2>
     </div>
   );
 }
