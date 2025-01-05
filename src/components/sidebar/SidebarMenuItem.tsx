@@ -62,17 +62,14 @@ export function SidebarMenuItemComponent({
                   >
                     <Link 
                       to={subItem.url}
-                      className="w-full"
+                      className="w-full flex justify-between items-center"
                     >
-                      {subItem.title}
-                      {level === 1 && item.title === "Membros" &&
-                        subItem.title !== "Todos" && getSubscriberCount && (
-                          <span className="ml-auto text-xs opacity-60">
-                            {getSubscriberCount(
-                              subItem.title as "Basic" | "Classic" | "Business"
-                            )}
-                          </span>
-                        )}
+                      <span>{subItem.title}</span>
+                      {subItem.count !== undefined && (
+                        <span className="ml-auto text-xs opacity-60">
+                          {subItem.count}
+                        </span>
+                      )}
                     </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>

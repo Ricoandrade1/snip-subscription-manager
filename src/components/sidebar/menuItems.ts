@@ -22,10 +22,10 @@ export const menuItems = [
     icon: Users,
     url: "/members",
     submenu: [
-      { title: "Todos", url: "/members" },
-      { title: "Basic", url: "/members" },
-      { title: "Classic", url: "/members" },
-      { title: "Business", url: "/members" },
+      { title: "Todos", url: "/members", count: 9 },
+      { title: "Basic", url: "/members", count: 3 },
+      { title: "Classic", url: "/members", count: 3 },
+      { title: "Business", url: "/members", count: 3 },
     ],
   },
   {
