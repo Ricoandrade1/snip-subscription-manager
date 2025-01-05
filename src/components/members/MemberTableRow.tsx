@@ -45,7 +45,7 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
         </Badge>
       </TableCell>
       <TableCell>{member.phone || '-'}</TableCell>
-      <TableCell>{member.nif || '-'}</TableCell>
+      <TableCell>{member.nickname || '-'}</TableCell>
       <TableCell>{formatDate(member.created_at)}</TableCell>
     </TableRow>
   );

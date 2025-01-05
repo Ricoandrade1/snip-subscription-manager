@@ -85,7 +85,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
             <TableHead>Nome</TableHead>
             <TableHead>Plano</TableHead>
             <TableHead>Telefone</TableHead>
-            <TableHead>NIF</TableHead>
+            <TableHead>Apelido</TableHead>
             <TableHead>Data de Cadastro</TableHead>
           </TableRow>
         </TableHeader>

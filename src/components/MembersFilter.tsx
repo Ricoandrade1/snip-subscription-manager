@@ -34,10 +34,10 @@ export function MembersFilter({ filters, onFilterChange }: MembersFilterProps) {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="nif-filter">NIF</Label>
+        <Label htmlFor="nif-filter">Apelido</Label>
         <Input
           id="nif-filter"
-          placeholder="Filtrar por NIF..."
+          placeholder="Filtrar por apelido..."
           value={filters.nif}
           onChange={(e) => onFilterChange('nif', e.target.value)}
         />
