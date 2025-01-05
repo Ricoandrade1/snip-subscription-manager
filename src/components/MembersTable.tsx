@@ -16,6 +16,25 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  const getMemberCode = (member: Member) => {
+    // Get all members with the same plan, ordered by creation date
+    const samePlanMembers = members
+      .filter(m => m.plan === member.plan)
+      .sort((a, b) => {
+        const dateA = new Date(a.created_at || '');
+        const dateB = new Date(b.created_at || '');
+        return dateA.getTime() - dateB.getTime();
+      });
+    
+    // Find the index of the current member in the sorted array
+    const memberIndex = samePlanMembers.findIndex(m => m.id === member.id);
+    
+    // Format the sequence number with leading zeros (4 digits)
+    const sequenceNumber = String(memberIndex + 1).padStart(4, '0');
+    
+    return `${member.plan} ${sequenceNumber}`;
+  };
+
   const filteredMembers = members
     .filter((member) => !planFilter || member.plan === planFilter)
     .filter((member) =>
@@ -24,21 +43,10 @@ export function MembersTable({ planFilter }: MembersTableProps) {
       member.phone.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort((a, b) => {
-      const aCode = `${a.plan} ${String(
-        members.filter((m) => m.plan === a.plan && m.id < a.id).length + 1
-      ).padStart(2, "0")}`;
-      const bCode = `${b.plan} ${String(
-        members.filter((m) => m.plan === b.plan && m.id < b.id).length + 1
-      ).padStart(2, "0")}`;
+      const aCode = getMemberCode(a);
+      const bCode = getMemberCode(b);
       return aCode.localeCompare(bCode);
     });
-
-  const getMemberCode = (member: Member) => {
-    const memberNumber = String(
-      members.filter((m) => m.plan === member.plan && m.id < member.id).length + 1
-    ).padStart(2, "0");
-    return `${member.plan} ${memberNumber}`;
-  };
 
   const handleMemberClick = (member: Member) => {
     setSelectedMember(member);
