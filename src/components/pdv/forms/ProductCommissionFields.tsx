@@ -11,6 +11,7 @@ import { toast } from "sonner";
 interface Barber {
   id: string;
   name: string;
+  commission_rate: number;
 }
 
 interface ProductCommissionFieldsProps {
@@ -28,7 +29,8 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
     try {
       const { data, error } = await supabase
         .from("barbers")
-        .select("id, name")
+        .select("id, name, commission_rate")
+        .eq("status", "active")
         .order("name");
       
       if (error) throw error;
@@ -49,7 +51,8 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
     
     barberData.forEach(barber => {
       if (!(barber.id in initializedRates)) {
-        initializedRates[barber.id] = 0;
+        // Use a taxa de comissão padrão do barbeiro se não houver uma taxa específica
+        initializedRates[barber.id] = barber.commission_rate || 0;
       }
     });
     
@@ -80,13 +83,13 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
   };
 
   return (
-    <Card className="p-4">
+    <Card className="bg-barber-gray border-barber-gold/20 p-6">
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Percent className="h-5 w-5" />
-          <h3 className="text-lg font-medium">Comissões por Barbeiro</h3>
+        <div className="flex items-center gap-2 border-b border-barber-gold/20 pb-4">
+          <Percent className="h-5 w-5 text-barber-gold" />
+          <h3 className="text-lg font-medium text-barber-gold">Comissões por Barbeiro</h3>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {barbers.map((barber) => (
             <FormField
               key={barber.id}
@@ -94,7 +97,7 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
               name={`commission_rates.${barber.id}`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{barber.name}</FormLabel>
+                  <FormLabel className="text-barber-light">{barber.name}</FormLabel>
                   <FormControl>
                     <div className="flex items-center gap-2">
                       <Input
@@ -103,11 +106,11 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
                         max="100"
                         step="0.1"
                         placeholder="% comissão"
-                        value={field.value ?? 0}
+                        value={field.value ?? barber.commission_rate}
                         onChange={(e) => handleCommissionChange(barber.id, e.target.value)}
-                        className="w-24"
+                        className="w-24 bg-barber-black border-barber-gold/50 focus:border-barber-gold text-white"
                       />
-                      <span className="text-sm text-muted-foreground">%</span>
+                      <span className="text-sm text-barber-light">%</span>
                     </div>
                   </FormControl>
                   <FormMessage />
