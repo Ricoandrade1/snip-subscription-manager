@@ -66,7 +66,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearCart }: Car
       for (const item of items) {
         const { error: stockError } = await supabase
           .from("products")
-          .update({ stock: supabase.rpc('decrement_stock', { amount: item.quantity }) })
+          .update({ stock: supabase.rpc('decrement', { x: item.quantity }) })
           .eq("id", item.id);
 
         if (stockError) throw stockError;
