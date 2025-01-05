@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Badge } from "@/components/ui/badge";
 
 interface MembersTableProps {
   planFilter?: "Basic" | "Classic" | "Business";
@@ -34,7 +35,6 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const getMemberCode = (member: Member) => {
-    // Get all members with the same plan, ordered by creation date
     const samePlanMembers = members
       .filter(m => m.plan === member.plan)
       .sort((a, b) => {
@@ -43,10 +43,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
         return dateA.getTime() - dateB.getTime();
       });
     
-    // Find the index of the current member in the sorted array
     const memberIndex = samePlanMembers.findIndex(m => m.id === member.id);
-    
-    // Format the sequence number with leading zeros (4 digits)
     const sequenceNumber = String(memberIndex + 1).padStart(4, '0');
     
     return `${member.plan} ${sequenceNumber}`;
@@ -76,6 +73,19 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   const handleMemberClick = (member: Member) => {
     setSelectedMember(member);
     setDialogOpen(true);
+  };
+
+  const getPlanBadgeColor = (plan: string) => {
+    switch (plan) {
+      case "Basic":
+        return "bg-blue-500";
+      case "Classic":
+        return "bg-purple-500";
+      case "Business":
+        return "bg-amber-500";
+      default:
+        return "bg-gray-500";
+    }
   };
 
   if (isLoading) {
@@ -146,9 +156,11 @@ export function MembersTable({ planFilter }: MembersTableProps) {
           <TableRow>
             <TableHead>Código</TableHead>
             <TableHead>Nome</TableHead>
+            <TableHead>Plano</TableHead>
             <TableHead>Telefone</TableHead>
             <TableHead>NIF</TableHead>
             <TableHead>Data de Nascimento</TableHead>
+            <TableHead>Banco</TableHead>
             <TableHead>IBAN</TableHead>
           </TableRow>
         </TableHeader>
@@ -161,11 +173,17 @@ export function MembersTable({ planFilter }: MembersTableProps) {
             >
               <TableCell className="font-medium">{getMemberCode(member)}</TableCell>
               <TableCell>{member.name}</TableCell>
+              <TableCell>
+                <Badge className={`${getPlanBadgeColor(member.plan)}`}>
+                  {member.plan}
+                </Badge>
+              </TableCell>
               <TableCell>{member.phone}</TableCell>
               <TableCell>{member.nif}</TableCell>
               <TableCell>
                 {member.birthDate ? format(new Date(member.birthDate), 'dd/MM/yyyy', { locale: ptBR }) : '-'}
               </TableCell>
+              <TableCell>{member.bank}</TableCell>
               <TableCell>{member.iban}</TableCell>
             </TableRow>
           ))}
