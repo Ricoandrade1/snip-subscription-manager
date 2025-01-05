@@ -1,6 +1,32 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+interface SidebarContextType {
+  isOpen: boolean;
+  toggleSidebar: () => void;
+}
+
+const SidebarContext = React.createContext<SidebarContextType | undefined>(undefined);
+
+export function useSidebar() {
+  const context = React.useContext(SidebarContext);
+  if (context === undefined) {
+    throw new Error("useSidebar must be used within a SidebarProvider");
+  }
+  return context;
+}
+
+export function SidebarProvider({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = React.useState(true);
+  const toggleSidebar = () => setIsOpen(!isOpen);
+
+  return (
+    <SidebarContext.Provider value={{ isOpen, toggleSidebar }}>
+      {children}
+    </SidebarContext.Provider>
+  );
+}
+
 const Sidebar = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div ref={ref} className={cn("flex flex-col", className)} {...props} />
@@ -51,8 +77,10 @@ const SidebarMenuItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HT
 SidebarMenuItem.displayName = "SidebarMenuItem";
 
 const SidebarMenuButton = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
-  ({ className, ...props }, ref) => (
-    <button ref={ref} className={cn("flex items-center w-full", className)} {...props} />
+  ({ className, children, ...props }, ref) => (
+    <button ref={ref} className={cn("flex items-center w-full", className)} {...props}>
+      {children}
+    </button>
   )
 );
 SidebarMenuButton.displayName = "SidebarMenuButton";

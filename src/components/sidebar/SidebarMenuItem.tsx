@@ -33,8 +33,8 @@ export function SidebarMenuItemComponent({
           open={openSubmenus.includes(item.title)}
           onOpenChange={() => toggleSubmenu(item.title)}
         >
-          <CollapsibleTrigger asChild>
-            <SidebarMenuButton asChild tooltip={item.title}>
+          <CollapsibleTrigger>
+            <SidebarMenuButton>
               <div className="flex w-full items-center justify-between">
                 <Link 
                   to={item.url} 
@@ -56,13 +56,11 @@ export function SidebarMenuItemComponent({
             <SidebarMenuSub>
               {item.submenu.map((subItem: any) => (
                 <SidebarMenuSubItem key={subItem.title}>
-                  <SidebarMenuSubButton
-                    asChild
-                    data-active={isActiveRoute(subItem.url)}
-                  >
+                  <SidebarMenuSubButton>
                     <Link 
                       to={subItem.url}
                       className="w-full"
+                      data-active={isActiveRoute(subItem.url)}
                     >
                       {subItem.title}
                       {level === 1 && item.title === "Membros" &&
@@ -86,12 +84,8 @@ export function SidebarMenuItemComponent({
 
   return (
     <BaseSidebarMenuItem>
-      <SidebarMenuButton
-        asChild
-        tooltip={item.title}
-        data-active={isActiveRoute(item.url)}
-      >
-        <Link to={item.url}>
+      <SidebarMenuButton>
+        <Link to={item.url} className="flex items-center gap-2" data-active={isActiveRoute(item.url)}>
           <item.icon className="h-4 w-4" />
           <span>{item.title}</span>
         </Link>

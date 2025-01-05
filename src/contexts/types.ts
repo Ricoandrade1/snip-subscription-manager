@@ -3,6 +3,7 @@ export type Member = {
   name: string;
   nickname: string | null;
   phone: string | null;
+  nif: string | null;
   plan_id: number | null;
   plan: "Basic" | "Classic" | "Business";
   created_at?: string;
