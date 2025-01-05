@@ -109,6 +109,7 @@ export type Database = {
           id: string
           name: string
           nickname: string | null
+          nif: string | null
           payment_date: string | null
           phone: string | null
           plan_id: number | null
@@ -119,6 +120,7 @@ export type Database = {
           id?: string
           name: string
           nickname?: string | null
+          nif?: string | null
           payment_date?: string | null
           phone?: string | null
           plan_id?: number | null
@@ -129,6 +131,7 @@ export type Database = {
           id?: string
           name?: string
           nickname?: string | null
+          nif?: string | null
           payment_date?: string | null
           phone?: string | null
           plan_id?: number | null
