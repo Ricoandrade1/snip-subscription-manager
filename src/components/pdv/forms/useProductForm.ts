@@ -11,8 +11,8 @@ interface Product {
   price: number;
   description?: string | null;
   stock?: number;
-  brand?: string | null;
-  category?: string | null;
+  brand_id?: string | null;
+  category_id?: string | null;
   vat_rate?: number;
   vat_included?: boolean;
 }
@@ -27,8 +27,8 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
       description: initialData?.description?.toString() ?? "",
       price: initialData?.price?.toString() ?? "",
       stock: initialData?.stock?.toString() ?? "",
-      brand: initialData?.brand ?? "",
-      category: initialData?.category ?? "",
+      brand: initialData?.brand_id ?? "",
+      category: initialData?.category_id ?? "",
       vat_rate: initialData?.vat_rate?.toString() ?? "23",
       vat_included: initialData?.vat_included ?? false,
     },
@@ -51,24 +51,31 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
 
       console.log("Saving product with data:", productData);
 
-      const { error } = initialData
-        ? await supabase
-            .from("products")
-            .update(productData)
-            .eq("id", initialData.id)
-        : await supabase
-            .from("products")
-            .insert(productData);
+      let error;
+      if (initialData) {
+        const { error: updateError } = await supabase
+          .from("products")
+          .update(productData)
+          .eq("id", initialData.id);
+        error = updateError;
+      } else {
+        const { error: insertError } = await supabase
+          .from("products")
+          .insert(productData);
+        error = insertError;
+      }
 
       if (error) throw error;
 
       toast.success(
-        initialData ? "Item atualizado com sucesso" : "Item criado com sucesso"
+        initialData ? "Produto atualizado com sucesso" : "Produto criado com sucesso"
       );
+      
+      form.reset();
       onSuccess?.();
     } catch (error) {
-      console.error("Error saving item:", error);
-      toast.error("Erro ao salvar item");
+      console.error("Error saving product:", error);
+      toast.error("Erro ao salvar produto");
     } finally {
       setIsLoading(false);
     }
