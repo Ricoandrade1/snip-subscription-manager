@@ -55,11 +55,14 @@ export function SubscriberForm() {
     try {
       console.log('Buscando plano:', data.plan);
       
+      // Primeiro, vamos verificar se o plano existe
       const { data: plans, error: planError } = await supabase
         .from('plans')
         .select('id, title')
         .eq('title', data.plan)
-        .single();
+        .maybeSingle();
+
+      console.log('Resultado da busca:', { plans, planError });
 
       if (planError) {
         console.error('Erro ao buscar plano:', planError);
