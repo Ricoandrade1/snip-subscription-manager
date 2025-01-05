@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { PersonalInfoFields } from "./PersonalInfoFields";
 import { DocumentFields } from "./DocumentFields";
@@ -22,8 +22,8 @@ const formSchema = z.object({
   passport: z.string().optional(),
   citizenCard: z.string().optional(),
   bi: z.string().optional(),
-  bank: z.string().min(2, "Nome do banco é obrigatório").optional(),
-  iban: z.string().min(15, "IBAN inválido").optional(),
+  bank: z.string().optional(),
+  iban: z.string().optional(),
   debitDate: z.string().optional(),
   plan: z.enum(["Basic", "Classic", "Business"]),
 });
@@ -69,13 +69,14 @@ export function SubscriberForm() {
       plan: data.plan
     };
 
-    // Check for missing fields
+    // Check for missing required fields
     const missingFields = [];
     if (!data.name) missingFields.push("Nome");
     if (!data.phone) missingFields.push("Telefone");
     if (!data.bank) missingFields.push("Banco");
     if (!data.iban) missingFields.push("IBAN");
-    
+
+    // If there are missing fields and allowIncomplete is false, show error
     if (missingFields.length > 0 && !allowIncomplete) {
       toast({
         title: "Campos obrigatórios em falta",
@@ -85,6 +86,7 @@ export function SubscriberForm() {
       return;
     }
 
+    // Proceed with member creation
     addMember(memberData);
     const currentSubscribers = members.filter(member => member.plan === data.plan).length;
     
@@ -93,6 +95,7 @@ export function SubscriberForm() {
       description: `${missingFields.length > 0 ? `Campos pendentes: ${missingFields.join(", ")}. ` : ""}Número único: ${data.plan} ${String(currentSubscribers + 1).padStart(2, '0')}`,
       variant: missingFields.length > 0 ? "destructive" : "default",
     });
+    
     form.reset();
   };
 
