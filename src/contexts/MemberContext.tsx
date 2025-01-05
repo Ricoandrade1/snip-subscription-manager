@@ -19,6 +19,9 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     if (session) {
       fetchMembers();
+    } else {
+      setMembers([]);
+      setIsLoading(false);
     }
   }, [session]);
 
@@ -36,7 +39,12 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
-  const addMember = async (member: Omit<Member, "id">) => {
+  const addMember = async (member: Omit<Member, "id" | "plan">) => {
+    if (!session) {
+      toast.error('Você precisa estar logado para adicionar membros');
+      return;
+    }
+
     try {
       const newMember = await addMemberToDB(member);
       setMembers(prev => [...prev, { ...member, id: newMember.id } as Member]);
@@ -48,6 +56,11 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const updateMember = async (id: string, updatedFields: Partial<Member>) => {
+    if (!session) {
+      toast.error('Você precisa estar logado para atualizar membros');
+      return;
+    }
+
     try {
       await updateMemberInDB(id, updatedFields);
       setMembers(prev =>
@@ -63,6 +76,11 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const deleteMember = async (id: string) => {
+    if (!session) {
+      toast.error('Você precisa estar logado para deletar membros');
+      return;
+    }
+
     try {
       await deleteMemberFromDB(id);
       setMembers(prev => prev.filter(member => member.id !== id));

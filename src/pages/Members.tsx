@@ -4,11 +4,11 @@ import { SubscriberForm } from "@/components/SubscriberForm";
 import { MembersTable } from "@/components/MembersTable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemberContext } from "@/contexts/MemberContext";
-import { PlanCard } from "@/components/PlanCard";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useSession } from '@supabase/auth-helpers-react';
 import { Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useEffect } from "react";
 
 interface MembersProps {
   planType?: "Basic" | "Classic" | "Business";
@@ -19,6 +19,13 @@ export default function Members({ planType }: MembersProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const session = useSession();
+
+  useEffect(() => {
+    if (!session) {
+      navigate('/login');
+    }
+  }, [session, navigate]);
 
   const getInitialTab = () => {
     const path = location.pathname;
@@ -51,6 +58,10 @@ export default function Members({ planType }: MembersProps) {
     }
   }, [planType]);
 
+  if (!session) {
+    return null;
+  }
+
   return (
     <div className="p-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -63,7 +74,10 @@ export default function Members({ planType }: MembersProps) {
           </div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button>Cadastrar Assinante</Button>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Cadastrar Assinante
+              </Button>
             </DialogTrigger>
             <DialogContent className="max-w-3xl">
               <SubscriberForm />
