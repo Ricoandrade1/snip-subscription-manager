@@ -63,21 +63,18 @@ export default function CashFlow() {
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                Novo Produto
+                Novo Item
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-sm">
               <DialogHeader>
-                <DialogTitle>Novo Produto</DialogTitle>
+                <DialogTitle>Novo Item</DialogTitle>
               </DialogHeader>
               <ProductServiceForm
                 onSuccess={() => setIsDialogOpen(false)}
               />
             </DialogContent>
           </Dialog>
-        </div>
-        <div className="mb-8">
-          <ProductServiceGrid />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <ProductList onProductSelect={handleProductSelect} />
