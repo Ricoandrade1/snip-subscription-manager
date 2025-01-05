@@ -6,6 +6,7 @@ import DashboardActions from "@/components/dashboard/DashboardActions";
 import PlansGrid from "@/components/dashboard/PlansGrid";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const Index = () => {
   const { getMembersByPlan } = useMemberContext();
