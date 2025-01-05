@@ -4,9 +4,10 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { FilterInputs } from "./filters/FilterInputs";
 import { FilterBadges } from "./filters/FilterBadges";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ProductServiceForm } from "@/components/pdv/ProductServiceForm";
 
 interface FilterState {
   name: string;
@@ -23,10 +24,10 @@ interface ProductFilterProps {
 }
 
 export function ProductFilter({ filters, onFilterChange }: ProductFilterProps) {
-  const navigate = useNavigate();
   const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([]);
   const [brands, setBrands] = useState<Array<{ id: string; name: string }>>([]);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchCategoriesAndBrands();
@@ -127,7 +128,7 @@ export function ProductFilter({ filters, onFilterChange }: ProductFilterProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate("/products")}
+            onClick={() => setIsDialogOpen(true)}
           >
             <Plus className="h-4 w-4 mr-2" />
             Novo Produto
@@ -140,6 +141,17 @@ export function ProductFilter({ filters, onFilterChange }: ProductFilterProps) {
         onClearFilter={clearFilter}
         onClearAllFilters={clearAllFilters}
       />
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Novo Produto</DialogTitle>
+          </DialogHeader>
+          <ProductServiceForm
+            onSuccess={() => setIsDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
