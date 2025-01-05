@@ -9,6 +9,8 @@ const specialties = [
   { id: "coloracao", label: "Coloração" },
   { id: "penteados", label: "Penteados" },
   { id: "tratamentos", label: "Tratamentos Capilares" },
+  { id: "admin", label: "Administrador" },
+  { id: "vendedor", label: "Vendedor" },
 ];
 
 interface SpecialtiesFieldsProps {
@@ -22,7 +24,7 @@ export function SpecialtiesFields({ form }: SpecialtiesFieldsProps) {
       name="specialties"
       render={() => (
         <FormItem>
-          <FormLabel>Especialidades</FormLabel>
+          <FormLabel>Especialidades e Funções</FormLabel>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
             {specialties.map((specialty) => (
               <FormField
