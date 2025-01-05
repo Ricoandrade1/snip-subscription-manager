@@ -37,8 +37,9 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
   });
 
   const onSubmit = async (values: ProductFormValues) => {
-    setIsLoading(true);
     try {
+      setIsLoading(true);
+      
       const productData = {
         name: values.name,
         description: values.description,

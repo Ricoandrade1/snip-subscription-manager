@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Percent } from "lucide-react";
+import { toast } from "sonner";
 
 interface Barber {
   id: string;
@@ -24,39 +25,57 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
   }, []);
 
   const fetchBarbers = async () => {
-    const { data } = await supabase
-      .from("barbers")
-      .select("id, name")
-      .order("name");
-    
-    if (data) {
-      setBarbers(data);
+    try {
+      const { data, error } = await supabase
+        .from("barbers")
+        .select("id, name")
+        .order("name");
       
-      // Initialize commission rates if they don't exist
-      const currentRates = form.getValues("commission_rates") || {};
-      const initializedRates = { ...currentRates };
+      if (error) throw error;
       
-      data.forEach(barber => {
-        if (!(barber.id in initializedRates)) {
-          initializedRates[barber.id] = 0;
-        }
-      });
-      
-      form.setValue("commission_rates", initializedRates);
+      if (data) {
+        setBarbers(data);
+        initializeCommissionRates(data);
+      }
+    } catch (error) {
+      console.error("Error fetching barbers:", error);
+      toast.error("Erro ao carregar barbeiros");
     }
   };
 
+  const initializeCommissionRates = (barberData: Barber[]) => {
+    const currentRates = form.getValues("commission_rates") || {};
+    const initializedRates = { ...currentRates };
+    
+    barberData.forEach(barber => {
+      if (!(barber.id in initializedRates)) {
+        initializedRates[barber.id] = 0;
+      }
+    });
+    
+    form.setValue("commission_rates", initializedRates, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
+    });
+  };
+
   const handleCommissionChange = (barberId: string, value: string) => {
-    const numValue = value === "" ? 0 : parseFloat(value);
-    if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
-      console.log("Setting commission rate for barber", barberId, "to", numValue);
-      const currentRates = { ...form.getValues("commission_rates") } || {};
-      currentRates[barberId] = numValue;
-      form.setValue("commission_rates", currentRates, { 
-        shouldValidate: true,
-        shouldDirty: true,
-        shouldTouch: true
-      });
+    try {
+      const numValue = value === "" ? 0 : parseFloat(value);
+      if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
+        const currentRates = { ...form.getValues("commission_rates") };
+        currentRates[barberId] = numValue;
+        
+        form.setValue("commission_rates", currentRates, {
+          shouldValidate: true,
+          shouldDirty: true,
+          shouldTouch: true
+        });
+      }
+    } catch (error) {
+      console.error("Error updating commission rate:", error);
+      toast.error("Erro ao atualizar comissão");
     }
   };
 
@@ -82,8 +101,9 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
                         type="number"
                         min="0"
                         max="100"
+                        step="0.1"
                         placeholder="% comissão"
-                        value={field.value || 0}
+                        value={field.value ?? 0}
                         onChange={(e) => handleCommissionChange(barber.id, e.target.value)}
                         className="w-24"
                       />
