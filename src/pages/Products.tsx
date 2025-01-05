@@ -18,10 +18,10 @@ export default function Products() {
   });
 
   return (
-    <div className="h-full w-full p-4">
-      <div className="mx-auto space-y-4">
+    <div className="container py-2">
+      <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Produtos</h1>
+          <h1 className="text-2xl font-bold">Produtos</h1>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button>
