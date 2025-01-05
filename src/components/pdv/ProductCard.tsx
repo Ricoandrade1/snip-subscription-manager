@@ -39,6 +39,18 @@ export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
                   {product.description}
                 </p>
               )}
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                {product.brands?.name && (
+                  <span className="bg-muted px-2 py-0.5 rounded-full">
+                    {product.brands.name}
+                  </span>
+                )}
+                {product.categories?.name && (
+                  <span className="bg-muted px-2 py-0.5 rounded-full">
+                    {product.categories.name}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
