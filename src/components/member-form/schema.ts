@@ -6,5 +6,4 @@ export const formSchema = z.object({
   phone: z.string().optional(),
   nif: z.string().optional(),
   plan: z.enum(["Basic", "Classic", "Business"]),
-  due_date: z.date().optional(),
 });

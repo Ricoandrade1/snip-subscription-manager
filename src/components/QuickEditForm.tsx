@@ -4,10 +4,8 @@ import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Member } from "@/contexts/MemberContext";
-import { format } from "date-fns";
 import { PersonalInfoFields } from "./member-form/PersonalInfoFields";
 import { PlanFields } from "./member-form/PlanFields";
-import { DueDateField } from "./member-form/DueDateField";
 import { formSchema } from "./member-form/schema";
 
 interface QuickEditFormProps {
@@ -24,16 +22,11 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       phone: member.phone || "",
       nif: member.nif || "",
       plan: member.plan,
-      due_date: member.due_date ? new Date(member.due_date) : undefined,
     },
   });
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-    const formattedData = {
-      ...data,
-      due_date: data.due_date ? format(data.due_date, 'yyyy-MM-dd') : undefined,
-    };
-    await onSubmit(formattedData);
+    await onSubmit(data);
   };
 
   return (
@@ -42,7 +35,6 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <PersonalInfoFields form={form} />
           <PlanFields form={form} />
-          <DueDateField form={form} />
         </div>
 
         <div className="flex justify-end space-x-2">
