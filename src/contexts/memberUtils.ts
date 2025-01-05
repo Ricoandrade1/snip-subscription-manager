@@ -80,11 +80,12 @@ export const addMemberToDB = async (member: Omit<Member, "id">) => {
   try {
     console.log('Buscando plano:', member.plan);
     
+    // Changed from .single() to .maybeSingle() to handle no results gracefully
     const { data: planData, error: planError } = await supabase
       .from('plans')
       .select('id')
       .eq('title', member.plan)
-      .single();
+      .maybeSingle();
 
     if (planError) {
       console.error('Erro ao buscar plano:', planError);
@@ -92,8 +93,8 @@ export const addMemberToDB = async (member: Omit<Member, "id">) => {
     }
 
     if (!planData) {
-      console.error('Plano não encontrado');
-      throw new Error('Plano não encontrado');
+      console.error('Plano não encontrado:', member.plan);
+      throw new Error(`Plano "${member.plan}" não encontrado`);
     }
 
     console.log('Plano encontrado:', planData);
@@ -136,7 +137,7 @@ export const updateMemberInDB = async (id: string, member: Partial<Member>) => {
       .from('plans')
       .select('id')
       .eq('title', member.plan)
-      .maybeSingle();  // Changed from .single() to .maybeSingle()
+      .maybeSingle();
     planId = planData?.id;
   }
 
