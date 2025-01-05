@@ -4,6 +4,8 @@ import { UseFormReturn } from "react-hook-form";
 import { ProductFormValues } from "./schema";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/ui/card";
+import { Percent } from "lucide-react";
 
 interface Barber {
   id: string;
@@ -33,32 +35,41 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium">Comissões por Barbeiro</h3>
-      <div className="grid grid-cols-2 gap-4">
-        {barbers.map((barber) => (
-          <FormField
-            key={barber.id}
-            control={form.control}
-            name={`commission_rates.${barber.id}`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{barber.name}</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    placeholder="% comissão"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
+    <Card className="p-4">
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Percent className="h-5 w-5" />
+          <h3 className="text-lg font-medium">Comissões por Barbeiro</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {barbers.map((barber) => (
+            <FormField
+              key={barber.id}
+              control={form.control}
+              name={`commission_rates.${barber.id}`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{barber.name}</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        placeholder="% comissão"
+                        {...field}
+                        className="w-24"
+                      />
+                      <span className="text-sm text-muted-foreground">%</span>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </Card>
   );
 }
