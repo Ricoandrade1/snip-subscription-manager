@@ -18,8 +18,8 @@ export default function Products() {
   });
 
   return (
-    <div className="p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="h-full w-full p-4">
+      <div className="mx-auto space-y-4">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Produtos</h1>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

@@ -11,22 +11,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
-// Define the form schema with required fields matching database requirements
+// Updated schema with optional fields
 const formSchema = z.object({
-  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  price: z.coerce.number().min(0, "Preço deve ser maior que 0"),
+  name: z.string().optional(),
+  price: z.coerce.number().optional(),
   description: z.string().optional(),
   is_service: z.boolean().default(false),
-  stock: z.coerce.number().min(0, "Estoque deve ser maior ou igual a 0"),
+  stock: z.coerce.number().optional(),
   brand_id: z.string().optional(),
   category_id: z.string().optional(),
   image_url: z.string().optional(),
 });
 
-// Define the type for form values
 type FormValues = z.infer<typeof formSchema>;
 
-// Define types for brands and categories
 interface Brand {
   id: string;
   name: string;
@@ -85,17 +83,12 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
 
   const onSubmit = async (values: FormValues) => {
     try {
-      // Ensure required fields are present
-      if (!values.name || values.price === undefined) {
-        throw new Error("Nome e preço são obrigatórios");
-      }
-
       const productData = {
-        name: values.name,
-        price: values.price,
+        name: values.name || "",
+        price: values.price || 0,
         description: values.description,
         is_service: values.is_service,
-        stock: values.stock,
+        stock: values.stock || 0,
         brand_id: values.brand_id,
         category_id: values.category_id,
         image_url: values.image_url,
@@ -126,7 +119,7 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="name"
