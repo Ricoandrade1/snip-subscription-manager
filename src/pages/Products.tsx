@@ -79,7 +79,7 @@ export default function Products() {
                 Novo Produto
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-4xl">
               <DialogHeader>
                 <DialogTitle>
                   {selectedProduct ? "Editar Produto" : "Novo Produto"}
