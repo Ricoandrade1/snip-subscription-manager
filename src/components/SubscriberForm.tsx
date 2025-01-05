@@ -53,22 +53,26 @@ export function SubscriberForm() {
 
   const handleSubmit = async (data: SubscriberFormData) => {
     try {
-      // First, get the plan_id for the selected plan
+      console.log('Buscando plano:', data.plan);
+      
+      // Changed from .single() to .maybeSingle() to handle no results gracefully
       const { data: planData, error: planError } = await supabase
         .from('plans')
         .select('id')
         .eq('title', data.plan)
-        .single();
+        .maybeSingle();
 
       if (planError) {
-        console.error('Error fetching plan:', planError);
-        toast({
-          title: "Erro ao buscar plano",
-          description: "Não foi possível encontrar o plano selecionado.",
-          variant: "destructive",
-        });
-        return;
+        console.error('Erro ao buscar plano:', planError);
+        throw new Error('Erro ao buscar plano');
       }
+
+      if (!planData) {
+        console.error('Plano não encontrado:', data.plan);
+        throw new Error(`Plano "${data.plan}" não encontrado`);
+      }
+
+      console.log('Plano encontrado:', planData);
 
       const memberData: Omit<Member, "id"> = {
         name: data.name || "",
@@ -94,7 +98,7 @@ export function SubscriberForm() {
         }]);
 
       if (insertError) {
-        console.error('Error inserting member:', insertError);
+        console.error('Erro ao inserir membro:', insertError);
         throw insertError;
       }
 
