@@ -66,6 +66,42 @@ export type Database = {
         }
         Relationships: []
       }
+      locations: {
+        Row: {
+          address: string
+          barbers: string[] | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          opening_hours: Json | null
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          barbers?: string[] | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          opening_hours?: Json | null
+          phone: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          barbers?: string[] | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          opening_hours?: Json | null
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       members: {
         Row: {
           bank: string | null

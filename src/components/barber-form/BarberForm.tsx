@@ -25,7 +25,11 @@ const formSchema = z.object({
 
 type BarberFormData = z.infer<typeof formSchema>;
 
-export function BarberForm() {
+interface BarberFormProps {
+  onSuccess?: () => void;
+}
+
+export function BarberForm({ onSuccess }: BarberFormProps) {
   const { toast } = useToast();
 
   const form = useForm<BarberFormData>({
@@ -69,6 +73,9 @@ export function BarberForm() {
       });
       
       form.reset();
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       toast({
         title: "Erro ao cadastrar barbeiro",
