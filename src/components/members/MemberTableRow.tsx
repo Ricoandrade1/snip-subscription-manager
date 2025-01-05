@@ -22,6 +22,16 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
     }
   };
 
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  };
+
   return (
     <TableRow 
       className="cursor-pointer hover:bg-muted/50"
@@ -36,7 +46,7 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
       </TableCell>
       <TableCell>{member.phone || '-'}</TableCell>
       <TableCell>{member.nickname || '-'}</TableCell>
-      <TableCell>{member.created_at ? new Date(member.created_at).toLocaleDateString('pt-BR') : '-'}</TableCell>
+      <TableCell>{formatDate(member.created_at)}</TableCell>
     </TableRow>
   );
 }
