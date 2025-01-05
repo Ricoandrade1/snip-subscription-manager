@@ -12,6 +12,7 @@ import { MemberProvider } from "./contexts/MemberContext";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { supabase } from "./integrations/supabase/client";
+import { Toaster } from "@/components/ui/sonner";
 
 import "./App.css";
 
@@ -27,6 +28,9 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/members" element={<Members />} />
+                  <Route path="/members/basic" element={<Members planType="Basic" />} />
+                  <Route path="/members/classic" element={<Members planType="Classic" />} />
+                  <Route path="/members/business" element={<Members planType="Business" />} />
                   <Route path="/payment-reports" element={<PaymentReports />} />
                   <Route path="/revenue" element={<Revenue />} />
                   <Route path="/schedule" element={<Schedule />} />
@@ -37,6 +41,7 @@ function App() {
               </main>
             </div>
           </Router>
+          <Toaster />
         </SidebarProvider>
       </MemberProvider>
     </SessionContextProvider>

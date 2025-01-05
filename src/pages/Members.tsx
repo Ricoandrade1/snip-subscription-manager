@@ -21,9 +21,10 @@ export default function Members({ planType }: MembersProps) {
   const { toast } = useToast();
 
   const getInitialTab = () => {
-    if (planType === "Basic") return "basic";
-    if (planType === "Classic") return "classic";
-    if (planType === "Business") return "business";
+    const path = location.pathname;
+    if (path.includes("/basic")) return "basic";
+    if (path.includes("/classic")) return "classic";
+    if (path.includes("/business")) return "business";
     return "all";
   };
 
@@ -38,25 +39,17 @@ export default function Members({ planType }: MembersProps) {
       case "business":
         navigate("/members/business");
         break;
-      case "all":
-        navigate("/members/all");
-        break;
       default:
+        navigate("/members");
         break;
     }
   };
 
-  const handleViewSubscribers = (plan: string) => {
-    const tabValue = plan.toLowerCase();
-    navigate(`/members/${tabValue}`);
-  };
-
-  const handleCreateNewPlan = () => {
-    toast({
-      title: "Funcionalidade em desenvolvimento",
-      description: "A criação de novos planos estará disponível em breve.",
-    });
-  };
+  useEffect(() => {
+    if (planType) {
+      handleTabChange(planType.toLowerCase());
+    }
+  }, [planType]);
 
   return (
     <div className="p-8">
@@ -92,9 +85,6 @@ export default function Members({ planType }: MembersProps) {
             <TabsTrigger value="business" className="text-barber-light">
               Business ({members.filter(m => m.plan === "Business").length})
             </TabsTrigger>
-            <TabsTrigger value="new-plans" className="text-barber-light">
-              +Mais planos
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="all" className="mt-6">
@@ -111,47 +101,6 @@ export default function Members({ planType }: MembersProps) {
 
           <TabsContent value="business" className="mt-6">
             <MembersTable planFilter="Business" />
-          </TabsContent>
-
-          <TabsContent value="new-plans" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <PlanCard
-                title="Basic"
-                price={30}
-                features={["Somente Barba", "1 vez por semana", "Agendamento prioritário"]}
-                subscribers={members.filter(m => m.plan === "Basic").length}
-                onViewSubscribers={() => handleViewSubscribers("Basic")}
-              />
-              <PlanCard
-                title="Classic"
-                price={40}
-                features={["Somente Cabelo", "1 vez por semana", "Agendamento prioritário"]}
-                subscribers={members.filter(m => m.plan === "Classic").length}
-                onViewSubscribers={() => handleViewSubscribers("Classic")}
-              />
-              <PlanCard
-                title="Business"
-                price={50}
-                features={[
-                  "Cabelo e Barba",
-                  "1 vez por semana",
-                  "Agendamento VIP",
-                  "Produtos exclusivos"
-                ]}
-                subscribers={members.filter(m => m.plan === "Business").length}
-                onViewSubscribers={() => handleViewSubscribers("Business")}
-              />
-              <div className="flex items-center justify-center w-full max-w-sm h-[400px] border-2 border-dashed border-barber-gold/20 rounded-lg hover:border-barber-gold/40 transition-colors">
-                <Button
-                  variant="ghost"
-                  onClick={handleCreateNewPlan}
-                  className="flex flex-col gap-4 text-barber-gold hover:text-barber-gold/80 hover:bg-barber-gold/10"
-                >
-                  <Plus className="h-8 w-8" />
-                  <span>Criar novo plano</span>
-                </Button>
-              </div>
-            </div>
           </TabsContent>
         </Tabs>
       </div>
