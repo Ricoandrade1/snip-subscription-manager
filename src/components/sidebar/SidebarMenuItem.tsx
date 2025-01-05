@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import {
   SidebarMenuItem as BaseSidebarMenuItem,
@@ -32,6 +32,10 @@ export function SidebarMenuItemComponent({
     navigate(url);
   };
 
+  const isSubmenuItemActive = (url: string) => {
+    return location.pathname === url;
+  };
+
   if (item.submenu) {
     return (
       <BaseSidebarMenuItem>
@@ -61,7 +65,7 @@ export function SidebarMenuItemComponent({
                   <button 
                     onClick={() => handleTabChange(subItem.url)}
                     className={`w-full flex items-center justify-between p-2 rounded-md hover:bg-muted ${
-                      location.pathname === subItem.url ? 'bg-muted' : ''
+                      isSubmenuItemActive(subItem.url) ? 'bg-muted' : ''
                     }`}
                   >
                     <span>{subItem.title}</span>
@@ -88,7 +92,7 @@ export function SidebarMenuItemComponent({
       <button
         onClick={() => handleTabChange(item.url)}
         className={`flex items-center gap-2 p-2 w-full rounded-md hover:bg-muted ${
-          location.pathname === item.url ? 'bg-muted' : ''
+          isActiveRoute(item.url) ? 'bg-muted' : ''
         }`}
       >
         <item.icon className="h-4 w-4" />

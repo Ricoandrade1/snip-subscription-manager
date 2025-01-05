@@ -26,7 +26,7 @@ export function AppSidebar() {
   useEffect(() => {
     const currentPath = location.pathname;
     const activeMenuItem = menuItems.find(item => 
-      item.submenu?.some(subItem => currentPath.startsWith(subItem.url)) ||
+      item.submenu?.some(subItem => currentPath === subItem.url) ||
       currentPath === item.url
     );
     
@@ -45,11 +45,7 @@ export function AppSidebar() {
 
   const isActiveRoute = (url: string) => {
     if (url === "/members") {
-      const path = location.pathname;
-      if (path === "/members/basic") return false;
-      if (path === "/members/classic") return false;
-      if (path === "/members/business") return false;
-      return path === "/members";
+      return ["/members", "/members/basic", "/members/classic", "/members/business"].includes(location.pathname);
     }
     return location.pathname === url;
   };
