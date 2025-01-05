@@ -21,29 +21,21 @@ export default function Members({ planType }: MembersProps) {
   const { toast } = useToast();
 
   const getInitialTab = () => {
-    if (planType === "Basic") return "basic";
-    if (planType === "Classic") return "classic";
-    if (planType === "Business") return "business";
-    return "all";
+    const path = location.pathname.split('/').pop();
+    switch (path) {
+      case 'basic':
+        return 'basic';
+      case 'classic':
+        return 'classic';
+      case 'business':
+        return 'business';
+      default:
+        return 'all';
+    }
   };
 
   const handleTabChange = (value: string) => {
-    switch (value) {
-      case "basic":
-        navigate("/members/basic");
-        break;
-      case "classic":
-        navigate("/members/classic");
-        break;
-      case "business":
-        navigate("/members/business");
-        break;
-      case "all":
-        navigate("/members/all");
-        break;
-      default:
-        break;
-    }
+    navigate(`/members/${value.toLowerCase()}`);
   };
 
   const handleViewSubscribers = (plan: string) => {
@@ -56,6 +48,20 @@ export default function Members({ planType }: MembersProps) {
       title: "Funcionalidade em desenvolvimento",
       description: "A criação de novos planos estará disponível em breve.",
     });
+  };
+
+  const getPlanFilterFromPath = (): "Basic" | "Classic" | "Business" | undefined => {
+    const path = location.pathname.split('/').pop();
+    switch (path) {
+      case 'basic':
+        return 'Basic';
+      case 'classic':
+        return 'Classic';
+      case 'business':
+        return 'Business';
+      default:
+        return undefined;
+    }
   };
 
   return (
