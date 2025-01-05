@@ -111,13 +111,13 @@ export function PaymentHistoryTable({ payments }: PaymentHistoryTableProps) {
                           : "Atrasado"}
                       </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="bg-background border-border">
                       <DialogHeader>
                         <DialogTitle>Alterar Status do Pagamento</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div>
-                          <label className="text-sm font-medium">
+                          <label className="text-sm font-medium text-foreground">
                             Senha do Administrador
                           </label>
                           <Input
@@ -125,12 +125,15 @@ export function PaymentHistoryTable({ payments }: PaymentHistoryTableProps) {
                             value={adminPassword}
                             onChange={(e) => setAdminPassword(e.target.value)}
                             placeholder="Digite a senha"
+                            className="bg-background border-border text-foreground"
                           />
                         </div>
                         <div>
-                          <label className="text-sm font-medium">Novo Status</label>
+                          <label className="text-sm font-medium text-foreground">
+                            Novo Status
+                          </label>
                           <select
-                            className="w-full border rounded-md p-2"
+                            className="w-full border rounded-md p-2 bg-background border-border text-foreground"
                             value={newStatus}
                             onChange={(e) =>
                               setNewStatus(e.target.value as "paid" | "pending" | "overdue")
@@ -141,7 +144,12 @@ export function PaymentHistoryTable({ payments }: PaymentHistoryTableProps) {
                             <option value="overdue">Atrasado</option>
                           </select>
                         </div>
-                        <Button onClick={handleStatusChange}>Confirmar</Button>
+                        <Button 
+                          onClick={handleStatusChange}
+                          className="bg-barber-gold hover:bg-barber-gold/90 text-black"
+                        >
+                          Confirmar
+                        </Button>
                       </div>
                     </DialogContent>
                   </Dialog>
