@@ -5,7 +5,7 @@ import { ProductServiceGrid } from "@/components/pdv/ProductServiceGrid";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ProductServiceForm } from "@/components/pdv/ProductServiceForm";
-import { Plus } from "lucide-react";
+import { PlusSquare, Edit, Edit2 } from "lucide-react";
 
 interface Product {
   id: string;
@@ -59,31 +59,52 @@ export default function CashFlow() {
           <h1 className="text-2xl font-bold text-barber-gold">
             Movimento de Caixa
           </h1>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Novo Item
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-sm">
-              <DialogHeader>
-                <DialogTitle>Novo Item</DialogTitle>
-              </DialogHeader>
-              <ProductServiceForm
-                onSuccess={() => setIsDialogOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <ProductList onProductSelect={handleProductSelect} />
-          <Cart
-            items={cartItems}
-            onUpdateQuantity={handleUpdateQuantity}
-            onRemoveItem={handleRemoveItem}
-            onClearCart={handleClearCart}
-          />
+          <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-4">
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="aspect-square h-20 w-20"
+                  >
+                    <PlusSquare className="h-8 w-8" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-sm">
+                  <DialogHeader>
+                    <DialogTitle>Novo Item</DialogTitle>
+                  </DialogHeader>
+                  <ProductServiceForm
+                    onSuccess={() => setIsDialogOpen(false)}
+                  />
+                </DialogContent>
+              </Dialog>
+              <Button
+                variant="outline"
+                size="icon"
+                className="aspect-square h-20 w-20"
+              >
+                <Edit className="h-8 w-8" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="aspect-square h-20 w-20"
+              >
+                <Edit2 className="h-8 w-8" />
+              </Button>
+            </div>
+            <Cart
+              items={cartItems}
+              onUpdateQuantity={handleUpdateQuantity}
+              onRemoveItem={handleRemoveItem}
+              onClearCart={handleClearCart}
+            />
+          </div>
         </div>
       </div>
     </div>
