@@ -14,20 +14,24 @@ const Index = () => {
   const [showRevenue, setShowRevenue] = useState(true);
   const [showSubscribers, setShowSubscribers] = useState(true);
 
+  const basicCount = getMembersByPlan("Basic");
+  const classicCount = getMembersByPlan("Classic");
+  const businessCount = getMembersByPlan("Business");
+
   const PLANS = [
     {
       id: 1,
       title: "Basic",
       price: 30,
       features: ["Somente barba", "1 vez por semana", "Agendamento prioritário"],
-      totalSubscribers: getMembersByPlan("Basic"),
+      totalSubscribers: basicCount,
     },
     {
       id: 2,
       title: "Classic",
       price: 40,
       features: ["Somente cabelo", "1 vez por semana", "Agendamento prioritário"],
-      totalSubscribers: getMembersByPlan("Classic"),
+      totalSubscribers: classicCount,
     },
     {
       id: 3,
@@ -39,11 +43,11 @@ const Index = () => {
         "Agendamento VIP",
         "Produtos exclusivos",
       ],
-      totalSubscribers: getMembersByPlan("Business"),
+      totalSubscribers: businessCount,
     },
   ];
 
-  const totalSubscribers = members.length;
+  const totalSubscribers = basicCount + classicCount + businessCount;
   const monthlyRevenue = PLANS.reduce((acc, plan) => {
     return acc + plan.price * plan.totalSubscribers;
   }, 0);
