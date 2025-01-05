@@ -22,12 +22,14 @@ const Index = () => {
       title: "Basic",
       price: 30,
       features: ["Somente barba", "1 vez por semana", "Agendamento prioritário"],
+      totalSubscribers: 3,
     },
     {
       id: 2,
       title: "Classic",
       price: 40,
       features: ["Somente cabelo", "1 vez por semana", "Agendamento prioritário"],
+      totalSubscribers: 3,
     },
     {
       id: 3,
@@ -39,13 +41,13 @@ const Index = () => {
         "Agendamento VIP",
         "Produtos exclusivos",
       ],
+      totalSubscribers: 3,
     },
   ];
 
-  const totalSubscribers = members.length;
+  const totalSubscribers = PLANS.reduce((acc, plan) => acc + plan.totalSubscribers, 0);
   const monthlyRevenue = PLANS.reduce((acc, plan) => {
-    const planMembers = getMembersByPlan(plan.title as "Basic" | "Classic" | "Business");
-    return acc + plan.price * planMembers;
+    return acc + plan.price * plan.totalSubscribers;
   }, 0);
 
   return (
@@ -142,7 +144,7 @@ const Index = () => {
               title={plan.title}
               price={plan.price}
               features={plan.features}
-              subscribers={getMembersByPlan(plan.title as "Basic" | "Classic" | "Business")}
+              subscribers={plan.totalSubscribers}
               onViewSubscribers={() => {}}
             />
           ))}
