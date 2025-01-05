@@ -33,10 +33,14 @@ export function SidebarMenuItemComponent({
   };
 
   const isSubmenuItemActive = (url: string) => {
+    const currentPath = location.pathname;
     if (url === "/members") {
-      return location.pathname === "/members";
+      return currentPath === "/members";
     }
-    return location.pathname === url;
+    if (url.startsWith("/members/")) {
+      return currentPath === url;
+    }
+    return currentPath === url;
   };
 
   if (item.submenu) {
