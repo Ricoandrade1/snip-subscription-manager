@@ -16,8 +16,8 @@ const formSchema = z.object({
   phone: z.string().min(9, "Telefone deve ter pelo menos 9 dígitos"),
   email: z.string().email("Email inválido").optional(),
   nif: z.string().min(9, "NIF deve ter 9 dígitos"),
-  birthDate: z.string(),
-  startDate: z.string(),
+  birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
+  startDate: z.string().min(1, "Data de início é obrigatória"),
   specialties: z.array(z.string()).min(1, "Selecione pelo menos uma especialidade"),
   commissionRate: z.number().min(0).max(100),
   bankName: z.string().min(2, "Nome do banco é obrigatório"),
@@ -33,6 +33,7 @@ interface BarberFormProps {
 
 export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
   const { toast } = useToast();
+  const today = new Date().toISOString().split('T')[0];
 
   const form = useForm<BarberFormData>({
     resolver: zodResolver(formSchema),
@@ -42,8 +43,8 @@ export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
       phone: "",
       email: "",
       nif: "",
-      birthDate: "",
-      startDate: new Date().toISOString().split('T')[0],
+      birthDate: today,
+      startDate: today,
       specialties: [],
       commissionRate: 50,
       bankName: "",
@@ -68,14 +69,18 @@ export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
       if (error) throw error;
 
       if (data) {
+        // Ensure dates are in YYYY-MM-DD format
+        const birthDate = data.birth_date ? new Date(data.birth_date).toISOString().split('T')[0] : today;
+        const startDate = data.start_date ? new Date(data.start_date).toISOString().split('T')[0] : today;
+
         form.reset({
           name: data.name,
           nickname: data.nickname || "",
           phone: data.phone,
           email: data.email || "",
           nif: data.nif,
-          birthDate: data.birth_date,
-          startDate: data.start_date,
+          birthDate,
+          startDate,
           specialties: data.specialties,
           commissionRate: data.commission_rate,
           bankName: data.bank_name,
@@ -83,6 +88,7 @@ export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
         });
       }
     } catch (error) {
+      console.error('Error loading barber data:', error);
       toast({
         title: "Erro ao carregar dados",
         description: "Não foi possível carregar os dados do barbeiro.",
@@ -134,6 +140,7 @@ export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
         onSuccess();
       }
     } catch (error) {
+      console.error('Error saving barber:', error);
       toast({
         title: barberId ? "Erro ao atualizar barbeiro" : "Erro ao cadastrar barbeiro",
         description: "Ocorreu um erro ao tentar salvar os dados do barbeiro.",
