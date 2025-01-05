@@ -20,27 +20,35 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
     e.stopPropagation();
     
     try {
-      // First check if the product has any sales
+      // Primeiro verificar se o produto tem vendas associadas
       const { data: saleItems, error: checkError } = await supabase
         .from('sale_items')
         .select('id')
         .eq('product_id', product.id)
         .limit(1);
 
-      if (checkError) throw checkError;
+      if (checkError) {
+        console.error('Erro ao verificar vendas:', checkError);
+        toast.error('Erro ao verificar vendas do produto');
+        return;
+      }
 
       if (saleItems && saleItems.length > 0) {
         toast.error('Não é possível excluir um produto que já foi vendido');
         return;
       }
 
-      // If no sales, proceed with deletion
+      // Se não houver vendas, prosseguir com a exclusão
       const { error: deleteError } = await supabase
         .from('products')
         .delete()
         .eq('id', product.id);
 
-      if (deleteError) throw deleteError;
+      if (deleteError) {
+        console.error('Erro ao excluir produto:', deleteError);
+        toast.error('Erro ao excluir produto');
+        return;
+      }
       
       toast.success('Produto excluído com sucesso');
     } catch (error) {
