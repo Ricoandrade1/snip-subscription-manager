@@ -6,6 +6,7 @@ import { Plus, Edit, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 interface Brand {
   id: string;
@@ -17,23 +18,52 @@ export default function Brands() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [newBrandName, setNewBrandName] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchBrands();
-  }, []);
+    // Check authentication status when component mounts
+    checkAuth();
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate('/login');
+      }
+    });
 
-  const fetchBrands = async () => {
-    const { data, error } = await supabase
-      .from("brands")
-      .select("*")
-      .order("name");
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
-    if (error) {
-      toast.error("Erro ao carregar marcas");
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate('/login');
       return;
     }
+    fetchBrands();
+  };
 
-    setBrands(data || []);
+  const fetchBrands = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("brands")
+        .select("*")
+        .order("name");
+
+      if (error) {
+        toast.error("Erro ao carregar marcas");
+        if (error.status === 401) {
+          navigate('/login');
+        }
+        return;
+      }
+
+      setBrands(data || []);
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+      toast.error("Erro ao carregar marcas");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,25 +74,33 @@ export default function Brands() {
       return;
     }
 
-    const { error } = editingBrand
-      ? await supabase
-          .from("brands")
-          .update({ name: newBrandName })
-          .eq("id", editingBrand.id)
-      : await supabase
-          .from("brands")
-          .insert([{ name: newBrandName }]);
+    try {
+      const { error } = editingBrand
+        ? await supabase
+            .from("brands")
+            .update({ name: newBrandName })
+            .eq("id", editingBrand.id)
+        : await supabase
+            .from("brands")
+            .insert([{ name: newBrandName }]);
 
-    if (error) {
+      if (error) {
+        if (error.status === 401) {
+          navigate('/login');
+          return;
+        }
+        throw error;
+      }
+
+      toast.success(editingBrand ? "Marca atualizada" : "Marca criada");
+      setIsDialogOpen(false);
+      setNewBrandName("");
+      setEditingBrand(null);
+      fetchBrands();
+    } catch (error) {
+      console.error("Error saving brand:", error);
       toast.error("Erro ao salvar marca");
-      return;
     }
-
-    toast.success(editingBrand ? "Marca atualizada" : "Marca criada");
-    setIsDialogOpen(false);
-    setNewBrandName("");
-    setEditingBrand(null);
-    fetchBrands();
   };
 
   const handleEdit = (brand: Brand) => {
@@ -72,18 +110,26 @@ export default function Brands() {
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase
-      .from("brands")
-      .delete()
-      .eq("id", id);
+    try {
+      const { error } = await supabase
+        .from("brands")
+        .delete()
+        .eq("id", id);
 
-    if (error) {
+      if (error) {
+        if (error.status === 401) {
+          navigate('/login');
+          return;
+        }
+        throw error;
+      }
+
+      toast.success("Marca deletada");
+      fetchBrands();
+    } catch (error) {
+      console.error("Error deleting brand:", error);
       toast.error("Erro ao deletar marca");
-      return;
     }
-
-    toast.success("Marca deletada");
-    fetchBrands();
   };
 
   return (
