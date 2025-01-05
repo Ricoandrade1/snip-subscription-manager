@@ -122,13 +122,13 @@ export function ProductList({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {isLoading ? (
         <div className="text-center text-muted-foreground">Carregando produtos...</div>
       ) : products.length === 0 ? (
         <div className="text-center text-muted-foreground">Nenhum produto encontrado</div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="space-y-4">
           {products.map((product) => (
             <ProductCard
               key={product.id}
