@@ -49,17 +49,20 @@ export function ProductList({
   }, [filters]);
 
   const fetchBarbers = async () => {
-    const { data, error } = await supabase
-      .from("barbers")
-      .select("id, name")
-      .order("name");
+    try {
+      const { data, error } = await supabase
+        .from("barbers")
+        .select("id, name");
 
-    if (error) {
-      console.error("Error fetching barbers:", error);
-      return;
+      if (error) {
+        console.error("Error fetching barbers:", error);
+        return;
+      }
+
+      setBarbers(data || []);
+    } catch (error) {
+      console.error("Error in fetchBarbers:", error);
     }
-
-    setBarbers(data || []);
   };
 
   const fetchProducts = async () => {
