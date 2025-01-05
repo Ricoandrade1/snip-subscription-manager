@@ -9,6 +9,7 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { menuItems } from "./sidebar/menuItems";
@@ -19,6 +20,7 @@ export function AppSidebar() {
   const location = useLocation();
   const { getMembersByPlan } = useMemberContext();
   const [openSubmenus, setOpenSubmenus] = useState<string[]>([]);
+  const { toggleSidebar } = useSidebar();
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -49,16 +51,14 @@ export function AppSidebar() {
       <Button 
         variant="ghost" 
         size="icon" 
-        className="fixed top-4 left-4 z-50 md:hidden"
+        className="fixed top-4 left-4 z-50"
+        onClick={toggleSidebar}
       >
         <Menu className="h-4 w-4" />
       </Button>
       <Sidebar>
         <SidebarContent>
           <div className="flex items-center gap-2 px-2 py-2">
-            <Button variant="ghost" size="icon" className="h-8 w-8 hidden md:flex">
-              <Menu className="h-4 w-4" />
-            </Button>
             <span className="font-semibold text-barber-gold">Barbearia</span>
             <div className="ml-auto">
               <SidebarTrigger />
