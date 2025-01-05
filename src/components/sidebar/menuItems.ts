@@ -22,10 +22,10 @@ export const menuItems = [
     icon: Users,
     url: "/members",
     submenu: [
-      { title: "Todos", url: "/members/all" },
-      { title: "Basic", url: "/members/basic" },
-      { title: "Classic", url: "/members/classic" },
-      { title: "Business", url: "/members/business" },
+      { title: "Todos", url: "/members" },
+      { title: "Basic", url: "/members" },
+      { title: "Classic", url: "/members" },
+      { title: "Business", url: "/members" },
     ],
   },
   {
@@ -33,8 +33,8 @@ export const menuItems = [
     icon: Rss,
     url: "/social",
     submenu: [
-      { title: "Story", url: "/social/story", icon: Image },
-      { title: "Feed", url: "/social/feed", icon: Rss },
+      { title: "Story", url: "/story", icon: Image },
+      { title: "Feed", url: "/feed", icon: Rss },
     ],
   },
   {
