@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Search } from "lucide-react";
 import { toast } from "sonner";
 
 interface Product {
@@ -64,11 +63,11 @@ export function ProductList({ onProductSelect, filters = { name: "", category: "
         query = query.ilike("name", `%${filters.name}%`);
       }
 
-      if (filters.category) {
+      if (filters.category && filters.category !== "all") {
         query = query.eq("category_id", filters.category);
       }
 
-      if (filters.brand) {
+      if (filters.brand && filters.brand !== "all") {
         query = query.eq("brand_id", filters.brand);
       }
 

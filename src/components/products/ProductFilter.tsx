@@ -70,7 +70,7 @@ export function ProductFilter({ filters, onFilterChange }: ProductFilterProps) {
             <SelectValue placeholder="Selecionar categoria" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todas</SelectItem>
+            <SelectItem value="all">Todas</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}
@@ -90,7 +90,7 @@ export function ProductFilter({ filters, onFilterChange }: ProductFilterProps) {
             <SelectValue placeholder="Selecionar marca" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todas</SelectItem>
+            <SelectItem value="all">Todas</SelectItem>
             {brands.map((brand) => (
               <SelectItem key={brand.id} value={brand.id}>
                 {brand.name}
