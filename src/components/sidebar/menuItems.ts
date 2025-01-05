@@ -9,19 +9,13 @@ import {
   Image,
   Rss,
   Home,
-  LayoutDashboard,
 } from "lucide-react";
 
 export const menuItems = [
   {
-    title: "Dashboard",
-    icon: LayoutDashboard,
-    url: "/",
-  },
-  {
     title: "Home",
     icon: Home,
-    url: "/home",
+    url: "/",
   },
   {
     title: "Membros",
