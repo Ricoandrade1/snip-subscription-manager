@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { ProductBasicFields } from "./forms/ProductBasicFields";
 import { ProductCategoryFields } from "./forms/ProductCategoryFields";
-import { ProductCommissionFields } from "./forms/ProductCommissionFields";
 import { supabase } from "@/integrations/supabase/client";
 import { useProductForm } from "./forms/useProductForm";
 import { toast } from "sonner";
@@ -16,7 +15,6 @@ interface Product {
   stock?: number;
   brand?: string | null;
   category?: string | null;
-  commission_rates?: Record<string, number>;
   vat_rate?: number;
   vat_included?: boolean;
 }
@@ -76,7 +74,6 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
               brands={brands}
               categories={categories}
             />
-            <ProductCommissionFields form={form} />
           </div>
         </div>
 
