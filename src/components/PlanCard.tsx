@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { QuickEditForm } from "./QuickEditForm";
+import { PlanEditForm } from "./plans/PlanEditForm";
 import { useState } from "react";
 
 interface PlanCardProps {
@@ -45,7 +45,7 @@ export const PlanCard = ({
             <DialogHeader>
               <DialogTitle>Editar Plano {title}</DialogTitle>
             </DialogHeader>
-            <QuickEditForm
+            <PlanEditForm
               initialData={{ title, price, features }}
               onClose={() => setIsDialogOpen(false)}
             />
