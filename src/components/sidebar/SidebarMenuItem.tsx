@@ -4,7 +4,6 @@ import {
   SidebarMenuItem as BaseSidebarMenuItem,
   SidebarMenuButton,
   SidebarMenuSub,
-  SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -52,21 +51,23 @@ export function SidebarMenuItemComponent({
             <SidebarMenuSub>
               {item.submenu.map((subItem: any) => (
                 <SidebarMenuSubItem key={subItem.title}>
-                  <Link 
-                    to={subItem.url}
-                    className="w-full flex items-center justify-between p-2 rounded-md hover:bg-muted"
-                    data-active={isActiveRoute(subItem.url)}
-                  >
-                    <span>{subItem.title}</span>
-                    {level === 0 && item.title === "Membros" &&
-                      subItem.title !== "Todos" && getSubscriberCount && (
-                        <span className="ml-auto text-xs opacity-60">
-                          {getSubscriberCount(
-                            subItem.title as "Basic" | "Classic" | "Business"
-                          )}
-                        </span>
-                      )}
-                  </Link>
+                  <SidebarMenuButton asChild>
+                    <Link 
+                      to={subItem.url}
+                      className="w-full flex items-center justify-between p-2 rounded-md hover:bg-muted"
+                      data-active={isActiveRoute(subItem.url)}
+                    >
+                      <span>{subItem.title}</span>
+                      {level === 0 && item.title === "Membros" &&
+                        subItem.title !== "Todos" && getSubscriberCount && (
+                          <span className="ml-auto text-xs opacity-60">
+                            {getSubscriberCount(
+                              subItem.title as "Basic" | "Classic" | "Business"
+                            )}
+                          </span>
+                        )}
+                    </Link>
+                  </SidebarMenuButton>
                 </SidebarMenuSubItem>
               ))}
             </SidebarMenuSub>
@@ -78,14 +79,16 @@ export function SidebarMenuItemComponent({
 
   return (
     <BaseSidebarMenuItem>
-      <Link 
-        to={item.url} 
-        className="flex items-center gap-2 p-2 w-full rounded-md hover:bg-muted"
-        data-active={isActiveRoute(item.url)}
-      >
-        <item.icon className="h-4 w-4" />
-        <span>{item.title}</span>
-      </Link>
+      <SidebarMenuButton asChild>
+        <Link 
+          to={item.url} 
+          className="flex items-center gap-2 p-2 w-full rounded-md hover:bg-muted"
+          data-active={isActiveRoute(item.url)}
+        >
+          <item.icon className="h-4 w-4" />
+          <span>{item.title}</span>
+        </Link>
+      </SidebarMenuButton>
     </BaseSidebarMenuItem>
   );
 }
