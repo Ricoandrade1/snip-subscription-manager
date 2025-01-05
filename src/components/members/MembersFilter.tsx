@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 interface FilterState {
   name: string;
   phone: string;
-  nickname: string;
+  nif: string;
 }
 
 interface MembersFilterProps {
@@ -34,12 +34,12 @@ export function MembersFilter({ filters, onFilterChange }: MembersFilterProps) {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="nickname-filter">Apelido</Label>
+        <Label htmlFor="nif-filter">NIF</Label>
         <Input
-          id="nickname-filter"
-          placeholder="Filtrar por apelido..."
-          value={filters.nickname}
-          onChange={(e) => onFilterChange('nickname', e.target.value)}
+          id="nif-filter"
+          placeholder="Filtrar por NIF..."
+          value={filters.nif}
+          onChange={(e) => onFilterChange('nif', e.target.value)}
         />
       </div>
     </div>

@@ -14,7 +14,7 @@ interface MembersTableProps {
 interface FilterState {
   name: string;
   phone: string;
-  nickname: string;
+  nif: string;
 }
 
 export function MembersTable({ planFilter }: MembersTableProps) {
@@ -22,7 +22,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   const [filters, setFilters] = useState<FilterState>({
     name: "",
     phone: "",
-    nickname: "",
+    nif: "",
   });
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -51,9 +51,9 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     .filter((member) => {
       const matchName = member.name.toLowerCase().includes(filters.name.toLowerCase());
       const matchPhone = !filters.phone || (member.phone && member.phone.toLowerCase().includes(filters.phone.toLowerCase()));
-      const matchNickname = !filters.nickname || (member.nickname && member.nickname.toLowerCase().includes(filters.nickname.toLowerCase()));
+      const matchNif = !filters.nif || (member.nif && member.nif.toLowerCase().includes(filters.nif.toLowerCase()));
 
-      return matchName && matchPhone && matchNickname;
+      return matchName && matchPhone && matchNif;
     })
     .sort((a, b) => {
       const aCode = getMemberCode(a);
@@ -85,7 +85,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
             <TableHead>Nome</TableHead>
             <TableHead>Plano</TableHead>
             <TableHead>Telefone</TableHead>
-            <TableHead>Apelido</TableHead>
+            <TableHead>NIF</TableHead>
             <TableHead>Data de Cadastro</TableHead>
           </TableRow>
         </TableHeader>
