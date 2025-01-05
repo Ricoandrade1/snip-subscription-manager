@@ -116,7 +116,7 @@ export function BarberList() {
                       <Pencil className="h-4 w-4" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-lg">
+                  <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>Editar Barbeiro</DialogTitle>
                     </DialogHeader>
