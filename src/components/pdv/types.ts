@@ -18,6 +18,7 @@ export interface Product {
   description?: string | null;
   vat_rate: number;
   vat_included: boolean;
+  is_service?: boolean;
 }
 
 export interface ProductListFilters {
