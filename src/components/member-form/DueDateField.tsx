@@ -8,15 +8,12 @@ import { format } from "date-fns";
 import { UseFormReturn } from "react-hook-form";
 import * as z from "zod";
 import { formSchema } from "./schema";
-import { useState } from "react";
 
 interface DueDateFieldProps {
   form: UseFormReturn<z.infer<typeof formSchema>>;
 }
 
 export function DueDateField({ form }: DueDateFieldProps) {
-  const [open, setOpen] = useState(false);
-
   return (
     <FormField
       control={form.control}
@@ -24,7 +21,7 @@ export function DueDateField({ form }: DueDateFieldProps) {
       render={({ field }) => (
         <FormItem className="flex flex-col">
           <FormLabel className="text-barber-light">Data de Vencimento</FormLabel>
-          <Popover open={open} onOpenChange={setOpen}>
+          <Popover>
             <PopoverTrigger asChild>
               <FormControl>
                 <Button
@@ -47,12 +44,7 @@ export function DueDateField({ form }: DueDateFieldProps) {
               <Calendar
                 mode="single"
                 selected={field.value}
-                onSelect={(date) => {
-                  if (date) {
-                    field.onChange(date);
-                    setOpen(false);
-                  }
-                }}
+                onSelect={field.onChange}
                 disabled={(date) =>
                   date < new Date(new Date().setHours(0, 0, 0, 0))
                 }
