@@ -1,7 +1,5 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { Member } from "@/contexts/MemberContext";
 
 interface MemberTableRowProps {
@@ -36,13 +34,9 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
           {member.plan}
         </Badge>
       </TableCell>
-      <TableCell>{member.phone}</TableCell>
-      <TableCell>{member.nif || '-'}</TableCell>
-      <TableCell>
-        {member.birthDate ? format(new Date(member.birthDate), 'dd/MM/yyyy', { locale: ptBR }) : '-'}
-      </TableCell>
-      <TableCell>{member.bank || '-'}</TableCell>
-      <TableCell>{member.iban || '-'}</TableCell>
+      <TableCell>{member.phone || '-'}</TableCell>
+      <TableCell>{member.nickname || '-'}</TableCell>
+      <TableCell>{member.created_at ? new Date(member.created_at).toLocaleDateString('pt-BR') : '-'}</TableCell>
     </TableRow>
   );
 }

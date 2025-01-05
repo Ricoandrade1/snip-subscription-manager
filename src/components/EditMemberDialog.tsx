@@ -7,8 +7,6 @@ import { useForm } from "react-hook-form";
 import type { Member } from "@/contexts/MemberContext";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { PersonalInfoFields } from "./PersonalInfoFields";
-import { DocumentFields } from "./DocumentFields";
-import { BankingFields } from "./BankingFields";
 import { PlanFields } from "./member-dialog/PlanFields";
 import { formSchema } from "./member-dialog/schema";
 import * as z from "zod";
@@ -29,14 +27,6 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
       name: member.name || "",
       nickname: member.nickname || "",
       phone: member.phone || "",
-      nif: member.nif || "",
-      birthDate: member.birthDate || "",
-      passport: member.passport || "",
-      citizenCard: member.citizenCard || "",
-      bi: member.bi || "",
-      bank: member.bank || "",
-      iban: member.iban || "",
-      debitDate: member.debitDate || "",
       plan: member.plan || "Basic",
     } : undefined,
   });
@@ -64,8 +54,6 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <PersonalInfoFields form={form} />
-              <DocumentFields form={form} />
-              <BankingFields form={form} />
             </div>
 
             <PlanFields form={form} />

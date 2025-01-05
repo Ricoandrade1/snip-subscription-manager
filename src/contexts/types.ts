@@ -1,9 +1,9 @@
 export type Member = {
   id: string;
   name: string;
-  nickname: string;
-  phone: string;
-  plan_id: number;
+  nickname: string | null;
+  phone: string | null;
+  plan_id: number | null;
   plan: "Basic" | "Classic" | "Business";
   created_at?: string;
 };
