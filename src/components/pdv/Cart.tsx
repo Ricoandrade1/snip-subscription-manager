@@ -1,48 +1,46 @@
 import { useState } from "react";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, Plus, Minus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  stock: number;
-}
+import { Separator } from "@/components/ui/separator";
+import { X } from "lucide-react";
 
 interface CartProps {
-  items: CartItem[];
+  items: {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }[];
   onUpdateQuantity: (id: string, quantity: number) => void;
   onRemoveItem: (id: string) => void;
   onClearCart: () => void;
 }
 
-export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearCart }: CartProps) {
-  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix">("card");
+export function Cart({
+  items,
+  onUpdateQuantity,
+  onRemoveItem,
+  onClearCart,
+}: CartProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<string>("money");
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  const handleFinalizeSale = async () => {
+  const handleFinishSale = async () => {
     if (items.length === 0) {
       toast.error("Adicione itens ao carrinho");
       return;
     }
 
-    // Verificar estoque antes de processar
-    for (const item of items) {
-      if (item.quantity > item.stock) {
-        toast.error(`Estoque insuficiente para ${item.name}`);
-        return;
-      }
-    }
-
     setIsProcessing(true);
 
     try {
-      // Criar registro de venda
+      // Create the sale
       const { data: sale, error: saleError } = await supabase
         .from("sales")
         .insert([
@@ -57,7 +55,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearCart }: Car
 
       if (saleError) throw saleError;
 
-      // Criar itens da venda
+      // Create sale items and update stock
       const saleItems = items.map((item) => ({
         sale_id: sale.id,
         product_id: item.id,
@@ -71,16 +69,14 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearCart }: Car
 
       if (itemsError) throw itemsError;
 
-      // Atualizar estoque dos produtos
+      // Update stock for each product
       for (const item of items) {
-        const newStock = item.stock - item.quantity;
-
-        const { error: updateError } = await supabase
+        const { error: stockError } = await supabase
           .from("products")
-          .update({ stock: newStock })
+          .update({ stock: supabase.rpc('decrement', { x: item.quantity }) })
           .eq("id", item.id);
 
-        if (updateError) throw updateError;
+        if (stockError) throw stockError;
       }
 
       toast.success("Venda finalizada com sucesso!");
@@ -94,101 +90,96 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearCart }: Car
   };
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="flex items-center justify-between p-2 border rounded-md"
-          >
-            <div className="flex-1">
-              <div className="font-medium">{item.name}</div>
-              <div className="text-sm text-muted-foreground">
-                {new Intl.NumberFormat("pt-BR", {
-                  style: "currency",
-                  currency: "EUR",
-                }).format(item.price)}
+    <Card className="p-6">
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold">Carrinho</h2>
+          {items.length > 0 && (
+            <Button variant="outline" onClick={onClearCart}>
+              Limpar
+            </Button>
+          )}
+        </div>
+
+        {items.length === 0 ? (
+          <div className="text-center text-muted-foreground py-8">
+            Carrinho vazio
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                className="flex justify-between items-center gap-4"
+              >
+                <div className="flex-1">
+                  <div className="font-medium">{item.name}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {new Intl.NumberFormat("pt-PT", {
+                      style: "currency",
+                      currency: "EUR",
+                    }).format(item.price)}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    min="1"
+                    value={item.quantity}
+                    onChange={(e) =>
+                      onUpdateQuantity(item.id, parseInt(e.target.value))
+                    }
+                    className="w-20"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onRemoveItem(item.id)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                disabled={item.quantity <= 1}
+            ))}
+
+            <Separator />
+
+            <div className="space-y-4">
+              <div className="flex justify-between text-lg font-bold">
+                <span>Total</span>
+                <span>
+                  {new Intl.NumberFormat("pt-PT", {
+                    style: "currency",
+                    currency: "EUR",
+                  }).format(total)}
+                </span>
+              </div>
+
+              <Select
+                value={paymentMethod}
+                onValueChange={setPaymentMethod}
               >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <span className="w-8 text-center">{item.quantity}</span>
+                <SelectTrigger>
+                  <SelectValue placeholder="Forma de pagamento" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="money">Dinheiro</SelectItem>
+                  <SelectItem value="card">Cartão</SelectItem>
+                  <SelectItem value="mbway">MBWay</SelectItem>
+                </SelectContent>
+              </Select>
+
               <Button
-                variant="outline"
-                size="icon"
-                onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                disabled={item.quantity >= item.stock}
+                className="w-full"
+                onClick={handleFinishSale}
+                disabled={isProcessing}
               >
-                <Plus className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="destructive"
-                size="icon"
-                onClick={() => onRemoveItem(item.id)}
-              >
-                <Trash2 className="h-4 w-4" />
+                {isProcessing ? "Processando..." : "Finalizar Venda"}
               </Button>
             </div>
           </div>
-        ))}
+        )}
       </div>
-
-      <div className="flex gap-2">
-        <Button
-          variant={paymentMethod === "card" ? "default" : "outline"}
-          onClick={() => setPaymentMethod("card")}
-          className="flex-1"
-        >
-          Cartão
-        </Button>
-        <Button
-          variant={paymentMethod === "cash" ? "default" : "outline"}
-          onClick={() => setPaymentMethod("cash")}
-          className="flex-1"
-        >
-          Dinheiro
-        </Button>
-        <Button
-          variant={paymentMethod === "pix" ? "default" : "outline"}
-          onClick={() => setPaymentMethod("pix")}
-          className="flex-1"
-        >
-          PIX
-        </Button>
-      </div>
-
-      <div className="text-2xl font-bold text-right">
-        Total:{" "}
-        {new Intl.NumberFormat("pt-BR", {
-          style: "currency",
-          currency: "EUR",
-        }).format(total)}
-      </div>
-
-      <div className="flex gap-2">
-        <Button
-          variant="outline"
-          onClick={onClearCart}
-          disabled={items.length === 0 || isProcessing}
-          className="flex-1"
-        >
-          Limpar
-        </Button>
-        <Button
-          onClick={handleFinalizeSale}
-          disabled={items.length === 0 || isProcessing}
-          className="flex-1 bg-barber-gold hover:bg-barber-gold/90"
-        >
-          Finalizar Venda
-        </Button>
-      </div>
-    </div>
+    </Card>
   );
 }

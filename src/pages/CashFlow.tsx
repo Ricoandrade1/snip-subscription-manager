@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ProductList } from "@/components/pdv/ProductList";
 import { Cart } from "@/components/pdv/Cart";
+import { ProductServiceGrid } from "@/components/pdv/ProductServiceGrid";
 
 interface Product {
   id: string;
@@ -52,6 +53,9 @@ export default function CashFlow() {
         <h1 className="text-3xl font-bold text-barber-gold mb-8">
           Movimento de Caixa
         </h1>
+        <div className="mb-8">
+          <ProductServiceGrid />
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <ProductList onProductSelect={handleProductSelect} />
           <Cart
