@@ -51,6 +51,20 @@ export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
           </FormItem>
         )}
       />
+
+      <FormField
+        control={form.control}
+        name="nif"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-sm">NIF</FormLabel>
+            <FormControl>
+              <Input placeholder="Número de Identificação Fiscal" {...field} className="h-8" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </>
   );
 }

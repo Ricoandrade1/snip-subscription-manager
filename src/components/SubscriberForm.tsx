@@ -13,6 +13,7 @@ const formSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   nickname: z.string().optional(),
   phone: z.string().optional(),
+  nif: z.string().optional(),
   plan: z.enum(["Basic", "Classic", "Business"]).default("Basic"),
 });
 
@@ -29,6 +30,7 @@ export function SubscriberForm() {
       name: "",
       nickname: "",
       phone: "",
+      nif: "",
     },
   });
 
@@ -68,6 +70,7 @@ export function SubscriberForm() {
         name: data.name,
         nickname: data.nickname || "",
         phone: data.phone || "",
+        nif: data.nif || "",
         plan_id: planId
       };
 
