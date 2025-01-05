@@ -34,7 +34,7 @@ export const fetchMembersFromDB = async () => {
     throw membersError;
   }
 
-  console.log('Membros encontrados:', membersData);
+  console.log('Dados brutos dos membros:', membersData);
 
   if (!membersData) {
     console.log('Nenhum membro encontrado');
@@ -77,7 +77,6 @@ export const fetchMembersFromDB = async () => {
 };
 
 export const addMemberToDB = async (member: Omit<Member, "id">) => {
-  // First, get the plan_id based on the plan title
   const { data: planData, error: planError } = await supabase
     .from('plans')
     .select('id')

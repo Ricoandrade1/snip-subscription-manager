@@ -26,8 +26,8 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     try {
       setIsLoading(true);
       const formattedMembers = await fetchMembersFromDB();
+      console.log('Membros carregados:', formattedMembers);
       setMembers(formattedMembers);
-      console.log('Membros carregados com sucesso:', formattedMembers);
     } catch (error) {
       console.error('Erro ao buscar membros:', error);
       toast.error('Erro ao carregar membros');
