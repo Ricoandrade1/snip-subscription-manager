@@ -5,14 +5,31 @@ import { useState } from "react";
 import type { Member } from "@/contexts/MemberContext";
 import { EditMemberDialog } from "./EditMemberDialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Label } from "@/components/ui/label";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface MembersTableProps {
   planFilter?: "Basic" | "Classic" | "Business";
 }
 
+interface FilterState {
+  name: string;
+  phone: string;
+  nif: string;
+  birthDate: string;
+  iban: string;
+}
+
 export function MembersTable({ planFilter }: MembersTableProps) {
   const { members, isLoading } = useMemberContext();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState<FilterState>({
+    name: "",
+    phone: "",
+    nif: "",
+    birthDate: "",
+    iban: "",
+  });
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -35,13 +52,21 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     return `${member.plan} ${sequenceNumber}`;
   };
 
+  const handleFilterChange = (field: keyof FilterState, value: string) => {
+    setFilters(prev => ({ ...prev, [field]: value }));
+  };
+
   const filteredMembers = members
     .filter((member) => !planFilter || member.plan === planFilter)
-    .filter((member) =>
-      member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.nickname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.phone.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    .filter((member) => {
+      const matchName = member.name.toLowerCase().includes(filters.name.toLowerCase());
+      const matchPhone = member.phone.toLowerCase().includes(filters.phone.toLowerCase());
+      const matchNif = !filters.nif || (member.nif && member.nif.toLowerCase().includes(filters.nif.toLowerCase()));
+      const matchBirthDate = !filters.birthDate || (member.birthDate && member.birthDate.includes(filters.birthDate));
+      const matchIban = !filters.iban || (member.iban && member.iban.toLowerCase().includes(filters.iban.toLowerCase()));
+
+      return matchName && matchPhone && matchNif && matchBirthDate && matchIban;
+    })
     .sort((a, b) => {
       const aCode = getMemberCode(a);
       const bCode = getMemberCode(b);
@@ -67,22 +92,64 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <Input
-        placeholder="Pesquisar por nome, apelido ou telefone..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="max-w-sm"
-      />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-muted rounded-lg">
+        <div className="space-y-2">
+          <Label htmlFor="name-filter">Nome</Label>
+          <Input
+            id="name-filter"
+            placeholder="Filtrar por nome..."
+            value={filters.name}
+            onChange={(e) => handleFilterChange('name', e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="phone-filter">Telefone</Label>
+          <Input
+            id="phone-filter"
+            placeholder="Filtrar por telefone..."
+            value={filters.phone}
+            onChange={(e) => handleFilterChange('phone', e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="nif-filter">NIF</Label>
+          <Input
+            id="nif-filter"
+            placeholder="Filtrar por NIF..."
+            value={filters.nif}
+            onChange={(e) => handleFilterChange('nif', e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="birth-date-filter">Data de Nascimento</Label>
+          <Input
+            id="birth-date-filter"
+            type="date"
+            value={filters.birthDate}
+            onChange={(e) => handleFilterChange('birthDate', e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="iban-filter">IBAN</Label>
+          <Input
+            id="iban-filter"
+            placeholder="Filtrar por IBAN..."
+            value={filters.iban}
+            onChange={(e) => handleFilterChange('iban', e.target.value)}
+          />
+        </div>
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Código</TableHead>
             <TableHead>Nome</TableHead>
-            <TableHead>Apelido</TableHead>
             <TableHead>Telefone</TableHead>
-            <TableHead>Plano</TableHead>
-            <TableHead>Data de Débito</TableHead>
+            <TableHead>NIF</TableHead>
+            <TableHead>Data de Nascimento</TableHead>
+            <TableHead>IBAN</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -94,10 +161,12 @@ export function MembersTable({ planFilter }: MembersTableProps) {
             >
               <TableCell className="font-medium">{getMemberCode(member)}</TableCell>
               <TableCell>{member.name}</TableCell>
-              <TableCell>{member.nickname}</TableCell>
               <TableCell>{member.phone}</TableCell>
-              <TableCell>{member.plan}</TableCell>
-              <TableCell>{member.debitDate}</TableCell>
+              <TableCell>{member.nif}</TableCell>
+              <TableCell>
+                {member.birthDate ? format(new Date(member.birthDate), 'dd/MM/yyyy', { locale: ptBR }) : '-'}
+              </TableCell>
+              <TableCell>{member.iban}</TableCell>
             </TableRow>
           ))}
         </TableBody>
