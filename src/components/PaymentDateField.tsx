@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
 
 interface PaymentDateFieldProps {
   form: UseFormReturn<any>;
@@ -53,6 +52,7 @@ export function PaymentDateField({
                 onSelect={field.onChange}
                 initialFocus
                 locale={ptBR}
+                className="rounded-md border"
               />
             </PopoverContent>
           </Popover>
