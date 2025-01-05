@@ -9,6 +9,8 @@ import { PersonalInfoFields } from "./PersonalInfoFields";
 import { DocumentFields } from "./DocumentFields";
 import { BankingFields } from "./BankingFields";
 import { PlanFields } from "./PlanFields";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
 import type { Member } from "@/contexts/MemberContext";
 
 const formSchema = z.object({
@@ -31,6 +33,7 @@ export type SubscriberFormData = z.infer<typeof formSchema>;
 export function SubscriberForm() {
   const { toast } = useToast();
   const { members, addMember } = useMemberContext();
+  const [allowIncomplete, setAllowIncomplete] = useState(false);
   
   const form = useForm<SubscriberFormData>({
     resolver: zodResolver(formSchema),
@@ -73,6 +76,15 @@ export function SubscriberForm() {
     if (!data.bank) missingFields.push("Banco");
     if (!data.iban) missingFields.push("IBAN");
     
+    if (missingFields.length > 0 && !allowIncomplete) {
+      toast({
+        title: "Campos obrigatórios em falta",
+        description: `Por favor, preencha os seguintes campos: ${missingFields.join(", ")}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     addMember(memberData);
     const currentSubscribers = members.filter(member => member.plan === data.plan).length;
     
@@ -103,7 +115,20 @@ export function SubscriberForm() {
           <PlanFields form={form} />
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="allowIncomplete" 
+              checked={allowIncomplete}
+              onCheckedChange={(checked) => setAllowIncomplete(checked as boolean)}
+            />
+            <label
+              htmlFor="allowIncomplete"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Permitir registro com campos obrigatórios em falta
+            </label>
+          </div>
           <Button type="submit" className="w-48">
             Cadastrar Assinante
           </Button>
