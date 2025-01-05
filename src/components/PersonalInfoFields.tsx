@@ -2,18 +2,12 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { SubscriberFormData } from "./SubscriberForm";
-import { cn } from "@/lib/utils";
 
 interface PersonalInfoFieldsProps {
   form: UseFormReturn<SubscriberFormData>;
 }
 
 export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
-  const watchedFields = {
-    name: form.watch("name"),
-    phone: form.watch("phone"),
-  };
-
   return (
     <>
       <FormField
@@ -21,16 +15,9 @@ export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className={cn("text-sm", !watchedFields.name && "text-destructive")}>Nome *</FormLabel>
+            <FormLabel className="text-sm">Nome</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="Nome completo" 
-                {...field} 
-                className={cn(
-                  "h-8",
-                  !watchedFields.name && "border-destructive"
-                )} 
-              />
+              <Input placeholder="Nome completo" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -56,16 +43,9 @@ export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
         name="phone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className={cn("text-sm", !watchedFields.phone && "text-destructive")}>Telefone *</FormLabel>
+            <FormLabel className="text-sm">Telefone</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="+351 912 345 678" 
-                {...field} 
-                className={cn(
-                  "h-8",
-                  !watchedFields.phone && "border-destructive"
-                )} 
-              />
+              <Input placeholder="+351 912 345 678" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>

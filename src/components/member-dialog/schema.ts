@@ -1,9 +1,9 @@
 import * as z from "zod";
 
 export const formSchema = z.object({
-  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres").optional(),
+  name: z.string().optional(),
   nickname: z.string().optional(),
-  phone: z.string().min(9, "Telefone deve ter pelo menos 9 dígitos").optional(),
+  phone: z.string().optional(),
   nif: z.string().optional(),
   birthDate: z.string().optional(),
   passport: z.string().optional(),

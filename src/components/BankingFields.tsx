@@ -2,18 +2,12 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { SubscriberFormData } from "./SubscriberForm";
-import { cn } from "@/lib/utils";
 
 interface BankingFieldsProps {
   form: UseFormReturn<SubscriberFormData>;
 }
 
 export function BankingFields({ form }: BankingFieldsProps) {
-  const watchedFields = {
-    bank: form.watch("bank"),
-    iban: form.watch("iban"),
-  };
-
   return (
     <>
       <FormField
@@ -21,16 +15,9 @@ export function BankingFields({ form }: BankingFieldsProps) {
         name="bank"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className={cn("text-sm", !watchedFields.bank && "text-destructive")}>Banco *</FormLabel>
+            <FormLabel className="text-sm">Banco</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="Nome do Banco" 
-                {...field} 
-                className={cn(
-                  "h-8",
-                  !watchedFields.bank && "border-destructive"
-                )} 
-              />
+              <Input placeholder="Nome do Banco" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -42,16 +29,9 @@ export function BankingFields({ form }: BankingFieldsProps) {
         name="iban"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className={cn("text-sm", !watchedFields.iban && "text-destructive")}>IBAN *</FormLabel>
+            <FormLabel className="text-sm">IBAN</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="PT50..." 
-                {...field} 
-                className={cn(
-                  "h-8",
-                  !watchedFields.iban && "border-destructive"
-                )} 
-              />
+              <Input placeholder="PT50..." {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
