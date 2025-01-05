@@ -49,13 +49,7 @@ export function PaymentDateField({
               <Calendar
                 mode="single"
                 selected={field.value}
-                onSelect={(date) => {
-                  if (date) {
-                    field.onChange(date);
-                    console.log("Nova data selecionada:", date);
-                  }
-                }}
-                disabled={false}
+                onSelect={field.onChange}
                 locale={ptBR}
                 initialFocus
               />
