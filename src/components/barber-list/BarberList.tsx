@@ -106,8 +106,8 @@ export function BarberList() {
                 </Badge>
               </TableCell>
               <TableCell>
-                <Sheet>
-                  <SheetTrigger asChild>
+                <Dialog>
+                  <DialogTrigger asChild>
                     <Button 
                       variant="ghost" 
                       size="icon"
@@ -115,19 +115,19 @@ export function BarberList() {
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
-                  </SheetTrigger>
-                  <SheetContent className="max-w-2xl">
-                    <SheetHeader>
-                      <SheetTitle>Editar Barbeiro</SheetTitle>
-                    </SheetHeader>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                      <DialogTitle>Editar Barbeiro</DialogTitle>
+                    </DialogHeader>
                     {editingBarber && (
                       <BarberForm 
                         barberId={editingBarber.id} 
                         onSuccess={handleEditSuccess}
                       />
                     )}
-                  </SheetContent>
-                </Sheet>
+                  </DialogContent>
+                </Dialog>
               </TableCell>
             </TableRow>
           ))}

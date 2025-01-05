@@ -36,7 +36,7 @@ export default function Barbers() {
                   Cadastrar Barbeiro
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Cadastrar Novo Barbeiro</DialogTitle>
                 </DialogHeader>
@@ -46,7 +46,7 @@ export default function Barbers() {
           </div>
         </header>
 
-        <div className="bg-barber-dark rounded-lg p-6">
+        <div className="bg-barber-gray rounded-lg p-6">
           <BarberList />
         </div>
       </div>
