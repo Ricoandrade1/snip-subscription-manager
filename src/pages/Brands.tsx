@@ -52,10 +52,11 @@ export default function Brands() {
         .order("name");
 
       if (error) {
-        toast.error("Erro ao carregar marcas");
-        if (error.status === 401) {
+        if (error.message?.includes('JWT')) {
           navigate('/login');
+          return;
         }
+        toast.error("Erro ao carregar marcas");
         return;
       }
 
@@ -85,7 +86,7 @@ export default function Brands() {
             .insert([{ name: newBrandName }]);
 
       if (error) {
-        if (error.status === 401) {
+        if (error.message?.includes('JWT')) {
           navigate('/login');
           return;
         }
@@ -117,7 +118,7 @@ export default function Brands() {
         .eq("id", id);
 
       if (error) {
-        if (error.status === 401) {
+        if (error.message?.includes('JWT')) {
           navigate('/login');
           return;
         }
