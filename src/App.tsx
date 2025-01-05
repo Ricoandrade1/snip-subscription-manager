@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AppSidebar } from "./components/AppSidebar";
 import Index from "./pages/Index";
 import Members from "./pages/Members";
@@ -14,65 +14,120 @@ import Categories from "./pages/Categories";
 import { MemberProvider } from "./contexts/MemberContext";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
+import { Auth } from '@supabase/auth-ui-react';
+import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from "./integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
+import { useEffect, useState } from "react";
 
 import "./App.css";
 
-// Create a default session object
-const defaultSession = {
-  access_token: 'default_token',
-  token_type: 'bearer',
-  expires_in: 3600,
-  refresh_token: 'default_refresh',
-  user: {
-    id: 'default_user_id',
-    aud: 'authenticated',
-    role: 'authenticated',
-    email: 'default@example.com',
-    email_confirmed_at: new Date().toISOString(),
-    phone: '',
-    confirmed_at: new Date().toISOString(),
-    last_sign_in_at: new Date().toISOString(),
-    app_metadata: {
-      provider: 'email',
-      providers: ['email'],
-    },
-    user_metadata: {},
-    identities: [],
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  expires_at: Math.floor(Date.now() / 1000) + 3600,
-};
+function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!session) {
+    return <Navigate to="/login" />;
+  }
+
+  return <>{children}</>;
+}
+
+function LoginPage() {
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (session) {
+    return <Navigate to="/" />;
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold">Login</h2>
+          <p className="mt-2 text-gray-600">Entre com sua conta para continuar</p>
+        </div>
+        <Auth
+          supabaseClient={supabase}
+          appearance={{ theme: ThemeSupa }}
+          providers={[]}
+          theme="light"
+        />
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
-    <SessionContextProvider supabaseClient={supabase} initialSession={defaultSession}>
+    <SessionContextProvider supabaseClient={supabase}>
       <MemberProvider>
         <SidebarProvider>
           <Router>
-            <div className="flex min-h-screen">
-              <AppSidebar />
-              <main className="flex-1 bg-background">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/members" element={<Members />} />
-                  <Route path="/members/basic" element={<Members planType="Basic" />} />
-                  <Route path="/members/classic" element={<Members planType="Classic" />} />
-                  <Route path="/members/business" element={<Members planType="Business" />} />
-                  <Route path="/schedule" element={<Schedule />} />
-                  <Route path="/story" element={<Story />} />
-                  <Route path="/feed" element={<Feed />} />
-                  <Route path="/barbers" element={<Barbers />} />
-                  <Route path="/revenue" element={<Revenue />} />
-                  <Route path="/cash-flow" element={<CashFlow />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route path="/brands" element={<Brands />} />
-                  <Route path="/categories" element={<Categories />} />
-                </Routes>
-              </main>
-            </div>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route
+                path="/"
+                element={
+                  <AuthenticatedRoute>
+                    <div className="flex min-h-screen">
+                      <AppSidebar />
+                      <main className="flex-1 bg-background">
+                        <Routes>
+                          <Route path="/" element={<Index />} />
+                          <Route path="/members" element={<Members />} />
+                          <Route path="/members/basic" element={<Members planType="Basic" />} />
+                          <Route path="/members/classic" element={<Members planType="Classic" />} />
+                          <Route path="/members/business" element={<Members planType="Business" />} />
+                          <Route path="/schedule" element={<Schedule />} />
+                          <Route path="/story" element={<Story />} />
+                          <Route path="/feed" element={<Feed />} />
+                          <Route path="/barbers" element={<Barbers />} />
+                          <Route path="/revenue" element={<Revenue />} />
+                          <Route path="/cash-flow" element={<CashFlow />} />
+                          <Route path="/products" element={<Products />} />
+                          <Route path="/brands" element={<Brands />} />
+                          <Route path="/categories" element={<Categories />} />
+                        </Routes>
+                      </main>
+                    </div>
+                  </AuthenticatedRoute>
+                }
+              />
+            </Routes>
           </Router>
           <Toaster />
         </SidebarProvider>

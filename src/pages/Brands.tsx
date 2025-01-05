@@ -21,28 +21,8 @@ export default function Brands() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check authentication status when component mounts
-    checkAuth();
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        navigate('/login');
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate]);
-
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/login');
-      return;
-    }
     fetchBrands();
-  };
+  }, []);
 
   const fetchBrands = async () => {
     try {
@@ -52,10 +32,7 @@ export default function Brands() {
         .order("name");
 
       if (error) {
-        if (error.message?.includes('JWT')) {
-          navigate('/login');
-          return;
-        }
+        console.error("Error fetching brands:", error);
         toast.error("Erro ao carregar marcas");
         return;
       }
@@ -86,10 +63,6 @@ export default function Brands() {
             .insert([{ name: newBrandName }]);
 
       if (error) {
-        if (error.message?.includes('JWT')) {
-          navigate('/login');
-          return;
-        }
         throw error;
       }
 
@@ -118,10 +91,6 @@ export default function Brands() {
         .eq("id", id);
 
       if (error) {
-        if (error.message?.includes('JWT')) {
-          navigate('/login');
-          return;
-        }
         throw error;
       }
 
