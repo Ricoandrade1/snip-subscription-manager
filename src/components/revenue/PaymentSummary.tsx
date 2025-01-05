@@ -9,9 +9,9 @@ interface PaymentSummaryProps {
 
 export function PaymentSummary({ title, payments }: PaymentSummaryProps) {
   return (
-    <Card>
+    <Card className="bg-barber-black border-barber-gold">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="text-barber-gold">{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <PaymentHistoryTable payments={payments} />
