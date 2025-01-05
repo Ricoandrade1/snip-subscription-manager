@@ -26,9 +26,10 @@ export default function Members({ planType }: MembersProps) {
   }, [session, navigate]);
 
   const getInitialTab = () => {
-    if (planType === "Basic") return "basic";
-    if (planType === "Classic") return "classic";
-    if (planType === "Business") return "business";
+    const currentPath = location.pathname;
+    if (currentPath === "/members/basic") return "basic";
+    if (currentPath === "/members/classic") return "classic";
+    if (currentPath === "/members/business") return "business";
     return "all";
   };
 
@@ -76,7 +77,7 @@ export default function Members({ planType }: MembersProps) {
           </Dialog>
         </header>
 
-        <Tabs defaultValue={getInitialTab()} className="w-full" onValueChange={handleTabChange}>
+        <Tabs value={getInitialTab()} className="w-full" onValueChange={handleTabChange}>
           <TabsList className="w-full justify-start bg-barber-gray">
             <TabsTrigger value="all" className="text-barber-light">
               Todos ({members.length})
