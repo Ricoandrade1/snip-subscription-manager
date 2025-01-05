@@ -51,7 +51,6 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
     
     barberData.forEach(barber => {
       if (!(barber.id in initializedRates)) {
-        // Use a taxa de comissão padrão do barbeiro se não houver uma taxa específica
         initializedRates[barber.id] = barber.commission_rate || 0;
       }
     });
@@ -75,6 +74,8 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
           shouldDirty: true,
           shouldTouch: true
         });
+      } else {
+        toast.error("A comissão deve estar entre 0 e 100%");
       }
     } catch (error) {
       console.error("Error updating commission rate:", error);
