@@ -45,35 +45,44 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar>
-      <SidebarContent>
-        <div className="flex items-center gap-2 px-2 py-2">
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Menu className="h-4 w-4" />
-          </Button>
-          <span className="font-semibold text-barber-gold">Barbearia</span>
-          <div className="ml-auto">
-            <SidebarTrigger />
+    <>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="fixed top-4 left-4 z-50 md:hidden"
+      >
+        <Menu className="h-4 w-4" />
+      </Button>
+      <Sidebar>
+        <SidebarContent>
+          <div className="flex items-center gap-2 px-2 py-2">
+            <Button variant="ghost" size="icon" className="h-8 w-8 hidden md:flex">
+              <Menu className="h-4 w-4" />
+            </Button>
+            <span className="font-semibold text-barber-gold">Barbearia</span>
+            <div className="ml-auto">
+              <SidebarTrigger />
+            </div>
           </div>
-        </div>
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItemComponent
-                  key={item.title}
-                  item={item}
-                  isActiveRoute={isActiveRoute}
-                  openSubmenus={openSubmenus}
-                  toggleSubmenu={toggleSubmenu}
-                  getSubscriberCount={getMembersByPlan}
-                />
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+          <SidebarGroup>
+            <SidebarGroupLabel>Menu</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {menuItems.map((item) => (
+                  <SidebarMenuItemComponent
+                    key={item.title}
+                    item={item}
+                    isActiveRoute={isActiveRoute}
+                    openSubmenus={openSubmenus}
+                    toggleSubmenu={toggleSubmenu}
+                    getSubscriberCount={getMembersByPlan}
+                  />
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    </>
   );
 }
