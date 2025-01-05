@@ -14,21 +14,21 @@ export function CartItem({
   onRemoveItem,
 }: CartItemProps) {
   return (
-    <div className="flex items-center gap-4 p-4 border rounded-lg bg-white">
+    <div className="flex items-center gap-4 p-4 border rounded-lg">
       {item.image_url ? (
         <img
           src={item.image_url}
           alt={item.name}
-          className="w-16 h-16 object-cover rounded flex-shrink-0"
+          className="w-16 h-16 object-cover rounded"
         />
       ) : (
-        <div className="w-16 h-16 bg-muted rounded flex items-center justify-center flex-shrink-0">
+        <div className="w-16 h-16 bg-muted rounded flex items-center justify-center">
           Sem imagem
         </div>
       )}
 
-      <div className="flex-1 min-w-0">
-        <h3 className="font-medium truncate">{item.name}</h3>
+      <div className="flex-1">
+        <h3 className="font-medium">{item.name}</h3>
         <p className="text-sm text-muted-foreground">
           {new Intl.NumberFormat("pt-PT", {
             style: "currency",
@@ -37,7 +37,7 @@ export function CartItem({
         </p>
       </div>
 
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex items-center gap-2">
         <Button
           variant="outline"
           size="icon"

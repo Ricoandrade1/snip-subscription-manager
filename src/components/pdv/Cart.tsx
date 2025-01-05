@@ -21,30 +21,26 @@ export function Cart({
 
   return (
     <Card className="h-full flex flex-col">
-      <div className="flex-shrink-0">
-        <CartHeader itemCount={items.length} />
-      </div>
+      <CartHeader itemCount={items.length} />
       
-      <div className="flex-1 min-h-0 overflow-auto">
-        <div className="p-4 space-y-4">
-          {items.length === 0 ? (
-            <div className="h-full flex items-center justify-center text-muted-foreground py-8">
-              Carrinho vazio
-            </div>
-          ) : (
-            items.map((item) => (
-              <CartItem
-                key={item.id}
-                item={item}
-                onUpdateQuantity={onUpdateQuantity}
-                onRemoveItem={onRemoveItem}
-              />
-            ))
-          )}
-        </div>
+      <div className="flex-1 overflow-auto p-4 space-y-4">
+        {items.length === 0 ? (
+          <div className="h-full flex items-center justify-center text-muted-foreground">
+            Carrinho vazio
+          </div>
+        ) : (
+          items.map((item) => (
+            <CartItem
+              key={item.id}
+              item={item}
+              onUpdateQuantity={onUpdateQuantity}
+              onRemoveItem={onRemoveItem}
+            />
+          ))
+        )}
       </div>
 
-      <div className="flex-shrink-0 border-t">
+      <div className="p-4 border-t">
         <CartPayment
           items={items}
           total={total}
