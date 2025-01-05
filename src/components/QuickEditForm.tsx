@@ -8,6 +8,7 @@ import { PersonalInfoFields } from "./member-form/PersonalInfoFields";
 import { PlanFields } from "./member-form/PlanFields";
 import { PaymentDateField } from "./PaymentDateField";
 import { formSchema } from "./member-form/schema";
+import { toast } from "sonner";
 
 interface QuickEditFormProps {
   member: Member;
@@ -28,11 +29,23 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
   });
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-    const formattedData = {
-      ...data,
-      payment_date: data.payment_date?.toISOString() || null,
-    };
-    await onSubmit(formattedData);
+    try {
+      // Check if plan was changed
+      if (data.plan !== member.plan) {
+        console.log('Plan changed from', member.plan, 'to', data.plan);
+        toast.success(`Plano alterado de ${member.plan} para ${data.plan}`);
+      }
+
+      const formattedData = {
+        ...data,
+        payment_date: data.payment_date?.toISOString() || null,
+      };
+      
+      await onSubmit(formattedData);
+    } catch (error) {
+      console.error('Erro ao atualizar membro:', error);
+      toast.error('Erro ao atualizar membro');
+    }
   };
 
   return (
