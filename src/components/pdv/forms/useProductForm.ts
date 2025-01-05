@@ -44,10 +44,12 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
         toast.error("Você precisa estar logado para salvar produtos");
         return;
       }
+
+      console.log("Current session:", session); // Debug log
       
       const productData = {
         name: values.name,
-        description: values.description,
+        description: values.description || null,
         price: parseFloat(values.price),
         stock: values.stock ? parseInt(values.stock) : 0,
         brand_id: values.brand || null,
@@ -56,20 +58,22 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
         vat_included: values.vat_included,
       };
 
-      console.log("Saving product with data:", productData);
+      console.log("Saving product with data:", productData); // Debug log
 
       let error;
       if (initialData) {
-        const { error: updateError } = await supabase
+        const { error: updateError, data } = await supabase
           .from("products")
           .update(productData)
           .eq("id", initialData.id);
         error = updateError;
+        console.log("Update response:", { error: updateError, data }); // Debug log
       } else {
-        const { error: insertError } = await supabase
+        const { error: insertError, data } = await supabase
           .from("products")
           .insert(productData);
         error = insertError;
+        console.log("Insert response:", { error: insertError, data }); // Debug log
       }
 
       if (error) {
@@ -85,7 +89,14 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
       onSuccess?.();
     } catch (error: any) {
       console.error("Error saving product:", error);
-      toast.error(error.message || "Erro ao salvar produto");
+      const errorMessage = error.message || "Erro ao salvar produto";
+      console.error("Full error details:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
