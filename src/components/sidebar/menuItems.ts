@@ -3,17 +3,16 @@ import {
   DollarSign,
   Users,
   Package,
-  ArrowUpDown,
   Building,
   Tags,
   Grid,
   Store,
   UserCog,
-  Clock,
   Calendar,
   CalendarDays,
   CalendarRange,
   Wallet,
+  Scissors,
 } from "lucide-react";
 
 export const menuItems = [
@@ -33,9 +32,9 @@ export const menuItems = [
     url: "/products",
   },
   {
-    title: "Variações",
-    icon: ArrowUpDown,
-    url: "/variations",
+    title: "Barbeiros",
+    icon: Scissors,
+    url: "/barbers",
   },
   {
     title: "Clientes",
