@@ -34,18 +34,28 @@ export function NavigationMenuItem({
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Verifica se algum item do submenu está ativo
-  const hasActiveSubmenuItem = item.submenu?.some(
-    (subItem) => location.pathname === subItem.url || 
-    (item.title === "Membros" && location.pathname.startsWith('/members'))
-  );
+  const isSubmenuActive = (submenuItem: { url: string }) => {
+    if (submenuItem.url === '/members') {
+      return location.pathname === '/members';
+    }
+    return location.pathname === submenuItem.url;
+  };
 
-  // Mantém o submenu aberto se algum item estiver ativo
+  const hasActiveSubmenuItem = item.submenu?.some((subItem) => {
+    if (item.title === "Membros") {
+      if (subItem.url === '/members') {
+        return location.pathname === '/members';
+      }
+      return location.pathname.startsWith(subItem.url);
+    }
+    return location.pathname === subItem.url;
+  });
+
   useEffect(() => {
     if (hasActiveSubmenuItem) {
       setIsOpen(true);
     }
-  }, [location.pathname, hasActiveSubmenuItem]);
+  }, [hasActiveSubmenuItem]);
 
   const handleNavigation = (url: string) => {
     navigate(url);
@@ -77,10 +87,7 @@ export function NavigationMenuItem({
                   <button
                     onClick={() => handleNavigation(subItem.url)}
                     className={`w-full flex items-center justify-between p-2 rounded-md hover:bg-muted ${
-                      location.pathname === subItem.url || 
-                      (subItem.url === '/members' && location.pathname.startsWith('/members/'))
-                        ? "bg-muted"
-                        : ""
+                      isSubmenuActive(subItem) ? "bg-muted" : ""
                     }`}
                   >
                     <span>{subItem.title}</span>
