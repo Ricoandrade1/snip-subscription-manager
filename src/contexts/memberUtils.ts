@@ -32,10 +32,10 @@ export const fetchMembersFromDB = async () => {
     name: member.name || '',
     nickname: member.nickname || '',
     phone: member.phone || '',
+    nif: member.nif || '',
     plan_id: member.plan_id,
     plan: member.plans?.title || "Basic",
     created_at: member.created_at,
-    due_date: member.due_date,
     payment_date: member.payment_date,
   })) as Member[];
 
@@ -64,17 +64,46 @@ export const addMemberToDB = async (member: Omit<Member, "id" | "plan">) => {
 };
 
 export const updateMemberInDB = async (id: string, member: Partial<Member>) => {
-  const { error } = await supabase
-    .from('members')
-    .update({
-      name: member.name,
-      nickname: member.nickname,
-      phone: member.phone,
-      plan_id: member.plan_id,
-    })
-    .eq('id', id);
+  try {
+    // Primeiro, buscar o plan_id baseado no título do plano
+    if (member.plan) {
+      const { data: planData, error: planError } = await supabase
+        .from('plans')
+        .select('id')
+        .eq('title', member.plan)
+        .single();
 
-  if (error) throw error;
+      if (planError) {
+        console.error('Erro ao buscar plano:', planError);
+        throw planError;
+      }
+
+      // Atualizar o member com o plan_id correto
+      const updateData = {
+        name: member.name,
+        nickname: member.nickname,
+        phone: member.phone,
+        nif: member.nif,
+        plan_id: planData.id,
+        payment_date: member.payment_date,
+      };
+
+      const { error } = await supabase
+        .from('members')
+        .update(updateData)
+        .eq('id', id);
+
+      if (error) {
+        console.error('Erro ao atualizar membro:', error);
+        throw error;
+      }
+
+      console.log('Membro atualizado com sucesso:', { id, ...updateData });
+    }
+  } catch (error) {
+    console.error('Erro ao atualizar membro:', error);
+    throw error;
+  }
 };
 
 export const deleteMemberFromDB = async (id: string) => {

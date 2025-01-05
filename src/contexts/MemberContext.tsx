@@ -43,32 +43,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         },
         async (payload) => {
           console.log('Realtime change received:', payload);
-          
-          switch (payload.eventType) {
-            case 'INSERT':
-              const newMember = payload.new as Member;
-              setMembers(prev => [...prev, newMember]);
-              toast.success('Novo membro adicionado');
-              break;
-            
-            case 'UPDATE':
-              const updatedMember = payload.new as Member;
-              setMembers(prev => 
-                prev.map(member => 
-                  member.id === updatedMember.id ? updatedMember : member
-                )
-              );
-              toast.success('Membro atualizado');
-              break;
-            
-            case 'DELETE':
-              const deletedMember = payload.old as Member;
-              setMembers(prev => 
-                prev.filter(member => member.id !== deletedMember.id)
-              );
-              toast.success('Membro removido');
-              break;
-          }
+          await fetchMembers(); // Recarrega todos os membros para garantir dados atualizados
         }
       )
       .subscribe();
@@ -100,7 +75,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     try {
       const newMember = await addMemberToDB(member);
-      setMembers(prev => [...prev, { ...member, id: newMember.id } as Member]);
+      await fetchMembers(); // Recarrega a lista após adicionar
       toast.success('Membro adicionado com sucesso!');
     } catch (error) {
       console.error('Erro ao adicionar membro:', error);
@@ -116,11 +91,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     try {
       await updateMemberInDB(id, updatedFields);
-      setMembers(prev =>
-        prev.map(member =>
-          member.id === id ? { ...member, ...updatedFields } : member
-        )
-      );
+      await fetchMembers(); // Recarrega a lista após atualizar
       toast.success('Membro atualizado com sucesso!');
     } catch (error) {
       console.error('Erro ao atualizar membro:', error);
@@ -136,7 +107,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     try {
       await deleteMemberFromDB(id);
-      setMembers(prev => prev.filter(member => member.id !== id));
+      await fetchMembers(); // Recarrega a lista após deletar
       toast.success('Membro removido com sucesso!');
     } catch (error) {
       console.error('Erro ao deletar membro:', error);
