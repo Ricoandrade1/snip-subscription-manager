@@ -36,7 +36,8 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     setIsDeleting(true);
     try {
       const { error } = await supabase
@@ -157,10 +158,7 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
                           Cancelar
                         </AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete();
-                          }}
+                          onClick={handleDelete}
                           className="bg-destructive hover:bg-destructive/90"
                           disabled={isDeleting}
                         >
