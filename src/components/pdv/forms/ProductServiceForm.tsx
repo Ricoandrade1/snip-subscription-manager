@@ -4,9 +4,10 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ProductBasicFields } from "./ProductBasicFields";
 import { ProductCategoryFields } from "./ProductCategoryFields";
+import { ProductCommissionFields } from "./ProductCommissionFields";
 import { productFormSchema, type ProductFormValues } from "./schema";
 
 interface Product {
@@ -17,16 +18,7 @@ interface Product {
   stock?: number;
   brand?: string | null;
   category?: string | null;
-}
-
-interface Brand {
-  id: string;
-  name: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
+  commission_rates?: Record<string, number>;
 }
 
 interface ProductServiceFormProps {
@@ -35,8 +27,6 @@ interface ProductServiceFormProps {
 }
 
 export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFormProps) {
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<ProductFormValues>({
@@ -48,31 +38,9 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
       stock: initialData?.stock?.toString() ?? "",
       brand: initialData?.brand ?? "",
       category: initialData?.category ?? "",
+      commission_rates: initialData?.commission_rates ?? {},
     },
   });
-
-  useEffect(() => {
-    fetchBrandsAndCategories();
-  }, []);
-
-  const fetchBrandsAndCategories = async () => {
-    try {
-      const [brandsResponse, categoriesResponse] = await Promise.all([
-        supabase.from("brands").select("*").order("name"),
-        supabase.from("categories").select("*").order("name"),
-      ]);
-
-      if (brandsResponse.data) {
-        setBrands(brandsResponse.data);
-      }
-      if (categoriesResponse.data) {
-        setCategories(categoriesResponse.data);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      toast.error("Erro ao carregar marcas e categorias");
-    }
-  };
 
   const onSubmit = async (values: ProductFormValues) => {
     setIsLoading(true);
@@ -84,6 +52,7 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
         stock: values.stock ? parseInt(values.stock) : 0,
         brand_id: values.brand || null,
         category_id: values.category || null,
+        commission_rates: values.commission_rates || {},
       };
 
       const { error } = initialData
@@ -111,13 +80,16 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <ProductBasicFields form={form} />
-        <ProductCategoryFields 
-          form={form}
-          brands={brands}
-          categories={categories}
-        />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            <ProductBasicFields form={form} />
+          </div>
+          <div className="space-y-6">
+            <ProductCategoryFields form={form} />
+            <ProductCommissionFields form={form} />
+          </div>
+        </div>
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isLoading}>

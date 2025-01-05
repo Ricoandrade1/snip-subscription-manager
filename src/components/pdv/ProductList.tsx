@@ -56,7 +56,7 @@ export function ProductList({ onProductSelect, filters = { name: "", category: "
       setIsLoading(true);
       let query = supabase
         .from("products")
-        .select("*")
+        .select("*, brands(name), categories(name)")
         .order("name");
 
       if (filters.name) {
@@ -100,7 +100,7 @@ export function ProductList({ onProductSelect, filters = { name: "", category: "
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {isLoading ? (
           <div className="col-span-full text-center">Carregando produtos...</div>
         ) : products.length === 0 ? (
@@ -120,17 +120,39 @@ export function ProductList({ onProductSelect, filters = { name: "", category: "
                 }
               }}
             >
-              <div className="text-sm font-medium">{product.name}</div>
-              <div className="text-2xl font-bold text-barber-gold">
-                {new Intl.NumberFormat("pt-BR", {
-                  style: "currency",
-                  currency: "EUR",
-                }).format(product.price)}
-              </div>
-              <div className={`text-xs ${
-                product.stock === 0 ? 'text-red-500' : 'text-muted-foreground'
-              }`}>
-                Estoque: {product.stock}
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="text-sm font-medium">{product.name}</div>
+                  <div className="text-2xl font-bold text-barber-gold">
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "EUR",
+                    }).format(product.price)}
+                  </div>
+                  <div className={`text-xs ${
+                    product.stock === 0 ? 'text-red-500' : 'text-muted-foreground'
+                  }`}>
+                    Estoque: {product.stock}
+                  </div>
+                  {product.brands && (
+                    <div className="text-xs text-muted-foreground">
+                      Marca: {product.brands.name}
+                    </div>
+                  )}
+                  {product.categories && (
+                    <div className="text-xs text-muted-foreground">
+                      Categoria: {product.categories.name}
+                    </div>
+                  )}
+                </div>
+                {product.commission_rates && Object.keys(product.commission_rates).length > 0 && (
+                  <div className="text-xs text-muted-foreground">
+                    <div className="font-medium">Comissões:</div>
+                    {Object.entries(product.commission_rates).map(([barberId, rate]) => (
+                      <div key={barberId}>{rate}%</div>
+                    ))}
+                  </div>
+                )}
               </div>
             </Card>
           ))

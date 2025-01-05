@@ -247,6 +247,7 @@ export type Database = {
           available_stores: string[] | null
           brand_id: string | null
           category_id: string | null
+          commission_rates: Json | null
           created_at: string
           description: string | null
           id: string
@@ -262,6 +263,7 @@ export type Database = {
           available_stores?: string[] | null
           brand_id?: string | null
           category_id?: string | null
+          commission_rates?: Json | null
           created_at?: string
           description?: string | null
           id?: string
@@ -277,6 +279,7 @@ export type Database = {
           available_stores?: string[] | null
           brand_id?: string | null
           category_id?: string | null
+          commission_rates?: Json | null
           created_at?: string
           description?: string | null
           id?: string
