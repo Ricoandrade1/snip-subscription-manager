@@ -1,98 +1,46 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemberContext } from "@/contexts/MemberContext";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Payment } from "@/contexts/types";
-import { PaymentSummary } from "@/components/revenue/PaymentSummary";
+import { RevenueInvoices } from "@/components/revenue/RevenueInvoices";
+import { RevenueMonthly } from "@/components/revenue/RevenueMonthly";
+import { RevenueYearly } from "@/components/revenue/RevenueYearly";
+import { RevenuePlanForecast } from "@/components/revenue/RevenuePlanForecast";
 import { usePayments } from "@/components/revenue/usePayments";
 
 export default function Revenue() {
   const { members } = useMemberContext();
   const { payments } = usePayments();
 
-  const getPaymentsByPlan = () => {
-    const planPayments: Record<string, Payment> = {
-      Basic: { 
-        id: 'basic-summary',
-        memberName: "Basic",
-        plan: "Basic",
-        amount: members.filter(m => m.plan === "Basic").length * 30,
-        date: new Date().toISOString(),
-        status: "paid"
-      },
-      Classic: {
-        id: 'classic-summary',
-        memberName: "Classic",
-        plan: "Classic",
-        amount: members.filter(m => m.plan === "Classic").length * 40,
-        date: new Date().toISOString(),
-        status: "paid"
-      },
-      Business: {
-        id: 'business-summary',
-        memberName: "Business",
-        plan: "Business",
-        amount: members.filter(m => m.plan === "Business").length * 50,
-        date: new Date().toISOString(),
-        status: "paid"
-      },
-    };
-
-    return Object.values(planPayments);
-  };
-
-  const getMonthlyPayments = (): Payment[] => {
-    return members.map((member) => ({
-      id: member.id,
-      memberName: member.name,
-      plan: member.plan,
-      amount: member.plan === "Basic" ? 30 : member.plan === "Classic" ? 40 : 50,
-      date: member.payment_date || new Date().toISOString(),
-      dueDate: member.due_date,
-      status: member.payment_date ? "paid" : "pending"
-    }));
-  };
-
-  const getYearlyPayments = (): Payment[] => {
-    const yearlyTotal = members.reduce((acc, member) => {
-      const monthlyAmount = member.plan === "Basic" ? 30 : member.plan === "Classic" ? 40 : 50;
-      return acc + (monthlyAmount * 12);
-    }, 0);
-
-    return [{
-      id: 'yearly-summary',
-      memberName: "Total Anual",
-      plan: "Basic",
-      amount: yearlyTotal,
-      date: format(new Date(), "yyyy", { locale: ptBR }),
-      status: "paid"
-    }];
-  };
-
   return (
     <div className="p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Receita</h1>
+          <h1 className="text-3xl font-bold text-barber-gold">Receita</h1>
         </div>
 
-        <Tabs defaultValue="monthly" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="monthly">Mensal</TabsTrigger>
-            <TabsTrigger value="yearly">Anual</TabsTrigger>
-            <TabsTrigger value="by-plan">Por Plano</TabsTrigger>
+        <Tabs defaultValue="invoices" className="space-y-6">
+          <TabsList className="bg-barber-gray">
+            <TabsTrigger value="invoices" className="text-barber-light">Fatura</TabsTrigger>
+            <TabsTrigger value="monthly" className="text-barber-light">Mensal</TabsTrigger>
+            <TabsTrigger value="yearly" className="text-barber-light">Anual</TabsTrigger>
+            <TabsTrigger value="by-plan" className="text-barber-light">Por Plano</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="invoices">
+            <RevenueInvoices payments={payments} />
+          </TabsContent>
+
           <TabsContent value="monthly">
-            <PaymentSummary title="Receita Mensal" payments={getMonthlyPayments()} />
+            <RevenueMonthly payments={payments} />
           </TabsContent>
 
           <TabsContent value="yearly">
-            <PaymentSummary title="Receita Anual" payments={getYearlyPayments()} />
+            <RevenueYearly payments={payments} />
           </TabsContent>
 
           <TabsContent value="by-plan">
-            <PaymentSummary title="Receita por Plano" payments={getPaymentsByPlan()} />
+            <RevenuePlanForecast members={members} payments={payments} />
           </TabsContent>
         </Tabs>
       </div>
