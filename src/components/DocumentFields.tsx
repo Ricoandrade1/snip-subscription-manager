@@ -15,9 +15,9 @@ export function DocumentFields({ form }: DocumentFieldsProps) {
         name="nif"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>NIF</FormLabel>
+            <FormLabel className="text-sm">NIF</FormLabel>
             <FormControl>
-              <Input placeholder="Número de Identificação Fiscal" {...field} />
+              <Input placeholder="Número de Identificação Fiscal" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -29,9 +29,9 @@ export function DocumentFields({ form }: DocumentFieldsProps) {
         name="passport"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Passaporte</FormLabel>
+            <FormLabel className="text-sm">Passaporte</FormLabel>
             <FormControl>
-              <Input placeholder="Número do Passaporte" {...field} />
+              <Input placeholder="Número do Passaporte" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -43,9 +43,9 @@ export function DocumentFields({ form }: DocumentFieldsProps) {
         name="citizenCard"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Cartão Cidadão</FormLabel>
+            <FormLabel className="text-sm">Cartão Cidadão</FormLabel>
             <FormControl>
-              <Input placeholder="Número do Cartão Cidadão" {...field} />
+              <Input placeholder="Número do Cartão Cidadão" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -57,9 +57,9 @@ export function DocumentFields({ form }: DocumentFieldsProps) {
         name="bi"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>BI</FormLabel>
+            <FormLabel className="text-sm">BI</FormLabel>
             <FormControl>
-              <Input placeholder="Número do BI" {...field} />
+              <Input placeholder="Número do BI" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>

@@ -15,9 +15,9 @@ export function BankingFields({ form }: BankingFieldsProps) {
         name="bank"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Banco</FormLabel>
+            <FormLabel className="text-sm">Banco</FormLabel>
             <FormControl>
-              <Input placeholder="Nome do Banco" {...field} />
+              <Input placeholder="Nome do Banco" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -29,9 +29,9 @@ export function BankingFields({ form }: BankingFieldsProps) {
         name="iban"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>IBAN</FormLabel>
+            <FormLabel className="text-sm">IBAN</FormLabel>
             <FormControl>
-              <Input placeholder="PT50..." {...field} />
+              <Input placeholder="PT50..." {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -43,9 +43,9 @@ export function BankingFields({ form }: BankingFieldsProps) {
         name="debitDate"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Data de Débito</FormLabel>
+            <FormLabel className="text-sm">Data de Débito</FormLabel>
             <FormControl>
-              <Input type="date" {...field} />
+              <Input type="date" {...field} className="h-8" />
             </FormControl>
             <FormMessage />
           </FormItem>

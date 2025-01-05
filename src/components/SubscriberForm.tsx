@@ -78,18 +78,28 @@ export function SubscriberForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <PersonalInfoFields form={form} />
-          <DocumentFields form={form} />
-          <BankingFields form={form} />
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="max-w-3xl mx-auto p-4 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-4">
+            <PersonalInfoFields form={form} />
+          </div>
+          <div className="space-y-4">
+            <DocumentFields form={form} />
+          </div>
+          <div className="space-y-4">
+            <BankingFields form={form} />
+          </div>
         </div>
 
-        <PlanFields form={form} />
+        <div className="max-w-md mx-auto">
+          <PlanFields form={form} />
+        </div>
 
-        <Button type="submit" className="w-full">
-          Cadastrar Assinante
-        </Button>
+        <div className="flex justify-center">
+          <Button type="submit" className="w-48">
+            Cadastrar Assinante
+          </Button>
+        </div>
       </form>
     </Form>
   );

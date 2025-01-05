@@ -14,35 +14,35 @@ export function PlanFields({ form }: PlanFieldsProps) {
       name="plan"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Plano</FormLabel>
+          <FormLabel className="text-sm">Plano</FormLabel>
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}
               defaultValue={field.value}
-              className="flex flex-col space-y-1"
+              className="flex flex-row justify-center gap-4"
             >
-              <FormItem className="flex items-center space-x-3 space-y-0">
+              <FormItem className="flex items-center space-x-2">
                 <FormControl>
                   <RadioGroupItem value="Basic" />
                 </FormControl>
-                <FormLabel className="font-normal">
-                  Basic - Somente Barba (30€)
+                <FormLabel className="text-sm">
+                  Basic (30€)
                 </FormLabel>
               </FormItem>
-              <FormItem className="flex items-center space-x-3 space-y-0">
+              <FormItem className="flex items-center space-x-2">
                 <FormControl>
                   <RadioGroupItem value="Classic" />
                 </FormControl>
-                <FormLabel className="font-normal">
-                  Classic - Somente Cabelo (40€)
+                <FormLabel className="text-sm">
+                  Classic (40€)
                 </FormLabel>
               </FormItem>
-              <FormItem className="flex items-center space-x-3 space-y-0">
+              <FormItem className="flex items-center space-x-2">
                 <FormControl>
                   <RadioGroupItem value="Business" />
                 </FormControl>
-                <FormLabel className="font-normal">
-                  Business - Cabelo e Barba (50€)
+                <FormLabel className="text-sm">
+                  Business (50€)
                 </FormLabel>
               </FormItem>
             </RadioGroup>
