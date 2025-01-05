@@ -33,24 +33,18 @@ export function SidebarMenuItemComponent({
   };
 
   const isSubmenuItemActive = (url: string) => {
-    const currentPath = location.pathname;
-    
-    if (url === "/members" && currentPath === "/members") {
-      return true;
-    }
-    
-    if (url.startsWith("/members/")) {
-      return currentPath === url;
-    }
-    
-    return currentPath === url;
+    return location.pathname === url;
   };
 
   if (item.submenu) {
+    const hasActiveSubmenuItem = item.submenu.some((subItem: any) => 
+      isSubmenuItemActive(subItem.url)
+    );
+
     return (
       <BaseSidebarMenuItem>
         <Collapsible
-          open={openSubmenus.includes(item.title)}
+          open={openSubmenus.includes(item.title) || hasActiveSubmenuItem}
           onOpenChange={() => toggleSubmenu(item.title)}
         >
           <CollapsibleTrigger asChild>
@@ -62,7 +56,7 @@ export function SidebarMenuItemComponent({
                 </div>
                 <ChevronDown
                   className={`h-4 w-4 transition-transform duration-200 ${
-                    openSubmenus.includes(item.title) ? "rotate-180" : ""
+                    openSubmenus.includes(item.title) || hasActiveSubmenuItem ? "rotate-180" : ""
                   }`}
                 />
               </div>

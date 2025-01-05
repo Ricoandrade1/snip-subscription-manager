@@ -26,15 +26,7 @@ export function AppSidebar() {
   useEffect(() => {
     const currentPath = location.pathname;
     const activeMenuItem = menuItems.find(item => 
-      item.submenu?.some(subItem => {
-        if (currentPath === "/members" && subItem.url === "/members") {
-          return true;
-        }
-        if (currentPath.startsWith("/members/") && subItem.url.startsWith("/members/")) {
-          return currentPath === subItem.url;
-        }
-        return currentPath === subItem.url;
-      }) ||
+      item.submenu?.some(subItem => currentPath === subItem.url) ||
       currentPath === item.url
     );
     
@@ -52,14 +44,7 @@ export function AppSidebar() {
   };
 
   const isActiveRoute = (url: string) => {
-    const currentPath = location.pathname;
-    if (url === "/members") {
-      return currentPath === "/members";
-    }
-    if (url.startsWith("/members/")) {
-      return currentPath === url;
-    }
-    return currentPath === url;
+    return location.pathname === url;
   };
 
   return (
