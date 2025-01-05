@@ -7,20 +7,26 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { UseFormReturn } from "react-hook-form";
-import { SubscriberFormData } from "./SubscriberForm";
+import { z } from "zod";
 
 interface PaymentDateFieldProps {
-  form: UseFormReturn<SubscriberFormData>;
+  form: UseFormReturn<any>;
+  name?: string;
+  label?: string;
 }
 
-export function PaymentDateField({ form }: PaymentDateFieldProps) {
+export function PaymentDateField({ 
+  form, 
+  name = "payment_date",
+  label = "Data de Pagamento" 
+}: PaymentDateFieldProps) {
   return (
     <FormField
       control={form.control}
-      name="payment_date"
+      name={name}
       render={({ field }) => (
         <FormItem className="flex flex-col">
-          <FormLabel>Data de Pagamento</FormLabel>
+          <FormLabel>{label}</FormLabel>
           <Popover>
             <PopoverTrigger asChild>
               <FormControl>

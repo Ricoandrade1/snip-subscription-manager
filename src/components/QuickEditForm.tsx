@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Member } from "@/contexts/MemberContext";
 import { PersonalInfoFields } from "./member-form/PersonalInfoFields";
 import { PlanFields } from "./member-form/PlanFields";
+import { PaymentDateField } from "./PaymentDateField";
 import { formSchema } from "./member-form/schema";
 
 interface QuickEditFormProps {
@@ -39,7 +40,10 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <PersonalInfoFields form={form} />
-          <PlanFields form={form} />
+          <div className="space-y-6">
+            <PlanFields form={form} />
+            <PaymentDateField form={form} />
+          </div>
         </div>
 
         <div className="flex justify-end space-x-2">
