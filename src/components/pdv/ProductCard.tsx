@@ -42,37 +42,46 @@ export function ProductCard({ product, barbers, onSelect }: ProductCardProps) {
       <div className="space-y-2">
         <div className="text-lg font-medium">{product.name}</div>
         
-        <div className="space-y-1 text-sm">
-          <div className="flex justify-between text-muted-foreground">
-            <span>Preço sem IVA:</span>
-            <span>
-              {new Intl.NumberFormat("pt-PT", {
-                style: "currency",
-                currency: "EUR",
-              }).format(priceWithoutVat)}
-            </span>
+        {product.vat_rate > 0 ? (
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between text-muted-foreground">
+              <span>Preço sem IVA:</span>
+              <span>
+                {new Intl.NumberFormat("pt-PT", {
+                  style: "currency",
+                  currency: "EUR",
+                }).format(priceWithoutVat)}
+              </span>
+            </div>
+            
+            <div className="flex justify-between text-muted-foreground">
+              <span>IVA ({product.vat_rate}%):</span>
+              <span>
+                {new Intl.NumberFormat("pt-PT", {
+                  style: "currency",
+                  currency: "EUR",
+                }).format(vatAmount)}
+              </span>
+            </div>
+            
+            <div className="flex justify-between font-bold pt-1 border-t">
+              <span>Total com IVA:</span>
+              <span>
+                {new Intl.NumberFormat("pt-PT", {
+                  style: "currency",
+                  currency: "EUR",
+                }).format(totalWithVat)}
+              </span>
+            </div>
           </div>
-          
-          <div className="flex justify-between text-muted-foreground">
-            <span>IVA ({product.vat_rate}%):</span>
-            <span>
-              {new Intl.NumberFormat("pt-PT", {
-                style: "currency",
-                currency: "EUR",
-              }).format(vatAmount)}
-            </span>
+        ) : (
+          <div className="text-lg font-bold">
+            {new Intl.NumberFormat("pt-PT", {
+              style: "currency",
+              currency: "EUR",
+            }).format(product.price)}
           </div>
-          
-          <div className="flex justify-between font-bold pt-1 border-t">
-            <span>Total com IVA:</span>
-            <span>
-              {new Intl.NumberFormat("pt-PT", {
-                style: "currency",
-                currency: "EUR",
-              }).format(totalWithVat)}
-            </span>
-          </div>
-        </div>
+        )}
         
         <div className="flex flex-wrap gap-2 text-xs text-muted-foreground mt-2">
           <div className={`${product.stock === 0 ? 'text-red-500' : ''}`}>
