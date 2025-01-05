@@ -36,33 +36,41 @@ export const fetchMembersFromDB = async () => {
     return [];
   }
 
-  const formattedMembers = membersData.map(member => ({
-    id: member.id,
-    name: member.name,
-    nickname: member.nickname || '',
-    phone: member.phone,
-    nif: member.nif || '',
-    birthDate: member.birth_date,
-    passport: member.passport || '',
-    citizenCard: member.citizen_card || '',
-    bi: member.bi || '',
-    bank: member.bank,
-    iban: member.iban,
-    debitDate: member.debit_date,
-    plan: member.plan_id === 1 ? 'Basic' : member.plan_id === 2 ? 'Classic' : 'Business',
-    nextPaymentDue: member.debit_date,
-    paymentHistory: member.payments?.map(payment => ({
-      date: payment.payment_date,
-      amount: payment.amount,
-      status: payment.status,
-      receiptUrl: payment.receipt_url || undefined
-    })),
-    visits: member.visits?.map(visit => ({
-      date: visit.visit_date,
-      service: visit.service,
-      barber: visit.barber
-    }))
-  }));
+  const formattedMembers = membersData.map(member => {
+    let planType: Member["plan"];
+    
+    if (member.plan_id === 1) planType = "Basic";
+    else if (member.plan_id === 2) planType = "Classic";
+    else planType = "Business";
+
+    return {
+      id: member.id,
+      name: member.name,
+      nickname: member.nickname || '',
+      phone: member.phone,
+      nif: member.nif || '',
+      birthDate: member.birth_date,
+      passport: member.passport || '',
+      citizenCard: member.citizen_card || '',
+      bi: member.bi || '',
+      bank: member.bank,
+      iban: member.iban,
+      debitDate: member.debit_date,
+      plan: planType,
+      nextPaymentDue: member.debit_date,
+      paymentHistory: member.payments?.map(payment => ({
+        date: payment.payment_date,
+        amount: payment.amount,
+        status: payment.status,
+        receiptUrl: payment.receipt_url || undefined
+      })),
+      visits: member.visits?.map(visit => ({
+        date: visit.visit_date,
+        service: visit.service,
+        barber: visit.barber
+      }))
+    } as Member;
+  });
 
   console.log('Membros formatados:', formattedMembers);
   return formattedMembers;
