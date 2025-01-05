@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { Menu } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,6 +13,7 @@ import {
 import { useMemberContext } from "@/contexts/MemberContext";
 import { menuItems } from "./sidebar/menuItems";
 import { SidebarMenuItemComponent } from "./sidebar/SidebarMenuItem";
+import { Button } from "./ui/button";
 
 export function AppSidebar() {
   const location = useLocation();
@@ -45,9 +47,14 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent>
-        <div className="flex items-center justify-between px-2 py-2">
+        <div className="flex items-center gap-2 px-2 py-2">
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Menu className="h-4 w-4" />
+          </Button>
           <span className="font-semibold text-barber-gold">Barbearia</span>
-          <SidebarTrigger />
+          <div className="ml-auto">
+            <SidebarTrigger />
+          </div>
         </div>
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
