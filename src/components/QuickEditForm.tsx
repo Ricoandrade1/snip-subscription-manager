@@ -23,7 +23,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       phone: member.phone || "",
       nif: member.nif || "",
       plan: member.plan,
-      payment_date: member.payment_date ? new Date(member.payment_date) : undefined,
+      payment_date: new Date(), // Set current date as default
     },
   });
 
