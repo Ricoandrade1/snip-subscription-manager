@@ -5,7 +5,7 @@ import { ProductBasicFields } from "./forms/ProductBasicFields";
 import { ProductCategoryFields } from "./forms/ProductCategoryFields";
 import { ProductCommissionFields } from "./forms/ProductCommissionFields";
 import { supabase } from "@/integrations/supabase/client";
-import { useProductForm } from "./useProductForm";
+import { useProductForm } from "./forms/useProductForm";
 import { toast } from "sonner";
 
 interface Product {
@@ -65,7 +65,7 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={onSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-6">
             <ProductBasicFields form={form} />

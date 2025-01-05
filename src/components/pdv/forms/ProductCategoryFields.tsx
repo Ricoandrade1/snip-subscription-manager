@@ -19,7 +19,7 @@ interface ProductCategoryFieldsProps {
   categories: Category[];
 }
 
-export function ProductCategoryFields({ form, brands, categories }: ProductCategoryFieldsProps) {
+export function ProductCategoryFields({ form, brands = [], categories = [] }: ProductCategoryFieldsProps) {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Categorização</h3>
@@ -36,7 +36,7 @@ export function ProductCategoryFields({ form, brands, categories }: ProductCateg
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {brands?.map((brand) => (
+                {brands.map((brand) => (
                   <SelectItem key={brand.id} value={brand.id}>
                     {brand.name}
                   </SelectItem>
@@ -61,7 +61,7 @@ export function ProductCategoryFields({ form, brands, categories }: ProductCateg
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {categories?.map((category) => (
+                {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}
                   </SelectItem>
