@@ -9,6 +9,13 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Product } from "../types";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useState } from "react";
 
 interface ProductActionsProps {
   product: Product;
@@ -16,9 +23,12 @@ interface ProductActionsProps {
 }
 
 export function ProductActions({ product, onEdit }: ProductActionsProps) {
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [saleId, setSaleId] = useState<string | null>(null);
+
   const handleDelete = async (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent any default behavior
-    e.stopPropagation(); // Stop event propagation
+    e.preventDefault();
+    e.stopPropagation();
     
     if (!confirm('Tem certeza que deseja excluir este produto?')) {
       return;
@@ -28,7 +38,7 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
       // Verificar vendas associadas
       const { data: saleItems, error: checkError } = await supabase
         .from('sale_items')
-        .select('id')
+        .select('id, sale_id')
         .eq('product_id', product.id)
         .limit(1);
 
@@ -39,7 +49,8 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
       }
 
       if (saleItems && saleItems.length > 0) {
-        toast.error('Não é possível excluir um produto que já foi vendido');
+        setSaleId(saleItems[0].sale_id);
+        setShowErrorDialog(true);
         return;
       }
 
@@ -64,33 +75,62 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
   };
 
   return (
-    <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-      {onEdit && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="opacity-100 transition-opacity"
+    <>
+      <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+        {onEdit && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="opacity-100 transition-opacity"
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onEdit(product)}>
+                Editar produto
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
+          onClick={handleDelete}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <Dialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-destructive">
+              Não é possível excluir este produto
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-destructive">
+              Este produto não pode ser excluído pois já possui vendas registradas no sistema.
+            </p>
+            {saleId && (
+              <p className="text-sm text-muted-foreground">
+                ID da venda associada: {saleId}
+              </p>
+            )}
+            <Button 
+              variant="outline" 
+              onClick={() => setShowErrorDialog(false)}
+              className="w-full"
             >
-              <Pencil className="h-4 w-4" />
+              Fechar
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onEdit(product)}>
-              Editar produto
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
-        onClick={handleDelete}
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
-    </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
