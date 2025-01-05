@@ -35,7 +35,7 @@ export const menuItems = [
     url: "/products",
   },
   {
-    title: "Clientes",
+    title: "Membros",
     icon: Users,
     url: "/members",
     submenu: [
