@@ -59,7 +59,7 @@ export function SubscriberForm() {
         .from('plans')
         .select('id, title')
         .eq('title', data.plan)
-        .maybeSingle();
+        .single();
 
       if (planError) {
         console.error('Erro ao buscar plano:', planError);
@@ -101,7 +101,7 @@ export function SubscriberForm() {
       
       toast({
         title: "Assinante cadastrado com sucesso!",
-        description: `Número único: ${data.plan} ${String(currentSubscribers + 1).padStart(2, '0')}`,
+        description: `Número único: ${data.plan} ${String(currentSubscribers + 1).padStart(4, '0')}`,
       });
       
       form.reset();
