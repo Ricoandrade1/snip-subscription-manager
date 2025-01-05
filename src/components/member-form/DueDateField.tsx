@@ -5,7 +5,6 @@ import { CalendarIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { UseFormReturn } from "react-hook-form";
 import * as z from "zod";
 import { formSchema } from "./schema";
@@ -46,14 +45,8 @@ export function DueDateField({ form }: DueDateFieldProps) {
                 mode="single"
                 selected={field.value}
                 onSelect={(date) => {
-                  field.onChange(date);
-                  // Close the popover after selection
-                  const popoverElement = document.querySelector('[data-state="open"]');
-                  if (popoverElement) {
-                    const closeButton = popoverElement.querySelector('[aria-label="Close"]');
-                    if (closeButton instanceof HTMLElement) {
-                      closeButton.click();
-                    }
+                  if (date) {
+                    field.onChange(date);
                   }
                 }}
                 disabled={(date) =>
