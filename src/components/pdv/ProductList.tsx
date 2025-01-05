@@ -130,9 +130,15 @@ export function ProductList({
       .subscribe();
 
     return () => {
-      channel.unsubscribe();
+      supabase.removeChannel(channel);
     };
   }, [filters]);
+
+  const handleProductDelete = (deletedProductId: string) => {
+    setProducts(prevProducts => 
+      prevProducts.filter(product => product.id !== deletedProductId)
+    );
+  };
 
   if (isLoading) {
     return <ProductListSkeleton />;
@@ -160,6 +166,7 @@ export function ProductList({
             barbers={barbers}
             onSelect={onProductSelect}
             onEdit={onEdit}
+            onDelete={handleProductDelete}
           />
           {index < products.length - 1 && <Separator className="my-2" />}
         </div>

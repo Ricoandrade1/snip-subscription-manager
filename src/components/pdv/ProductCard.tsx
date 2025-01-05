@@ -29,9 +29,10 @@ interface ProductCardProps {
   barbers: { id: string; name: string }[];
   onSelect: (product: Product) => void;
   onEdit?: (product: Product) => void;
+  onDelete?: (productId: string) => void;
 }
 
-export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
+export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -47,6 +48,7 @@ export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
 
       toast.success("Produto removido com sucesso");
       setIsDeleteDialogOpen(false);
+      onDelete?.(product.id);
     } catch (error) {
       console.error("Error deleting product:", error);
       toast.error("Erro ao remover produto");
@@ -128,7 +130,10 @@ export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
                     Editar produto
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                  <AlertDialog 
+                    open={isDeleteDialogOpen} 
+                    onOpenChange={setIsDeleteDialogOpen}
+                  >
                     <AlertDialogTrigger asChild>
                       <DropdownMenuItem
                         onClick={(e) => {
@@ -140,7 +145,7 @@ export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
                         Remover produto
                       </DropdownMenuItem>
                     </AlertDialogTrigger>
-                    <AlertDialogContent>
+                    <AlertDialogContent onClick={(e) => e.stopPropagation()}>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Remover produto</AlertDialogTitle>
                         <AlertDialogDescription>
@@ -148,7 +153,9 @@ export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                          Cancelar
+                        </AlertDialogCancel>
                         <AlertDialogAction
                           onClick={(e) => {
                             e.stopPropagation();
