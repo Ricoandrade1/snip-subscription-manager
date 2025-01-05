@@ -36,7 +36,7 @@ export function ProductCategoryFields({ form, brands, categories }: ProductCateg
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {brands.map((brand) => (
+                {brands?.map((brand) => (
                   <SelectItem key={brand.id} value={brand.id}>
                     {brand.name}
                   </SelectItem>
@@ -61,7 +61,7 @@ export function ProductCategoryFields({ form, brands, categories }: ProductCateg
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {categories.map((category) => (
+                {categories?.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}
                   </SelectItem>

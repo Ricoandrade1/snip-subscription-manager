@@ -1,14 +1,12 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { ProductBasicFields } from "./forms/ProductBasicFields";
 import { ProductCategoryFields } from "./forms/ProductCategoryFields";
 import { ProductCommissionFields } from "./forms/ProductCommissionFields";
-import { productFormSchema, type ProductFormValues } from "./forms/schema";
+import { supabase } from "@/integrations/supabase/client";
+import { useProductForm } from "./useProductForm";
+import { toast } from "sonner";
 
 interface Product {
   id: string;
@@ -23,64 +21,45 @@ interface Product {
   vat_included?: boolean;
 }
 
+interface Brand {
+  id: string;
+  name: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+}
+
 interface ProductServiceFormProps {
   initialData?: Product;
   onSuccess: () => void;
 }
 
 export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const { form, isLoading, onSubmit } = useProductForm(initialData, onSuccess);
 
-  const form = useForm<ProductFormValues>({
-    resolver: zodResolver(productFormSchema),
-    defaultValues: {
-      name: initialData?.name ?? "",
-      description: initialData?.description?.toString() ?? "",
-      price: initialData?.price?.toString() ?? "",
-      stock: initialData?.stock?.toString() ?? "",
-      brand: initialData?.brand ?? "",
-      category: initialData?.category ?? "",
-      commission_rates: initialData?.commission_rates ?? {},
-      vat_rate: initialData?.vat_rate?.toString() ?? "23",
-      vat_included: initialData?.vat_included ?? false,
-    },
-  });
+  useEffect(() => {
+    fetchBrandsAndCategories();
+  }, []);
 
-  const onSubmit = async (values: ProductFormValues) => {
-    setIsLoading(true);
+  const fetchBrandsAndCategories = async () => {
     try {
-      const productData = {
-        name: values.name,
-        description: values.description,
-        price: parseFloat(values.price),
-        stock: values.stock ? parseInt(values.stock) : 0,
-        brand_id: values.brand || null,
-        category_id: values.category || null,
-        commission_rates: values.commission_rates || {},
-        vat_rate: parseFloat(values.vat_rate),
-        vat_included: values.vat_included,
-      };
+      const [brandsResponse, categoriesResponse] = await Promise.all([
+        supabase.from("brands").select("*").order("name"),
+        supabase.from("categories").select("*").order("name"),
+      ]);
 
-      const { error } = initialData
-        ? await supabase
-            .from("products")
-            .update(productData)
-            .eq("id", initialData.id)
-        : await supabase
-            .from("products")
-            .insert(productData);
+      if (brandsResponse.error) throw brandsResponse.error;
+      if (categoriesResponse.error) throw categoriesResponse.error;
 
-      if (error) throw error;
-
-      toast.success(
-        initialData ? "Item atualizado com sucesso" : "Item criado com sucesso"
-      );
-      onSuccess();
+      setBrands(brandsResponse.data || []);
+      setCategories(categoriesResponse.data || []);
     } catch (error) {
-      console.error("Error saving item:", error);
-      toast.error("Erro ao salvar item");
-    } finally {
-      setIsLoading(false);
+      console.error("Error fetching data:", error);
+      toast.error("Erro ao carregar marcas e categorias");
     }
   };
 
@@ -92,7 +71,11 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
             <ProductBasicFields form={form} />
           </div>
           <div className="space-y-6">
-            <ProductCategoryFields form={form} />
+            <ProductCategoryFields 
+              form={form} 
+              brands={brands}
+              categories={categories}
+            />
             <ProductCommissionFields form={form} />
           </div>
         </div>
