@@ -20,7 +20,7 @@ export function CommissionDisplay({
   onCommissionChange 
 }: CommissionDisplayProps) {
   const calculateCommission = (sellerId: string) => {
-    const rate = commissionRates[sellerId] || 0;
+    const rate = commissionRates[sellerId] ?? 0;
     return (total * rate) / 100;
   };
 
@@ -37,7 +37,7 @@ export function CommissionDisplay({
               type="number"
               min="0"
               max="100"
-              value={commissionRates[seller.id] || seller.commission_rate}
+              value={commissionRates[seller.id] ?? seller.commission_rate}
               onChange={(e) => onCommissionChange(seller.id, parseFloat(e.target.value) || 0)}
               className="w-20 h-8 text-right"
             />

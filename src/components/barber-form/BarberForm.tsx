@@ -19,7 +19,7 @@ const formSchema = z.object({
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
   startDate: z.string().min(1, "Data de início é obrigatória"),
   specialties: z.array(z.string()).min(1, "Selecione pelo menos uma especialidade"),
-  commissionRate: z.number().min(0).max(100),
+  commissionRate: z.number().min(0).max(100), // Updated to allow 0
   bankName: z.string().min(2, "Nome do banco é obrigatório"),
   iban: z.string().min(15, "IBAN inválido"),
 });
