@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState, useEffect } from "react";
+import { SubmenuItem } from "./SubmenuItem";
 
 interface MenuItem {
   title: string;
@@ -45,26 +46,13 @@ export function NavigationMenuItem({
     return location.pathname === submenuItem.url;
   };
 
-  const hasActiveSubmenuItem = item.submenu?.some((subItem) => {
-    if (item.title === "Membros") {
-      if (subItem.title === "Todos") {
-        return location.pathname === "/members";
-      }
-      const planType = subItem.title.toLowerCase();
-      return location.pathname === `/members/${planType}`;
-    }
-    return location.pathname === subItem.url;
-  });
+  const hasActiveSubmenuItem = item.submenu?.some(isSubmenuActive);
 
   useEffect(() => {
     if (hasActiveSubmenuItem) {
       setIsOpen(true);
     }
   }, [hasActiveSubmenuItem]);
-
-  const handleNavigation = (url: string) => {
-    navigate(url);
-  };
 
   if (item.submenu) {
     return (
@@ -89,23 +77,16 @@ export function NavigationMenuItem({
             <SidebarMenuSub>
               {item.submenu.map((subItem) => (
                 <SidebarMenuSubItem key={subItem.title}>
-                  <button
-                    onClick={() => handleNavigation(subItem.url)}
-                    className={`w-full flex items-center justify-between p-2 rounded-md hover:bg-muted ${
-                      isSubmenuActive(subItem) ? "bg-muted" : ""
-                    }`}
-                  >
-                    <span>{subItem.title}</span>
-                    {item.title === "Membros" &&
-                      subItem.title !== "Todos" &&
-                      getSubscriberCount && (
-                        <span className="ml-auto text-xs opacity-60">
-                          {getSubscriberCount(
-                            subItem.title as "Basic" | "Classic" | "Business"
-                          )}
-                        </span>
-                      )}
-                  </button>
+                  <SubmenuItem
+                    title={subItem.title}
+                    url={subItem.url}
+                    isActive={isSubmenuActive(subItem)}
+                    subscriberCount={
+                      item.title === "Membros" && subItem.title !== "Todos"
+                        ? getSubscriberCount?.(subItem.title as "Basic" | "Classic" | "Business")
+                        : undefined
+                    }
+                  />
                 </SidebarMenuSubItem>
               ))}
             </SidebarMenuSub>
@@ -118,7 +99,7 @@ export function NavigationMenuItem({
   return (
     <SidebarMenuItem>
       <button
-        onClick={() => handleNavigation(item.url)}
+        onClick={() => navigate(item.url)}
         className={`flex items-center gap-2 p-2 w-full rounded-md hover:bg-muted ${
           isActiveRoute(item.url) ? "bg-muted" : ""
         }`}
