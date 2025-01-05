@@ -36,12 +36,13 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
 
   const handleCommissionChange = (barberId: string, value: string) => {
     const numValue = value === "" ? 0 : parseFloat(value);
-    const currentRates = form.getValues("commission_rates") || {};
-    
-    form.setValue("commission_rates", {
-      ...currentRates,
-      [barberId]: numValue
-    });
+    if (!isNaN(numValue)) {
+      const currentRates = form.getValues("commission_rates") || {};
+      form.setValue("commission_rates", {
+        ...currentRates,
+        [barberId]: numValue
+      }, { shouldValidate: true });
+    }
   };
 
   return (
@@ -67,7 +68,7 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
                         min="0"
                         max="100"
                         placeholder="% comissão"
-                        value={field.value || ""}
+                        value={field.value ?? ""}
                         onChange={(e) => handleCommissionChange(barber.id, e.target.value)}
                         className="w-24"
                       />
