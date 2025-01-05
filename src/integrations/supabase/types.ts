@@ -9,6 +9,63 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      barbers: {
+        Row: {
+          bank_name: string
+          birth_date: string
+          commission_rate: number
+          created_at: string | null
+          email: string | null
+          iban: string
+          id: string
+          name: string
+          nickname: string | null
+          nif: string
+          phone: string
+          schedule: Json | null
+          specialties: string[]
+          start_date: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          bank_name: string
+          birth_date: string
+          commission_rate?: number
+          created_at?: string | null
+          email?: string | null
+          iban: string
+          id?: string
+          name: string
+          nickname?: string | null
+          nif: string
+          phone: string
+          schedule?: Json | null
+          specialties: string[]
+          start_date: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          bank_name?: string
+          birth_date?: string
+          commission_rate?: number
+          created_at?: string | null
+          email?: string | null
+          iban?: string
+          id?: string
+          name?: string
+          nickname?: string | null
+          nif?: string
+          phone?: string
+          schedule?: Json | null
+          specialties?: string[]
+          start_date?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       members: {
         Row: {
           bank: string | null
