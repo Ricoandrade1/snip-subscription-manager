@@ -21,13 +21,30 @@ interface ProductCardProps {
 export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    
     try {
-      const { error } = await supabase
+      // First check if the product has any sales
+      const { data: saleItems, error: checkError } = await supabase
+        .from('sale_items')
+        .select('id')
+        .eq('product_id', product.id)
+        .limit(1);
+
+      if (checkError) throw checkError;
+
+      if (saleItems && saleItems.length > 0) {
+        toast.error('Não é possível excluir um produto que já foi vendido');
+        return;
+      }
+
+      // If no sales, proceed with deletion
+      const { error: deleteError } = await supabase
         .from('products')
         .delete()
         .eq('id', product.id);
 
-      if (error) throw error;
+      if (deleteError) throw deleteError;
+      
       toast.success('Produto excluído com sucesso');
     } catch (error) {
       console.error('Erro ao excluir produto:', error);
