@@ -37,6 +37,7 @@ interface Location {
 export default function Barbers() {
   const [barbers, setBarbers] = useState<Barber[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
+  const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -80,37 +81,9 @@ export default function Barbers() {
     }
   };
 
-  const assignBarberToLocation = async (barberId: string, locationId: string) => {
-    try {
-      const location = locations.find(loc => loc.id === locationId);
-      if (!location) return;
-
-      const updatedBarbers = [...(location.barbers || [])];
-      if (!updatedBarbers.includes(barberId)) {
-        updatedBarbers.push(barberId);
-      }
-
-      const { error } = await supabase
-        .from('locations')
-        .update({ barbers: updatedBarbers })
-        .eq('id', locationId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Barbeiro associado com sucesso",
-        description: "O barbeiro foi vinculado à barbearia.",
-      });
-
-      fetchLocations();
-    } catch (error) {
-      console.error('Error assigning barber:', error);
-      toast({
-        title: "Erro ao associar barbeiro",
-        description: "Não foi possível vincular o barbeiro à barbearia.",
-        variant: "destructive",
-      });
-    }
+  const handleSuccess = () => {
+    setOpen(false);
+    fetchBarbers();
   };
 
   return (
@@ -124,18 +97,18 @@ export default function Barbers() {
             </p>
           </div>
           <div className="flex justify-center w-full md:w-auto">
-            <Dialog>
+            <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button>
                   <UserPlus className="mr-2 h-4 w-4" />
                   Cadastrar Barbeiro
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Cadastrar Novo Barbeiro</DialogTitle>
                 </DialogHeader>
-                <BarberForm onSuccess={fetchBarbers} />
+                <BarberForm onSuccess={handleSuccess} />
               </DialogContent>
             </Dialog>
           </div>
@@ -175,7 +148,6 @@ export default function Barbers() {
                           {locations.map((location) => (
                             <Button
                               key={location.id}
-                              onClick={() => assignBarberToLocation(barber.id, location.id)}
                               variant="outline"
                             >
                               {location.name}
