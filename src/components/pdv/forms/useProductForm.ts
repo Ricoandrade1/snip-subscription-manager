@@ -5,7 +5,6 @@ import { Product } from "../types";
 
 interface UseProductFormProps {
   initialData?: Product | null;
-  onSuccess?: () => void;
 }
 
 export function useProductForm({ initialData }: UseProductFormProps) {
