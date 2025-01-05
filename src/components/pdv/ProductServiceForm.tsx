@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
+// Define the form schema with required fields matching database requirements
 const formSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   price: z.coerce.number().min(0, "Preço deve ser maior que 0"),
@@ -22,13 +23,10 @@ const formSchema = z.object({
   image_url: z.string().optional(),
 });
 
+// Define the type for form values
 type FormValues = z.infer<typeof formSchema>;
 
-interface ProductServiceFormProps {
-  initialData?: FormValues & { id: string };
-  onSuccess: () => void;
-}
-
+// Define types for brands and categories
 interface Brand {
   id: string;
   name: string;
@@ -37,6 +35,11 @@ interface Brand {
 interface Category {
   id: string;
   name: string;
+}
+
+interface ProductServiceFormProps {
+  initialData?: FormValues & { id: string };
+  onSuccess: () => void;
 }
 
 export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFormProps) {
@@ -82,14 +85,30 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
 
   const onSubmit = async (values: FormValues) => {
     try {
+      // Ensure required fields are present
+      if (!values.name || values.price === undefined) {
+        throw new Error("Nome e preço são obrigatórios");
+      }
+
+      const productData = {
+        name: values.name,
+        price: values.price,
+        description: values.description,
+        is_service: values.is_service,
+        stock: values.stock,
+        brand_id: values.brand_id,
+        category_id: values.category_id,
+        image_url: values.image_url,
+      };
+
       const { error } = initialData
         ? await supabase
             .from("products")
-            .update(values)
+            .update(productData)
             .eq("id", initialData.id)
         : await supabase
             .from("products")
-            .insert(values);
+            .insert(productData);
 
       if (error) {
         throw error;
