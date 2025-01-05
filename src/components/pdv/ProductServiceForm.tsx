@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { ProductBasicFields } from "./forms/ProductBasicFields";
 import { ProductCategoryFields } from "./forms/ProductCategoryFields";
 import { supabase } from "@/integrations/supabase/client";
-import { useProductForm } from "@/components/pdv/forms/useProductForm";
+import { useProductForm } from "./forms/useProductForm";
 import { toast } from "sonner";
 import { Product } from "./types";
 
