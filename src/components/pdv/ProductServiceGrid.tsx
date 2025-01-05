@@ -49,7 +49,14 @@ export function ProductServiceGrid() {
         return;
       }
 
-      setItems(data || []);
+      const formattedProducts: Product[] = (data || []).map(product => ({
+        ...product,
+        commission_rates: product.commission_rates ? 
+          JSON.parse(JSON.stringify(product.commission_rates)) as Record<string, number> : 
+          undefined
+      }));
+
+      setItems(formattedProducts);
     } catch (error) {
       console.error("Error in fetchItems:", error);
       toast.error("Erro ao carregar itens");
