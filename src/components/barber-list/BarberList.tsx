@@ -21,6 +21,9 @@ import {
 } from "@/components/ui/dialog";
 import { BarberForm } from "../barber-form/BarberForm";
 import { RoleManager } from "./RoleManager";
+import { Database } from "@/integrations/supabase/types";
+
+type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
 interface Barber {
   id: string;
@@ -30,7 +33,7 @@ interface Barber {
   specialties: string[];
   commission_rate: number;
   status: string;
-  roles: string[];
+  roles: UserAuthority[];
 }
 
 export function BarberList() {
