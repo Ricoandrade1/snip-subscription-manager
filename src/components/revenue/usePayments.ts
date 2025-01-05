@@ -81,5 +81,5 @@ export function usePayments() {
     setPayments(formattedPayments);
   };
 
-  return { payments };
+  return { payments, refetchPayments: fetchPayments };
 }
