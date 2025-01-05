@@ -23,9 +23,9 @@ export const menuItems = [
     url: "/members",
     submenu: [
       { title: "Todos", url: "/members" },
-      { title: "Basic", url: "/members" },
-      { title: "Classic", url: "/members" },
-      { title: "Business", url: "/members" },
+      { title: "Basic", url: "/members/basic" },
+      { title: "Classic", url: "/members/classic" },
+      { title: "Business", url: "/members/business" },
     ],
   },
   {

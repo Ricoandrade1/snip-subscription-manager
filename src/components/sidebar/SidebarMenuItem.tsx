@@ -59,11 +59,11 @@ export function SidebarMenuItemComponent({
                   <SidebarMenuSubButton>
                     <Link 
                       to={subItem.url}
-                      className="w-full"
+                      className="w-full flex items-center justify-between"
                       data-active={isActiveRoute(subItem.url)}
                     >
-                      {subItem.title}
-                      {level === 1 && item.title === "Membros" &&
+                      <span>{subItem.title}</span>
+                      {level === 0 && item.title === "Membros" &&
                         subItem.title !== "Todos" && getSubscriberCount && (
                           <span className="ml-auto text-xs opacity-60">
                             {getSubscriberCount(
