@@ -6,6 +6,7 @@ import Schedule from "./pages/Schedule";
 import Story from "./pages/Story";
 import Feed from "./pages/Feed";
 import Barbers from "./pages/Barbers";
+import Revenue from "./pages/Revenue";
 import { MemberProvider } from "./contexts/MemberContext";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
@@ -60,6 +61,7 @@ function App() {
                   <Route path="/story" element={<Story />} />
                   <Route path="/feed" element={<Feed />} />
                   <Route path="/barbers" element={<Barbers />} />
+                  <Route path="/revenue" element={<Revenue />} />
                 </Routes>
               </main>
             </div>
