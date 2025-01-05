@@ -6,8 +6,6 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { SubscriberForm } from "@/components/SubscriberForm";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { useSidebar } from "@/components/ui/sidebar";
-import { supabase } from "@/integrations/supabase/client";
-import { LoginForm } from "@/components/auth/LoginForm";
 
 const Index = () => {
   const { members, getMembersByPlan } = useMemberContext();
@@ -22,14 +20,14 @@ const Index = () => {
       title: "Basic",
       price: 30,
       features: ["Somente barba", "1 vez por semana", "Agendamento prioritário"],
-      totalSubscribers: 3,
+      totalSubscribers: getMembersByPlan("Basic"),
     },
     {
       id: 2,
       title: "Classic",
       price: 40,
       features: ["Somente cabelo", "1 vez por semana", "Agendamento prioritário"],
-      totalSubscribers: 3,
+      totalSubscribers: getMembersByPlan("Classic"),
     },
     {
       id: 3,
@@ -41,11 +39,11 @@ const Index = () => {
         "Agendamento VIP",
         "Produtos exclusivos",
       ],
-      totalSubscribers: 3,
+      totalSubscribers: getMembersByPlan("Business"),
     },
   ];
 
-  const totalSubscribers = PLANS.reduce((acc, plan) => acc + plan.totalSubscribers, 0);
+  const totalSubscribers = members.length;
   const monthlyRevenue = PLANS.reduce((acc, plan) => {
     return acc + plan.price * plan.totalSubscribers;
   }, 0);
