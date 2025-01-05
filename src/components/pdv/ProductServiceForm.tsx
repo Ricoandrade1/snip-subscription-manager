@@ -6,38 +6,25 @@ import { ProductCategoryFields } from "./forms/ProductCategoryFields";
 import { supabase } from "@/integrations/supabase/client";
 import { useProductForm } from "./forms/useProductForm";
 import { toast } from "sonner";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  description?: string | null;
-  stock?: number;
-  brand?: string | null;
-  category?: string | null;
-  vat_rate?: number;
-  vat_included?: boolean;
-}
-
-interface Brand {
-  id: string;
-  name: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-}
+import { Product } from "./types";
 
 interface ProductServiceFormProps {
-  initialData?: Product;
+  initialData?: Product | null;
   onSuccess: () => void;
 }
 
 export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFormProps) {
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const { form, isLoading, onSubmit } = useProductForm(initialData, onSuccess);
+  const [brands, setBrands] = useState<{ id: string; name: string }[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useProductForm({
+    initialData,
+    onSuccess: () => {
+      toast.success(initialData ? "Produto atualizado com sucesso" : "Produto criado com sucesso");
+      onSuccess();
+    },
+  });
 
   useEffect(() => {
     fetchBrandsAndCategories();
@@ -61,9 +48,47 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
     }
   };
 
+  const onSubmit = async (values: any) => {
+    setIsLoading(true);
+    try {
+      const productData = {
+        name: values.name,
+        description: values.description || null,
+        price: parseFloat(values.price),
+        stock: values.stock ? parseInt(values.stock) : 0,
+        brand_id: values.brand || null,
+        category_id: values.category || null,
+        vat_rate: parseFloat(values.vat_rate),
+        vat_included: values.vat_included,
+      };
+
+      if (initialData) {
+        const { error } = await supabase
+          .from("products")
+          .update(productData)
+          .eq("id", initialData.id);
+
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("products")
+          .insert([productData]);
+
+        if (error) throw error;
+      }
+
+      onSuccess();
+    } catch (error: any) {
+      console.error("Error saving product:", error);
+      toast.error("Erro ao salvar produto");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-6">
             <ProductBasicFields form={form} />
