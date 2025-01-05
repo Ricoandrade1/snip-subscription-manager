@@ -54,7 +54,11 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
   });
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-    await onSubmit(data);
+    const formattedData = {
+      ...data,
+      due_date: data.due_date ? format(data.due_date, 'yyyy-MM-dd') : undefined,
+    };
+    await onSubmit(formattedData);
   };
 
   return (
