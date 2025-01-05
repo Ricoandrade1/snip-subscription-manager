@@ -1,14 +1,6 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,89 +11,107 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Payment {
-  memberName: string;
-  plan: string;
-  amount?: number;
-  date?: string;
-  dueDate?: string;
-  status?: "paid" | "pending" | "overdue";
+  id: string;
+  member_id: string;
+  amount: number;
+  status: "paid" | "pending" | "overdue";
+  payment_date: string;
+  receipt_url?: string;
 }
 
 interface PaymentHistoryTableProps {
   payments: Payment[];
+  onPaymentUpdate: () => void;
 }
 
-export function PaymentHistoryTable({ payments }: PaymentHistoryTableProps) {
+export function PaymentHistoryTable({
+  payments,
+  onPaymentUpdate,
+}: PaymentHistoryTableProps) {
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [adminPassword, setAdminPassword] = useState("");
   const [newStatus, setNewStatus] = useState<"paid" | "pending" | "overdue">("paid");
 
-  const handleStatusChange = () => {
-    if (adminPassword === "1234") {
-      if (selectedPayment) {
-        selectedPayment.status = newStatus;
-        toast.success("Status atualizado com sucesso!");
-        setSelectedPayment(null);
-        setAdminPassword("");
-      }
-    } else {
-      toast.error("Senha incorreta!");
+  const handleStatusChange = async () => {
+    if (adminPassword !== "admin123") {
+      toast.error("Senha incorreta");
+      return;
+    }
+
+    if (!selectedPayment) return;
+
+    const { error } = await supabase
+      .from("payments")
+      .update({ status: newStatus })
+      .eq("id", selectedPayment.id);
+
+    if (error) {
+      toast.error("Erro ao atualizar status");
+      return;
+    }
+
+    toast.success("Status atualizado com sucesso");
+    onPaymentUpdate();
+    setAdminPassword("");
+    setSelectedPayment(null);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "paid":
+        return "bg-green-500/10 text-green-500";
+      case "pending":
+        return "bg-yellow-500/10 text-yellow-500";
+      case "overdue":
+        return "bg-red-500/10 text-red-500";
+      default:
+        return "bg-gray-500/10 text-gray-500";
     }
   };
 
   return (
-    <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Membro</TableHead>
-            <TableHead>Plano</TableHead>
-            {payments[0]?.amount && <TableHead>Valor</TableHead>}
-            {payments[0]?.date && <TableHead>Data</TableHead>}
-            {payments[0]?.dueDate && <TableHead>Vencimento</TableHead>}
-            {payments[0]?.status && <TableHead>Status</TableHead>}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {payments.map((payment, index) => (
-            <TableRow key={index}>
-              <TableCell>{payment.memberName}</TableCell>
-              <TableCell>{payment.plan}</TableCell>
-              {payment.amount && (
-                <TableCell>
-                  {payment.amount.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "EUR",
-                  })}
-                </TableCell>
-              )}
-              {payment.date && (
-                <TableCell>
-                  {format(new Date(payment.date), "dd/MM/yyyy", { locale: ptBR })}
-                </TableCell>
-              )}
-              {payment.dueDate && (
-                <TableCell>
-                  {format(new Date(payment.dueDate), "dd/MM/yyyy", {
+    <div className="rounded-md border border-border">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-border bg-muted/50">
+              <th className="h-12 px-4 text-left align-middle font-medium">
+                Data
+              </th>
+              <th className="h-12 px-4 text-left align-middle font-medium">
+                Valor
+              </th>
+              <th className="h-12 px-4 text-left align-middle font-medium">
+                Status
+              </th>
+              <th className="h-12 px-4 text-right align-middle font-medium">
+                Ações
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {payments.map((payment) => (
+              <tr key={payment.id} className="border-b border-border">
+                <td className="p-4 align-middle">
+                  {format(new Date(payment.payment_date), "dd/MM/yyyy", {
                     locale: ptBR,
                   })}
-                </TableCell>
-              )}
-              {payment.status && (
-                <TableCell>
+                </td>
+                <td className="p-4 align-middle">
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(payment.amount)}
+                </td>
+                <td className="p-4 align-middle">
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
                         variant="ghost"
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          payment.status === "paid"
-                            ? "bg-green-500/20 text-green-500"
-                            : payment.status === "pending"
-                            ? "bg-yellow-500/20 text-yellow-500"
-                            : "bg-red-500/20 text-red-500"
-                        }`}
+                        className={`${getStatusColor(payment.status)}`}
                         onClick={() => setSelectedPayment(payment)}
                       >
                         {payment.status === "paid"
@@ -111,13 +121,13 @@ export function PaymentHistoryTable({ payments }: PaymentHistoryTableProps) {
                           : "Atrasado"}
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-background border-border">
+                    <DialogContent className="bg-barber-black border-barber-gray">
                       <DialogHeader>
-                        <DialogTitle>Alterar Status do Pagamento</DialogTitle>
+                        <DialogTitle className="text-barber-light">Alterar Status do Pagamento</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div>
-                          <label className="text-sm font-medium text-foreground">
+                          <label className="text-sm font-medium text-barber-light">
                             Senha do Administrador
                           </label>
                           <Input
@@ -125,15 +135,15 @@ export function PaymentHistoryTable({ payments }: PaymentHistoryTableProps) {
                             value={adminPassword}
                             onChange={(e) => setAdminPassword(e.target.value)}
                             placeholder="Digite a senha"
-                            className="bg-background border-border text-foreground"
+                            className="bg-barber-gray border-barber-gray text-barber-light placeholder:text-barber-light/50"
                           />
                         </div>
                         <div>
-                          <label className="text-sm font-medium text-foreground">
+                          <label className="text-sm font-medium text-barber-light">
                             Novo Status
                           </label>
                           <select
-                            className="w-full border rounded-md p-2 bg-background border-border text-foreground"
+                            className="w-full border rounded-md p-2 bg-barber-gray border-barber-gray text-barber-light"
                             value={newStatus}
                             onChange={(e) =>
                               setNewStatus(e.target.value as "paid" | "pending" | "overdue")
@@ -146,19 +156,31 @@ export function PaymentHistoryTable({ payments }: PaymentHistoryTableProps) {
                         </div>
                         <Button 
                           onClick={handleStatusChange}
-                          className="bg-barber-gold hover:bg-barber-gold/90 text-black"
+                          className="bg-barber-gold hover:bg-barber-gold/90 text-black w-full"
                         >
                           Confirmar
                         </Button>
                       </div>
                     </DialogContent>
                   </Dialog>
-                </TableCell>
-              )}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </>
+                </td>
+                <td className="p-4 text-right">
+                  {payment.receipt_url && (
+                    <a
+                      href={payment.receipt_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-barber-gold hover:underline"
+                    >
+                      Ver comprovante
+                    </a>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
