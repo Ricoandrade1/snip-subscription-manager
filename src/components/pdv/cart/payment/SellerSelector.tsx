@@ -19,7 +19,6 @@ interface Seller {
 }
 
 interface SellerSelectorProps {
-  sellers: Seller[];
   selectedSellers: Seller[];
   onSelectSeller: (seller: Seller) => void;
 }
