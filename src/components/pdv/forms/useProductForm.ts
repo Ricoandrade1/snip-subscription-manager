@@ -19,6 +19,7 @@ export function useProductForm({ initialData }: UseProductFormProps) {
       category: initialData?.category_id ?? "",
       vat_rate: initialData?.vat_rate?.toString() ?? "23",
       vat_included: initialData?.vat_included ?? false,
+      image_url: initialData?.image_url ?? "",
     },
   });
 }

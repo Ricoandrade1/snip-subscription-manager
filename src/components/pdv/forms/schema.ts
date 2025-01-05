@@ -9,6 +9,7 @@ export const productFormSchema = z.object({
   category: z.string().optional(),
   vat_rate: z.string().default("23"),
   vat_included: z.boolean().default(false),
+  image_url: z.string().optional(),
 });
 
 export type ProductFormValues = z.infer<typeof productFormSchema>;

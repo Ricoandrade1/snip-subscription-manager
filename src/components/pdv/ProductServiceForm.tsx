@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { ProductBasicFields } from "./forms/ProductBasicFields";
 import { ProductCategoryFields } from "./forms/ProductCategoryFields";
 import { supabase } from "@/integrations/supabase/client";
-import { useProductForm } from "./forms/useProductForm";
+import { useProductForm } from "./useProductForm";
 import { toast } from "sonner";
 import { Product } from "./types";
 
@@ -53,6 +53,7 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
         category_id: values.category || null,
         vat_rate: parseFloat(values.vat_rate),
         vat_included: values.vat_included,
+        image_url: values.image_url || null,
       };
 
       if (initialData) {
@@ -85,7 +86,10 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-6">
-            <ProductBasicFields form={form} />
+            <ProductBasicFields 
+              form={form} 
+              initialImage={initialData?.image_url}
+            />
           </div>
           <div className="space-y-6">
             <ProductCategoryFields 
