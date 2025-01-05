@@ -2,6 +2,10 @@ import { useState } from "react";
 import { ProductList } from "@/components/pdv/ProductList";
 import { Cart } from "@/components/pdv/Cart";
 import { ProductServiceGrid } from "@/components/pdv/ProductServiceGrid";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { ProductServiceForm } from "@/components/pdv/ProductServiceForm";
+import { Plus } from "lucide-react";
 
 interface Product {
   id: string;
@@ -16,6 +20,7 @@ interface CartItem extends Product {
 
 export default function CashFlow() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleProductSelect = (product: Product) => {
     setCartItems((current) => {
@@ -48,11 +53,29 @@ export default function CashFlow() {
   };
 
   return (
-    <div className="p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-barber-gold mb-8">
-          Movimento de Caixa
-        </h1>
+    <div className="container py-2">
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-barber-gold">
+            Movimento de Caixa
+          </h1>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Novo Produto
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Novo Produto</DialogTitle>
+              </DialogHeader>
+              <ProductServiceForm
+                onSuccess={() => setIsDialogOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
         <div className="mb-8">
           <ProductServiceGrid />
         </div>
