@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
 
@@ -10,21 +9,29 @@ interface Product {
   name: string;
   price: number;
   stock: number;
+  brand_id: string | null;
+  category_id: string | null;
 }
 
 interface ProductListProps {
   onProductSelect: (product: Product) => void;
+  filters?: {
+    name: string;
+    category: string;
+    brand: string;
+    minPrice: string;
+    maxPrice: string;
+    inStock: boolean;
+  };
 }
 
-export function ProductList({ onProductSelect }: ProductListProps) {
+export function ProductList({ onProductSelect, filters = { name: "", category: "", brand: "", minPrice: "", maxPrice: "", inStock: false } }: ProductListProps) {
   const [products, setProducts] = useState<Product[]>([]);
-  const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchProducts();
 
-    // Inscrever-se para atualizações em tempo real
     const channel = supabase
       .channel('products-changes')
       .on(
@@ -43,15 +50,41 @@ export function ProductList({ onProductSelect }: ProductListProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [filters]);
 
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from("products")
         .select("*")
         .order("name");
+
+      if (filters.name) {
+        query = query.ilike("name", `%${filters.name}%`);
+      }
+
+      if (filters.category) {
+        query = query.eq("category_id", filters.category);
+      }
+
+      if (filters.brand) {
+        query = query.eq("brand_id", filters.brand);
+      }
+
+      if (filters.minPrice) {
+        query = query.gte("price", parseFloat(filters.minPrice));
+      }
+
+      if (filters.maxPrice) {
+        query = query.lte("price", parseFloat(filters.maxPrice));
+      }
+
+      if (filters.inStock) {
+        query = query.gt("stock", 0);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         throw error;
@@ -66,28 +99,15 @@ export function ProductList({ onProductSelect }: ProductListProps) {
     }
   };
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
     <div className="space-y-4">
-      <div className="relative">
-        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar produto..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-8"
-        />
-      </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {isLoading ? (
           <div className="col-span-full text-center">Carregando produtos...</div>
-        ) : filteredProducts.length === 0 ? (
+        ) : products.length === 0 ? (
           <div className="col-span-full text-center">Nenhum produto encontrado</div>
         ) : (
-          filteredProducts.map((product) => (
+          products.map((product) => (
             <Card
               key={product.id}
               className={`p-4 cursor-pointer hover:bg-muted/50 transition-colors ${

@@ -8,6 +8,9 @@ import Feed from "./pages/Feed";
 import Barbers from "./pages/Barbers";
 import Revenue from "./pages/Revenue";
 import CashFlow from "./pages/CashFlow";
+import Products from "./pages/Products";
+import Brands from "./pages/Brands";
+import Categories from "./pages/Categories";
 import { MemberProvider } from "./contexts/MemberContext";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
@@ -64,6 +67,9 @@ function App() {
                   <Route path="/barbers" element={<Barbers />} />
                   <Route path="/revenue" element={<Revenue />} />
                   <Route path="/cash-flow" element={<CashFlow />} />
+                  <Route path="/products" element={<Products />} />
+                  <Route path="/brands" element={<Brands />} />
+                  <Route path="/categories" element={<Categories />} />
                 </Routes>
               </main>
             </div>
