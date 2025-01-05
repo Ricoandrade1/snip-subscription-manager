@@ -2,8 +2,7 @@ import { useState } from "react";
 import { ProductList } from "@/components/pdv/ProductList";
 import { Cart } from "@/components/pdv/Cart";
 import { Product } from "@/components/pdv/types";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { ProductFilter } from "@/components/products/ProductFilter";
 
 export default function CashFlow() {
   const [cartItems, setCartItems] = useState<(Product & { quantity: number })[]>([]);
@@ -59,15 +58,7 @@ export default function CashFlow() {
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="mb-6 space-y-4">
             <h1 className="text-2xl font-bold">PDV</h1>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Buscar produtos..."
-                value={filters.name}
-                onChange={(e) => setFilters({ ...filters, name: e.target.value })}
-                className="pl-10"
-              />
-            </div>
+            <ProductFilter filters={filters} onFilterChange={setFilters} />
           </div>
           
           <div className="flex-1 overflow-y-auto pr-6 -mr-6">

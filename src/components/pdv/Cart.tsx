@@ -6,7 +6,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Separator } from "@/components/ui/separator";
-import { X } from "lucide-react";
+import { X, CreditCard, Wallet, Banknote } from "lucide-react";
 
 interface CartProps {
   items: {
@@ -71,12 +71,10 @@ export function Cart({
 
       // Update stock for each product
       for (const item of items) {
-        const { data: updatedStock, error: stockError } = await supabase
+        const { error: stockError } = await supabase
           .from("products")
           .update({ stock: item.quantity })
-          .eq("id", item.id)
-          .select('stock')
-          .single();
+          .eq("id", item.id);
 
         if (stockError) throw stockError;
       }
@@ -88,6 +86,19 @@ export function Cart({
       toast.error("Erro ao processar venda");
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const getPaymentIcon = (method: string) => {
+    switch (method) {
+      case "money":
+        return <Banknote className="h-4 w-4" />;
+      case "card":
+        return <CreditCard className="h-4 w-4" />;
+      case "mbway":
+        return <Wallet className="h-4 w-4" />;
+      default:
+        return null;
     }
   };
 
@@ -165,19 +176,42 @@ export function Cart({
                   <SelectValue placeholder="Forma de pagamento" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="money">Dinheiro</SelectItem>
-                  <SelectItem value="card">Cartão</SelectItem>
-                  <SelectItem value="mbway">MBWay</SelectItem>
+                  <SelectItem value="money">
+                    <div className="flex items-center gap-2">
+                      <Banknote className="h-4 w-4" />
+                      Dinheiro
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="card">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      Cartão
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="mbway">
+                    <div className="flex items-center gap-2">
+                      <Wallet className="h-4 w-4" />
+                      MBWay
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
 
-              <Button
-                className="w-full"
-                onClick={handleFinishSale}
-                disabled={isProcessing}
-              >
-                {isProcessing ? "Processando..." : "Finalizar Venda"}
-              </Button>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  onClick={onClearCart}
+                  disabled={isProcessing}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={handleFinishSale}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? "Processando..." : "Finalizar Venda"}
+                </Button>
+              </div>
             </div>
           </div>
         )}
