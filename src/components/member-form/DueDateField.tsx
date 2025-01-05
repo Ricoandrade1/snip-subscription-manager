@@ -45,19 +45,24 @@ export function DueDateField({ form }: DueDateFieldProps) {
               <Calendar
                 mode="single"
                 selected={field.value}
-                onSelect={field.onChange}
+                onSelect={(date) => {
+                  field.onChange(date);
+                  // Close the popover after selection
+                  const popoverElement = document.querySelector('[data-state="open"]');
+                  if (popoverElement) {
+                    const closeButton = popoverElement.querySelector('[aria-label="Close"]');
+                    if (closeButton instanceof HTMLElement) {
+                      closeButton.click();
+                    }
+                  }
+                }}
                 disabled={(date) =>
                   date < new Date(new Date().setHours(0, 0, 0, 0))
                 }
                 initialFocus
-                locale={ptBR}
                 formatters={{
-                  formatCaption: (date, options) => {
-                    return format(date, "MM/yyyy", { locale: ptBR });
-                  },
-                  formatDay: (date) => {
-                    return format(date, "dd");
-                  },
+                  formatCaption: (date) => format(date, "MM/yyyy"),
+                  formatDay: (date) => format(date, "dd"),
                 }}
                 className="rounded-md border-barber-gold/20 bg-barber-gray text-barber-light"
                 classNames={{
