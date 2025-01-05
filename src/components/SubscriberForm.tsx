@@ -55,24 +55,23 @@ export function SubscriberForm() {
     try {
       console.log('Buscando plano:', data.plan);
       
-      // Changed from .single() to .maybeSingle() to handle no results gracefully
-      const { data: planData, error: planError } = await supabase
+      const { data: plans, error: planError } = await supabase
         .from('plans')
-        .select('id')
-        .eq('title', data.plan)
-        .maybeSingle();
+        .select('id, title')
+        .eq('title', data.plan);
 
       if (planError) {
         console.error('Erro ao buscar plano:', planError);
         throw new Error('Erro ao buscar plano');
       }
 
-      if (!planData) {
+      if (!plans || plans.length === 0) {
         console.error('Plano não encontrado:', data.plan);
         throw new Error(`Plano "${data.plan}" não encontrado`);
       }
 
-      console.log('Plano encontrado:', planData);
+      const planId = plans[0].id;
+      console.log('Plano encontrado:', plans[0]);
 
       const memberData: Omit<Member, "id"> = {
         name: data.name || "",
@@ -89,12 +88,11 @@ export function SubscriberForm() {
         plan: data.plan
       };
 
-      // Add the member with the correct plan_id
       const { error: insertError } = await supabase
         .from('members')
         .insert([{
           ...memberData,
-          plan_id: planData.id
+          plan_id: planId
         }]);
 
       if (insertError) {
