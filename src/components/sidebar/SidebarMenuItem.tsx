@@ -33,17 +33,13 @@ export function SidebarMenuItemComponent({
           open={openSubmenus.includes(item.title)}
           onOpenChange={() => toggleSubmenu(item.title)}
         >
-          <CollapsibleTrigger>
+          <CollapsibleTrigger asChild>
             <SidebarMenuButton>
               <div className="flex w-full items-center justify-between">
-                <Link 
-                  to={item.url} 
-                  className="flex items-center gap-2"
-                  data-active={isActiveRoute(item.url)}
-                >
+                <div className="flex items-center gap-2">
                   <item.icon className="h-4 w-4" />
                   <span>{item.title}</span>
-                </Link>
+                </div>
                 <ChevronDown
                   className={`h-4 w-4 transition-transform duration-200 ${
                     openSubmenus.includes(item.title) ? "rotate-180" : ""
@@ -56,23 +52,21 @@ export function SidebarMenuItemComponent({
             <SidebarMenuSub>
               {item.submenu.map((subItem: any) => (
                 <SidebarMenuSubItem key={subItem.title}>
-                  <SidebarMenuSubButton>
-                    <Link 
-                      to={subItem.url}
-                      className="w-full flex items-center justify-between"
-                      data-active={isActiveRoute(subItem.url)}
-                    >
-                      <span>{subItem.title}</span>
-                      {level === 0 && item.title === "Membros" &&
-                        subItem.title !== "Todos" && getSubscriberCount && (
-                          <span className="ml-auto text-xs opacity-60">
-                            {getSubscriberCount(
-                              subItem.title as "Basic" | "Classic" | "Business"
-                            )}
-                          </span>
-                        )}
-                    </Link>
-                  </SidebarMenuSubButton>
+                  <Link 
+                    to={subItem.url}
+                    className="w-full flex items-center justify-between p-2 rounded-md hover:bg-muted"
+                    data-active={isActiveRoute(subItem.url)}
+                  >
+                    <span>{subItem.title}</span>
+                    {level === 0 && item.title === "Membros" &&
+                      subItem.title !== "Todos" && getSubscriberCount && (
+                        <span className="ml-auto text-xs opacity-60">
+                          {getSubscriberCount(
+                            subItem.title as "Basic" | "Classic" | "Business"
+                          )}
+                        </span>
+                      )}
+                  </Link>
                 </SidebarMenuSubItem>
               ))}
             </SidebarMenuSub>
@@ -84,12 +78,14 @@ export function SidebarMenuItemComponent({
 
   return (
     <BaseSidebarMenuItem>
-      <SidebarMenuButton>
-        <Link to={item.url} className="flex items-center gap-2" data-active={isActiveRoute(item.url)}>
-          <item.icon className="h-4 w-4" />
-          <span>{item.title}</span>
-        </Link>
-      </SidebarMenuButton>
+      <Link 
+        to={item.url} 
+        className="flex items-center gap-2 p-2 w-full rounded-md hover:bg-muted"
+        data-active={isActiveRoute(item.url)}
+      >
+        <item.icon className="h-4 w-4" />
+        <span>{item.title}</span>
+      </Link>
     </BaseSidebarMenuItem>
   );
 }
