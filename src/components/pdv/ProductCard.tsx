@@ -42,14 +42,18 @@ export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full bg-gray-500/10 p-2 text-gray-600 hover:bg-gray-500/20"
+                className="rounded-full bg-gray-500/10 p-2 text-gray-600 hover:bg-gray-500/20 active:bg-gray-500/30 transition-colors"
               >
                 <Pencil className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(product)}>
-                Editar produto
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem 
+                onClick={() => onEdit(product)}
+                className="cursor-pointer flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100"
+              >
+                <Pencil className="h-4 w-4" />
+                <span>Editar produto</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
