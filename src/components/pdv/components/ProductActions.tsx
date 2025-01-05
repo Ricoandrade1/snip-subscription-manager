@@ -1,0 +1,87 @@
+import { Button } from "@/components/ui/button";
+import { Pencil, Trash2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Product } from "../types";
+
+interface ProductActionsProps {
+  product: Product;
+  onEdit?: (product: Product) => void;
+}
+
+export function ProductActions({ product, onEdit }: ProductActionsProps) {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    try {
+      // First check if the product has any sales
+      const { data: saleItems, error: checkError } = await supabase
+        .from('sale_items')
+        .select('id')
+        .eq('product_id', product.id)
+        .limit(1);
+
+      if (checkError) throw checkError;
+
+      if (saleItems && saleItems.length > 0) {
+        toast.error('Não é possível excluir um produto que já foi vendido');
+        return;
+      }
+
+      // If no sales, proceed with deletion
+      const { error: deleteError } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', product.id);
+
+      if (deleteError) throw deleteError;
+      
+      toast.success('Produto excluído com sucesso');
+    } catch (error) {
+      console.error('Erro ao excluir produto:', error);
+      toast.error('Erro ao excluir produto');
+    }
+  };
+
+  return (
+    <div className="flex gap-2">
+      {onEdit && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+            <DropdownMenuItem 
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(product);
+              }}
+            >
+              Editar produto
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
+        onClick={handleDelete}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+}
