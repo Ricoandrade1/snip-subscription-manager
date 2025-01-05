@@ -33,6 +33,9 @@ export function SidebarMenuItemComponent({
   };
 
   const isSubmenuItemActive = (url: string) => {
+    if (url === "/members") {
+      return location.pathname === "/members";
+    }
     return location.pathname === url;
   };
 
