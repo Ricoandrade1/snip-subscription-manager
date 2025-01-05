@@ -47,8 +47,8 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
       if (error) throw error;
 
       toast.success("Produto removido com sucesso");
-      setIsDeleteDialogOpen(false);
       onDelete?.(product.id);
+      setIsDeleteDialogOpen(false);
     } catch (error) {
       console.error("Error deleting product:", error);
       toast.error("Erro ao remover produto");
@@ -120,7 +120,7 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
                     <Pencil className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                   <DropdownMenuItem 
                     onClick={(e) => {
                       e.stopPropagation();

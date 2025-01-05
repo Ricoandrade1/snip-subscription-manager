@@ -117,7 +117,6 @@ export function ProductList({
           table: 'products'
         },
         (payload) => {
-          console.log('Received change:', payload);
           if (payload.eventType === 'DELETE') {
             setProducts(prevProducts => 
               prevProducts.filter(product => product.id !== payload.old.id)
