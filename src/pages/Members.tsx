@@ -7,7 +7,6 @@ import { useMemberContext } from "@/contexts/MemberContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSession } from '@supabase/auth-helpers-react';
 import { Plus } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 
 interface MembersProps {
@@ -18,7 +17,6 @@ export default function Members({ planType }: MembersProps) {
   const { members } = useMemberContext();
   const navigate = useNavigate();
   const location = useLocation();
-  const { toast } = useToast();
   const session = useSession();
 
   useEffect(() => {
@@ -28,10 +26,9 @@ export default function Members({ planType }: MembersProps) {
   }, [session, navigate]);
 
   const getInitialTab = () => {
-    const path = location.pathname;
-    if (path.includes("/basic")) return "basic";
-    if (path.includes("/classic")) return "classic";
-    if (path.includes("/business")) return "business";
+    if (planType === "Basic") return "basic";
+    if (planType === "Classic") return "classic";
+    if (planType === "Business") return "business";
     return "all";
   };
 
@@ -51,12 +48,6 @@ export default function Members({ planType }: MembersProps) {
         break;
     }
   };
-
-  useEffect(() => {
-    if (planType) {
-      handleTabChange(planType.toLowerCase());
-    }
-  }, [planType]);
 
   if (!session) {
     return null;
@@ -101,19 +92,19 @@ export default function Members({ planType }: MembersProps) {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="all" className="mt-6">
+          <TabsContent value="all">
             <MembersTable />
           </TabsContent>
 
-          <TabsContent value="basic" className="mt-6">
+          <TabsContent value="basic">
             <MembersTable planFilter="Basic" />
           </TabsContent>
 
-          <TabsContent value="classic" className="mt-6">
+          <TabsContent value="classic">
             <MembersTable planFilter="Classic" />
           </TabsContent>
 
-          <TabsContent value="business" className="mt-6">
+          <TabsContent value="business">
             <MembersTable planFilter="Business" />
           </TabsContent>
         </Tabs>
