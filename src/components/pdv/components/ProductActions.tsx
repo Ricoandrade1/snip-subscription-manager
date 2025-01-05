@@ -20,7 +20,7 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
     e.stopPropagation();
     
     try {
-      // Primeiro verificar se o produto tem vendas associadas
+      // Verificar vendas associadas
       const { data: saleItems, error: checkError } = await supabase
         .from('sale_items')
         .select('id')
@@ -38,11 +38,12 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
         return;
       }
 
-      // Se não houver vendas, prosseguir com a exclusão
+      // Prosseguir com a exclusão se não houver vendas
       const { error: deleteError } = await supabase
         .from('products')
         .delete()
-        .eq('id', product.id);
+        .eq('id', product.id)
+        .select();
 
       if (deleteError) {
         console.error('Erro ao excluir produto:', deleteError);
@@ -65,7 +66,7 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              className="opacity-100 transition-opacity"
             >
               <Pencil className="h-4 w-4" />
             </Button>
@@ -85,7 +86,7 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
+        className="opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
         onClick={handleDelete}
       >
         <Trash2 className="h-4 w-4" />
