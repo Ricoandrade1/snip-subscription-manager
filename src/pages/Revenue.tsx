@@ -25,27 +25,7 @@ export default function Revenue() {
         },
         (payload) => {
           console.log('Payment change received:', payload);
-          
-          if (payload.eventType === 'INSERT') {
-            setPayments(current => [...current, payload.new as Payment]);
-            toast.success('Novo pagamento registrado');
-          }
-          
-          if (payload.eventType === 'UPDATE') {
-            setPayments(current => 
-              current.map(payment => 
-                payment.id === payload.new.id ? payload.new as Payment : payment
-              )
-            );
-            toast.success('Pagamento atualizado');
-          }
-          
-          if (payload.eventType === 'DELETE') {
-            setPayments(current => 
-              current.filter(payment => payment.id !== payload.old.id)
-            );
-            toast.success('Pagamento removido');
-          }
+          fetchPayments();
         }
       )
       .subscribe();
@@ -60,7 +40,7 @@ export default function Revenue() {
   const fetchPayments = async () => {
     const { data, error } = await supabase
       .from('payments')
-      .select('*')
+      .select('*, members(name, plans(title))')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -68,7 +48,20 @@ export default function Revenue() {
       return;
     }
 
-    setPayments(data || []);
+    const formattedPayments: Payment[] = (data || []).map(payment => ({
+      id: payment.id,
+      memberName: payment.members?.name || '',
+      plan: (payment.members?.plans?.title as "Basic" | "Classic" | "Business") || "Basic",
+      amount: payment.amount,
+      date: payment.payment_date,
+      status: payment.status as "paid" | "pending" | "overdue",
+      member_id: payment.member_id,
+      receipt_url: payment.receipt_url,
+      created_at: payment.created_at,
+      payment_date: payment.payment_date
+    }));
+
+    setPayments(formattedPayments);
   };
 
   const getPaymentsByPlan = () => {
@@ -185,3 +178,4 @@ export default function Revenue() {
     </div>
   );
 }
+};

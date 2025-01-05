@@ -28,4 +28,8 @@ export type Payment = {
   date: string;
   dueDate?: string;
   status: "paid" | "pending" | "overdue";
+  member_id?: string;
+  receipt_url?: string;
+  created_at?: string;
+  payment_date?: string;
 };

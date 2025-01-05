@@ -1,12 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from "sonner";
 import { Member, MemberContextType } from './types';
-import { 
-  fetchMembersFromDB, 
-  addMemberToDB, 
-  updateMemberInDB, 
-  deleteMemberFromDB 
-} from './memberUtils';
+import { fetchMembersFromDB, setupRealtimeSubscription } from './memberUtils';
 import { useSession } from '@supabase/auth-helpers-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -20,7 +15,7 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     if (session) {
       fetchMembers();
-      const channel = setupRealtimeSubscription();
+      const channel = setupRealtimeSubscription(setMembers);
       
       return () => {
         supabase.removeChannel(channel);
@@ -30,96 +25,6 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setIsLoading(false);
     }
   }, [session]);
-
-  const setupRealtimeSubscription = () => {
-    console.log('Setting up realtime subscription...');
-    
-    const channel = supabase
-      .channel('db-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'members'
-        },
-        async (payload) => {
-          console.log('Realtime change received:', payload);
-          
-          if (payload.eventType === 'INSERT') {
-            const { data: newMember } = await supabase
-              .from('members')
-              .select(`
-                *,
-                plans (
-                  id,
-                  title,
-                  price
-                )
-              `)
-              .eq('id', payload.new.id)
-              .single();
-
-            if (newMember) {
-              setMembers(current => [...current, {
-                id: newMember.id,
-                name: newMember.name || '',
-                nickname: newMember.nickname || '',
-                phone: newMember.phone || '',
-                nif: newMember.nif || '',
-                plan_id: newMember.plan_id,
-                plan: newMember.plans?.title || "Basic",
-                created_at: newMember.created_at,
-                payment_date: newMember.payment_date,
-              }]);
-              toast.success('Novo membro adicionado');
-            }
-          }
-          
-          if (payload.eventType === 'UPDATE') {
-            const { data: updatedMember } = await supabase
-              .from('members')
-              .select(`
-                *,
-                plans (
-                  id,
-                  title,
-                  price
-                )
-              `)
-              .eq('id', payload.new.id)
-              .single();
-
-            if (updatedMember) {
-              setMembers(current => current.map(member => 
-                member.id === payload.new.id ? {
-                  id: updatedMember.id,
-                  name: updatedMember.name || '',
-                  nickname: updatedMember.nickname || '',
-                  phone: updatedMember.phone || '',
-                  nif: updatedMember.nif || '',
-                  plan_id: updatedMember.plan_id,
-                  plan: updatedMember.plans?.title || "Basic",
-                  created_at: updatedMember.created_at,
-                  payment_date: updatedMember.payment_date,
-                } : member
-              ));
-              toast.success('Membro atualizado');
-            }
-          }
-          
-          if (payload.eventType === 'DELETE') {
-            setMembers(current => current.filter(member => member.id !== payload.old.id));
-            toast.success('Membro removido');
-          }
-        }
-      )
-      .subscribe((status) => {
-        console.log('Subscription status:', status);
-      });
-
-    return channel;
-  };
 
   const fetchMembers = async () => {
     try {
@@ -142,8 +47,15 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     try {
-      const newMember = await addMemberToDB(member);
-      await fetchMembers(); // Recarrega a lista após adicionar
+      const { data: newMember, error } = await supabase
+        .from('members')
+        .insert([member])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      await fetchMembers();
       toast.success('Membro adicionado com sucesso!');
     } catch (error) {
       console.error('Erro ao adicionar membro:', error);
@@ -158,8 +70,29 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     try {
-      await updateMemberInDB(id, updatedFields);
-      await fetchMembers(); // Recarrega a lista após atualizar
+      if (updatedFields.plan) {
+        const { data: planData } = await supabase
+          .from('plans')
+          .select('id')
+          .eq('title', updatedFields.plan)
+          .single();
+
+        if (planData) {
+          const updateData = {
+            ...updatedFields,
+            plan_id: planData.id,
+          };
+
+          const { error } = await supabase
+            .from('members')
+            .update(updateData)
+            .eq('id', id);
+
+          if (error) throw error;
+        }
+      }
+
+      await fetchMembers();
       toast.success('Membro atualizado com sucesso!');
     } catch (error) {
       console.error('Erro ao atualizar membro:', error);
@@ -174,8 +107,14 @@ export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     try {
-      await deleteMemberFromDB(id);
-      await fetchMembers(); // Recarrega a lista após deletar
+      const { error } = await supabase
+        .from('members')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await fetchMembers();
       toast.success('Membro removido com sucesso!');
     } catch (error) {
       console.error('Erro ao deletar membro:', error);

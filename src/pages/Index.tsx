@@ -12,10 +12,9 @@ const Index = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showRevenue, setShowRevenue] = useState(true);
   const [showSubscribers, setShowSubscribers] = useState(true);
-  const [plans, setPlans] = useState([]);
+  const [plans, setPlans] = useState<any[]>([]);
 
   useEffect(() => {
-    // Set up realtime subscription for plans
     const channel = supabase
       .channel('plans-changes')
       .on(
@@ -27,12 +26,11 @@ const Index = () => {
         },
         (payload) => {
           console.log('Plans change received:', payload);
-          fetchPlans(); // Refresh plans on any change
+          fetchPlans();
         }
       )
       .subscribe();
 
-    // Fetch initial plans
     fetchPlans();
 
     return () => {
@@ -56,7 +54,7 @@ const Index = () => {
       title: plan.title,
       price: plan.price,
       features: plan.features || [],
-      totalSubscribers: getMembersByPlan(plan.title)
+      totalSubscribers: getMembersByPlan(plan.title as "Basic" | "Classic" | "Business")
     }));
 
     setPlans(plansWithSubscribers);

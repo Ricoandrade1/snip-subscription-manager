@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Member } from './types';
+import { toast } from "sonner";
 
 export const fetchMembersFromDB = async () => {
   console.log('Iniciando busca de membros...');
@@ -34,81 +35,109 @@ export const fetchMembersFromDB = async () => {
     phone: member.phone || '',
     nif: member.nif || '',
     plan_id: member.plan_id,
-    plan: member.plans?.title as Member["plan"] || "Basic",
+    plan: member.plans?.title as Member["plan"],
     created_at: member.created_at,
     payment_date: member.payment_date,
-  })) as Member[];
+  }));
 
   console.log('Membros formatados:', formattedMembers);
   return formattedMembers;
 };
 
-export const addMemberToDB = async (member: Omit<Member, "id" | "plan">) => {
-  try {
-    const { data, error } = await supabase
-      .from('members')
-      .insert([member])
-      .select()
-      .single();
+export const setupRealtimeSubscription = (setMembers: React.Dispatch<React.SetStateAction<Member[]>>) => {
+  console.log('Setting up realtime subscription...');
+  
+  const channel = supabase
+    .channel('db-changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'members'
+      },
+      async (payload) => {
+        console.log('Realtime change received:', payload);
+        
+        if (payload.eventType === 'INSERT') {
+          const { data: newMember } = await supabase
+            .from('members')
+            .select(`
+              *,
+              plans (
+                id,
+                title,
+                price
+              )
+            `)
+            .eq('id', payload.new.id)
+            .single();
 
-    if (error) {
-      console.error('Erro ao inserir membro:', error);
-      throw error;
-    }
-    
-    return data;
-  } catch (error) {
-    console.error('Erro ao adicionar membro:', error);
-    throw error;
-  }
-};
+          if (newMember) {
+            const formattedMember: Member = {
+              id: newMember.id,
+              name: newMember.name || '',
+              nickname: newMember.nickname || '',
+              phone: newMember.phone || '',
+              nif: newMember.nif || '',
+              plan_id: newMember.plan_id,
+              plan: newMember.plans?.title as Member["plan"],
+              created_at: newMember.created_at,
+              payment_date: newMember.payment_date,
+            };
+            
+            setMembers(current => [...current, formattedMember]);
+            toast.success('Novo membro adicionado');
+          }
+        }
+        
+        if (payload.eventType === 'UPDATE') {
+          const { data: updatedMember } = await supabase
+            .from('members')
+            .select(`
+              *,
+              plans (
+                id,
+                title,
+                price
+              )
+            `)
+            .eq('id', payload.new.id)
+            .single();
 
-export const updateMemberInDB = async (id: string, member: Partial<Member>) => {
-  try {
-    if (member.plan) {
-      const { data: planData, error: planError } = await supabase
-        .from('plans')
-        .select('id')
-        .eq('title', member.plan)
-        .single();
-
-      if (planError) {
-        console.error('Erro ao buscar plano:', planError);
-        throw planError;
+          if (updatedMember) {
+            const formattedMember: Member = {
+              id: updatedMember.id,
+              name: updatedMember.name || '',
+              nickname: updatedMember.nickname || '',
+              phone: updatedMember.phone || '',
+              nif: updatedMember.nif || '',
+              plan_id: updatedMember.plan_id,
+              plan: updatedMember.plans?.title as Member["plan"],
+              created_at: updatedMember.created_at,
+              payment_date: updatedMember.payment_date,
+            };
+            
+            setMembers(current => 
+              current.map(member => 
+                member.id === payload.new.id ? formattedMember : member
+              )
+            );
+            toast.success('Membro atualizado');
+          }
+        }
+        
+        if (payload.eventType === 'DELETE') {
+          setMembers(current => 
+            current.filter(member => member.id !== payload.old.id)
+          );
+          toast.success('Membro removido');
+        }
       }
+    )
+    .subscribe((status) => {
+      console.log('Subscription status:', status);
+    });
 
-      const updateData = {
-        name: member.name,
-        nickname: member.nickname,
-        phone: member.phone,
-        nif: member.nif,
-        plan_id: planData.id,
-        payment_date: member.payment_date,
-      };
-
-      const { error } = await supabase
-        .from('members')
-        .update(updateData)
-        .eq('id', id);
-
-      if (error) {
-        console.error('Erro ao atualizar membro:', error);
-        throw error;
-      }
-
-      console.log('Membro atualizado com sucesso:', { id, ...updateData });
-    }
-  } catch (error) {
-    console.error('Erro ao atualizar membro:', error);
-    throw error;
-  }
-};
-
-export const deleteMemberFromDB = async (id: string) => {
-  const { error } = await supabase
-    .from('members')
-    .delete()
-    .eq('id', id);
-
-  if (error) throw error;
+  return channel;
 };
