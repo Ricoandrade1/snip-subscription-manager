@@ -1,16 +1,16 @@
 import * as z from "zod";
 
 export const formSchema = z.object({
-  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres").optional(),
   nickname: z.string().optional(),
-  phone: z.string().min(9, "Telefone deve ter pelo menos 9 dígitos"),
+  phone: z.string().min(9, "Telefone deve ter pelo menos 9 dígitos").optional(),
   nif: z.string().optional(),
-  birthDate: z.string(),
+  birthDate: z.string().optional(),
   passport: z.string().optional(),
   citizenCard: z.string().optional(),
   bi: z.string().optional(),
-  bank: z.string().min(2, "Nome do banco é obrigatório"),
-  iban: z.string().min(15, "IBAN inválido"),
-  debitDate: z.string(),
+  bank: z.string().min(2, "Nome do banco é obrigatório").optional(),
+  iban: z.string().min(15, "IBAN inválido").optional(),
+  debitDate: z.string().optional(),
   plan: z.enum(["Basic", "Classic", "Business"]),
 });

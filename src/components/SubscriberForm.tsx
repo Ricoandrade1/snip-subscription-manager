@@ -12,17 +12,17 @@ import { PlanFields } from "./PlanFields";
 import type { Member } from "@/contexts/MemberContext";
 
 const formSchema = z.object({
-  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres").optional(),
   nickname: z.string().optional(),
-  phone: z.string().min(9, "Telefone deve ter pelo menos 9 dígitos"),
+  phone: z.string().min(9, "Telefone deve ter pelo menos 9 dígitos").optional(),
   nif: z.string().optional(),
-  birthDate: z.string(),
+  birthDate: z.string().optional(),
   passport: z.string().optional(),
   citizenCard: z.string().optional(),
   bi: z.string().optional(),
-  bank: z.string().min(2, "Nome do banco é obrigatório"),
-  iban: z.string().min(15, "IBAN inválido"),
-  debitDate: z.string(),
+  bank: z.string().min(2, "Nome do banco é obrigatório").optional(),
+  iban: z.string().min(15, "IBAN inválido").optional(),
+  debitDate: z.string().optional(),
   plan: z.enum(["Basic", "Classic", "Business"]),
 });
 
@@ -52,26 +52,34 @@ export function SubscriberForm() {
 
   const handleSubmit = (data: SubscriberFormData) => {
     const memberData: Omit<Member, "id"> = {
-      name: data.name,
+      name: data.name || "",
       nickname: data.nickname || "",
-      phone: data.phone,
+      phone: data.phone || "",
       nif: data.nif || "",
-      birthDate: data.birthDate,
+      birthDate: data.birthDate || "",
       passport: data.passport || "",
       citizenCard: data.citizenCard || "",
       bi: data.bi || "",
-      bank: data.bank,
-      iban: data.iban,
-      debitDate: data.debitDate,
+      bank: data.bank || "",
+      iban: data.iban || "",
+      debitDate: data.debitDate || "",
       plan: data.plan
     };
+
+    // Check for missing fields
+    const missingFields = [];
+    if (!data.name) missingFields.push("Nome");
+    if (!data.phone) missingFields.push("Telefone");
+    if (!data.bank) missingFields.push("Banco");
+    if (!data.iban) missingFields.push("IBAN");
     
     addMember(memberData);
     const currentSubscribers = members.filter(member => member.plan === data.plan).length;
     
     toast({
-      title: "Assinante cadastrado com sucesso!",
-      description: `Número único: ${data.plan} ${String(currentSubscribers + 1).padStart(2, '0')}`,
+      title: missingFields.length > 0 ? "Assinante cadastrado com campos pendentes" : "Assinante cadastrado com sucesso!",
+      description: `${missingFields.length > 0 ? `Campos pendentes: ${missingFields.join(", ")}. ` : ""}Número único: ${data.plan} ${String(currentSubscribers + 1).padStart(2, '0')}`,
+      variant: missingFields.length > 0 ? "destructive" : "default",
     });
     form.reset();
   };
