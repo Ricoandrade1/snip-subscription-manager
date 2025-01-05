@@ -40,6 +40,7 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
     e.stopPropagation();
     setIsDeleting(true);
     try {
+      console.log('Deleting product:', product.id);
       const { error } = await supabase
         .from("products")
         .delete()
@@ -158,7 +159,10 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
                           Cancelar
                         </AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={handleDelete}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(e);
+                          }}
                           className="bg-destructive hover:bg-destructive/90"
                           disabled={isDeleting}
                         >
