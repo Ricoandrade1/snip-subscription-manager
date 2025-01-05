@@ -37,41 +37,42 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
-    setIsDeleting(true);
     try {
-      console.log('Attempting to delete product:', product.id);
-      
+      setIsDeleting(true);
+      console.log('Iniciando exclusão do produto:', product.id);
+
       const { error } = await supabase
         .from("products")
         .delete()
         .eq("id", product.id);
 
       if (error) {
-        console.error("Error deleting product:", error);
-        throw error;
+        console.error("Erro ao excluir produto:", error);
+        toast.error("Erro ao excluir produto");
+        return;
       }
 
-      console.log('Product deleted successfully');
-      onDelete?.(product.id);
+      console.log('Produto excluído com sucesso:', product.id);
+      if (onDelete) {
+        onDelete(product.id);
+      }
       setIsDeleteDialogOpen(false);
-      toast.success("Produto removido com sucesso");
+      toast.success("Produto excluído com sucesso");
     } catch (error) {
-      console.error("Error deleting product:", error);
-      toast.error("Erro ao remover produto");
+      console.error("Erro ao excluir produto:", error);
+      toast.error("Erro ao excluir produto");
     } finally {
       setIsDeleting(false);
     }
   };
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onSelect(product);
-  };
-
   return (
     <Card
       className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer hover:bg-muted/50"
-      onClick={handleCardClick}
+      onClick={(e) => {
+        e.preventDefault();
+        onSelect(product);
+      }}
     >
       <div className="p-4">
         <div className="flex items-center justify-between gap-4">
@@ -149,6 +150,7 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
                       <DropdownMenuItem
                         onClick={(e) => {
                           e.stopPropagation();
+                          setIsDeleteDialogOpen(true);
                         }}
                         className="text-destructive"
                       >
@@ -169,6 +171,7 @@ export function ProductCard({ product, onSelect, onEdit, onDelete }: ProductCard
                         </AlertDialogCancel>
                         <AlertDialogAction
                           onClick={(e) => {
+                            e.preventDefault();
                             e.stopPropagation();
                             handleDelete();
                           }}
