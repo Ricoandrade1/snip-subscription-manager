@@ -63,9 +63,14 @@ export const LoginForm = () => {
       <div className="w-full max-w-[420px]">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-semibold mb-2 text-barber-black">Bem-vindo</h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 mb-2">
             Faça login para continuar
           </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-sm text-blue-700">
+            <p className="font-medium mb-1">Credenciais de teste:</p>
+            <p>Email: admin@example.com</p>
+            <p>Senha: 1234</p>
+          </div>
         </div>
         <div className="bg-white rounded-lg p-8 shadow-lg border border-gray-100">
           <Auth
