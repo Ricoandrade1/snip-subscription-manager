@@ -31,9 +31,9 @@ interface Category {
 }
 
 const formSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1, "Nome é obrigatório"),
   description: z.string().optional(),
-  price: z.string(),
+  price: z.string().min(1, "Preço é obrigatório"),
   stock: z.string().optional(),
   brand: z.string().optional(),
   category: z.string().optional(),
@@ -49,6 +49,7 @@ interface ProductServiceFormProps {
 export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFormProps) {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -67,25 +68,31 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
   }, []);
 
   const fetchBrandsAndCategories = async () => {
-    const [brandsResponse, categoriesResponse] = await Promise.all([
-      supabase.from("brands").select("*").order("name"),
-      supabase.from("categories").select("*").order("name"),
-    ]);
+    try {
+      const [brandsResponse, categoriesResponse] = await Promise.all([
+        supabase.from("brands").select("*").order("name"),
+        supabase.from("categories").select("*").order("name"),
+      ]);
 
-    if (brandsResponse.data) {
-      setBrands(brandsResponse.data);
-    }
-    if (categoriesResponse.data) {
-      setCategories(categoriesResponse.data);
+      if (brandsResponse.data) {
+        setBrands(brandsResponse.data);
+      }
+      if (categoriesResponse.data) {
+        setCategories(categoriesResponse.data);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Erro ao carregar marcas e categorias");
     }
   };
 
   const onSubmit = async (values: FormValues) => {
+    setIsLoading(true);
     try {
       const productData = {
         name: values.name,
         description: values.description,
-        price: values.price ? parseFloat(values.price) : 0,
+        price: parseFloat(values.price),
         stock: values.stock ? parseInt(values.stock) : 0,
         brand_id: values.brand || null,
         category_id: values.category || null,
@@ -100,9 +107,7 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
             .from("products")
             .insert(productData);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       toast.success(
         initialData ? "Item atualizado com sucesso" : "Item criado com sucesso"
@@ -111,6 +116,8 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
     } catch (error) {
       console.error("Error saving item:", error);
       toast.error("Erro ao salvar item");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -156,7 +163,12 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
             <FormItem>
               <FormLabel>Preço</FormLabel>
               <FormControl>
-                <Input placeholder="Digite o preço" {...field} />
+                <Input 
+                  type="number"
+                  step="0.01"
+                  placeholder="Digite o preço" 
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -170,7 +182,11 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
             <FormItem>
               <FormLabel>Quantidade em Estoque</FormLabel>
               <FormControl>
-                <Input placeholder="Digite a quantidade" {...field} />
+                <Input 
+                  type="number"
+                  placeholder="Digite a quantidade" 
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -228,8 +244,8 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
         />
 
         <div className="flex justify-end">
-          <Button type="submit">
-            {initialData ? "Atualizar" : "Criar"}
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Salvando..." : initialData ? "Atualizar" : "Criar"}
           </Button>
         </div>
       </form>
