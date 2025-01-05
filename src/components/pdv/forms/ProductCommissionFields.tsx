@@ -34,6 +34,16 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
     }
   };
 
+  const handleCommissionChange = (barberId: string, value: string) => {
+    const numValue = value === "" ? 0 : parseFloat(value);
+    const currentRates = form.getValues("commission_rates") || {};
+    
+    form.setValue("commission_rates", {
+      ...currentRates,
+      [barberId]: numValue
+    });
+  };
+
   return (
     <Card className="p-4">
       <div className="space-y-4">
@@ -57,7 +67,8 @@ export function ProductCommissionFields({ form }: ProductCommissionFieldsProps) 
                         min="0"
                         max="100"
                         placeholder="% comissão"
-                        {...field}
+                        value={field.value || ""}
+                        onChange={(e) => handleCommissionChange(barber.id, e.target.value)}
                         className="w-24"
                       />
                       <span className="text-sm text-muted-foreground">%</span>

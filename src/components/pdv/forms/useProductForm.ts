@@ -51,6 +51,8 @@ export function useProductForm(initialData?: Product, onSuccess?: () => void) {
         vat_included: values.vat_included,
       };
 
+      console.log("Saving product with commission rates:", productData.commission_rates);
+
       const { error } = initialData
         ? await supabase
             .from("products")

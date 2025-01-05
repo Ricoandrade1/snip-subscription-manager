@@ -7,7 +7,7 @@ export const productFormSchema = z.object({
   stock: z.string().optional(),
   brand: z.string().optional(),
   category: z.string().optional(),
-  commission_rates: z.record(z.string(), z.number().min(0).max(100).optional()).optional(),
+  commission_rates: z.record(z.number().min(0).max(100)).optional(),
   vat_rate: z.string().default("23"),
   vat_included: z.boolean().default(false),
 });
