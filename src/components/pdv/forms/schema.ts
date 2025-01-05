@@ -7,7 +7,7 @@ export const productFormSchema = z.object({
   stock: z.string().optional(),
   brand: z.string().optional(),
   category: z.string().optional(),
-  commission_rates: z.record(z.number().optional()).optional(),
+  commission_rates: z.record(z.string(), z.number().min(0).max(100).optional()).optional(),
 });
 
 export type ProductFormValues = z.infer<typeof productFormSchema>;

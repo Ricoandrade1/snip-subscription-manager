@@ -1,14 +1,12 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { ProductBasicFields } from "./ProductBasicFields";
 import { ProductCategoryFields } from "./ProductCategoryFields";
 import { ProductCommissionFields } from "./ProductCommissionFields";
-import { productFormSchema, type ProductFormValues } from "./schema";
+import { supabase } from "@/integrations/supabase/client";
+import { useProductForm } from "./useProductForm";
+import { toast } from "sonner";
 
 interface Product {
   id: string;
@@ -37,22 +35,9 @@ interface ProductServiceFormProps {
 }
 
 export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-
-  const form = useForm<ProductFormValues>({
-    resolver: zodResolver(productFormSchema),
-    defaultValues: {
-      name: initialData?.name ?? "",
-      description: initialData?.description?.toString() ?? "",
-      price: initialData?.price?.toString() ?? "",
-      stock: initialData?.stock?.toString() ?? "",
-      brand: initialData?.brand ?? "",
-      category: initialData?.category ?? "",
-      commission_rates: initialData?.commission_rates ?? {},
-    },
-  });
+  const { form, isLoading, onSubmit } = useProductForm(initialData, onSuccess);
 
   useEffect(() => {
     fetchBrandsAndCategories();
@@ -65,57 +50,20 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
         supabase.from("categories").select("*").order("name"),
       ]);
 
-      if (brandsResponse.data) {
-        setBrands(brandsResponse.data);
-      }
-      if (categoriesResponse.data) {
-        setCategories(categoriesResponse.data);
-      }
+      if (brandsResponse.error) throw brandsResponse.error;
+      if (categoriesResponse.error) throw categoriesResponse.error;
+
+      setBrands(brandsResponse.data || []);
+      setCategories(categoriesResponse.data || []);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Erro ao carregar marcas e categorias");
     }
   };
 
-  const onSubmit = async (values: ProductFormValues) => {
-    setIsLoading(true);
-    try {
-      const productData = {
-        name: values.name,
-        description: values.description,
-        price: parseFloat(values.price),
-        stock: values.stock ? parseInt(values.stock) : 0,
-        brand_id: values.brand || null,
-        category_id: values.category || null,
-        commission_rates: values.commission_rates || {},
-      };
-
-      const { error } = initialData
-        ? await supabase
-            .from("products")
-            .update(productData)
-            .eq("id", initialData.id)
-        : await supabase
-            .from("products")
-            .insert(productData);
-
-      if (error) throw error;
-
-      toast.success(
-        initialData ? "Item atualizado com sucesso" : "Item criado com sucesso"
-      );
-      onSuccess();
-    } catch (error) {
-      console.error("Error saving item:", error);
-      toast.error("Erro ao salvar item");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={onSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-6">
             <ProductBasicFields form={form} />
