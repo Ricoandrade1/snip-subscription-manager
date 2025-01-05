@@ -6,16 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ProductServiceForm } from "./ProductServiceForm";
 import { toast } from "sonner";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  description: string | null;
-  image_url: string | null;
-  is_service: boolean;
-  stock: number;
-}
+import { Product } from "./types";
 
 export function ProductServiceGrid() {
   const [items, setItems] = useState<Product[]>([]);
@@ -46,36 +37,48 @@ export function ProductServiceGrid() {
   }, []);
 
   const fetchItems = async () => {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('name');
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*, brands(name), categories(name)')
+        .order('name');
 
-    if (error) {
+      if (error) {
+        console.error("Error fetching items:", error);
+        toast.error("Erro ao carregar itens");
+        return;
+      }
+
+      setItems(data || []);
+    } catch (error) {
+      console.error("Error in fetchItems:", error);
       toast.error("Erro ao carregar itens");
-      return;
     }
-
-    setItems(data || []);
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', id);
+    try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id);
 
-    if (error) {
+      if (error) {
+        console.error("Error deleting item:", error);
+        toast.error("Erro ao deletar item");
+        return;
+      }
+
+      toast.success("Item deletado com sucesso");
+      fetchItems();
+    } catch (error) {
+      console.error("Error in handleDelete:", error);
       toast.error("Erro ao deletar item");
-      return;
     }
-
-    toast.success("Item deletado com sucesso");
-    fetchItems();
   };
 
   return (
-    <div className="space-y-4">
+    <div className="container mx-auto p-4 space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Produtos e Serviços</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -102,7 +105,7 @@ export function ProductServiceGrid() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {items.map((item) => (
           <Card key={item.id} className="p-4 relative group">
             <div className="absolute top-2 right-2 space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -135,20 +138,38 @@ export function ProductServiceGrid() {
                 Sem imagem
               </div>
             )}
-            <h3 className="font-medium">{item.name}</h3>
-            <p className="text-sm text-muted-foreground">{item.description}</p>
-            <div className="mt-2 flex justify-between items-center">
-              <span className="font-bold">
-                {new Intl.NumberFormat("pt-PT", {
-                  style: "currency",
-                  currency: "EUR",
-                }).format(item.price)}
-              </span>
-              {!item.is_service && (
-                <span className="text-sm text-muted-foreground">
-                  Estoque: {item.stock}
-                </span>
+            <div className="space-y-2">
+              <h3 className="font-medium truncate">{item.name}</h3>
+              {item.description && (
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {item.description}
+                </p>
               )}
+              <div className="flex flex-col gap-1">
+                {item.brands?.name && (
+                  <span className="text-sm text-muted-foreground">
+                    Marca: {item.brands.name}
+                  </span>
+                )}
+                {item.categories?.name && (
+                  <span className="text-sm text-muted-foreground">
+                    Categoria: {item.categories.name}
+                  </span>
+                )}
+              </div>
+              <div className="flex justify-between items-center pt-2">
+                <span className="font-bold">
+                  {new Intl.NumberFormat("pt-PT", {
+                    style: "currency",
+                    currency: "EUR",
+                  }).format(item.price)}
+                </span>
+                {!item.is_service && (
+                  <span className="text-sm text-muted-foreground">
+                    Estoque: {item.stock}
+                  </span>
+                )}
+              </div>
             </div>
           </Card>
         ))}
