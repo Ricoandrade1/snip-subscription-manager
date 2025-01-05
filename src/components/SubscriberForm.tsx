@@ -10,6 +10,7 @@ import { DocumentFields } from "./DocumentFields";
 import { BankingFields } from "./BankingFields";
 import { PlanFields } from "./PlanFields";
 import type { Member } from "@/contexts/MemberContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
   name: z.string().optional(),
@@ -52,6 +53,23 @@ export function SubscriberForm() {
 
   const handleSubmit = async (data: SubscriberFormData) => {
     try {
+      // First, get the plan_id for the selected plan
+      const { data: planData, error: planError } = await supabase
+        .from('plans')
+        .select('id')
+        .eq('title', data.plan)
+        .single();
+
+      if (planError) {
+        console.error('Error fetching plan:', planError);
+        toast({
+          title: "Erro ao buscar plano",
+          description: "Não foi possível encontrar o plano selecionado.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const memberData: Omit<Member, "id"> = {
         name: data.name || "",
         nickname: data.nickname || "",
@@ -67,7 +85,19 @@ export function SubscriberForm() {
         plan: data.plan
       };
 
-      await addMember(memberData);
+      // Add the member with the correct plan_id
+      const { error: insertError } = await supabase
+        .from('members')
+        .insert([{
+          ...memberData,
+          plan_id: planData.id
+        }]);
+
+      if (insertError) {
+        console.error('Error inserting member:', insertError);
+        throw insertError;
+      }
+
       const currentSubscribers = members.filter(member => member.plan === data.plan).length;
       
       toast({
