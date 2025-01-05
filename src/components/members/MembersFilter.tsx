@@ -4,9 +4,7 @@ import { Label } from "@/components/ui/label";
 interface FilterState {
   name: string;
   phone: string;
-  nif: string;
-  birthDate: string;
-  iban: string;
+  nickname: string;
 }
 
 interface MembersFilterProps {
@@ -16,7 +14,7 @@ interface MembersFilterProps {
 
 export function MembersFilter({ filters, onFilterChange }: MembersFilterProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-muted rounded-lg">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
       <div className="space-y-2">
         <Label htmlFor="name-filter">Nome</Label>
         <Input
@@ -36,30 +34,12 @@ export function MembersFilter({ filters, onFilterChange }: MembersFilterProps) {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="nif-filter">NIF</Label>
+        <Label htmlFor="nickname-filter">Apelido</Label>
         <Input
-          id="nif-filter"
-          placeholder="Filtrar por NIF..."
-          value={filters.nif}
-          onChange={(e) => onFilterChange('nif', e.target.value)}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="birth-date-filter">Data de Nascimento</Label>
-        <Input
-          id="birth-date-filter"
-          type="date"
-          value={filters.birthDate}
-          onChange={(e) => onFilterChange('birthDate', e.target.value)}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="iban-filter">IBAN</Label>
-        <Input
-          id="iban-filter"
-          placeholder="Filtrar por IBAN..."
-          value={filters.iban}
-          onChange={(e) => onFilterChange('iban', e.target.value)}
+          id="nickname-filter"
+          placeholder="Filtrar por apelido..."
+          value={filters.nickname}
+          onChange={(e) => onFilterChange('nickname', e.target.value)}
         />
       </div>
     </div>

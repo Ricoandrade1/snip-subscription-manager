@@ -2,8 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppSidebar } from "./components/AppSidebar";
 import Index from "./pages/Index";
 import Members from "./pages/Members";
-import PaymentReports from "./pages/PaymentReports";
-import Revenue from "./pages/Revenue";
 import Schedule from "./pages/Schedule";
 import Story from "./pages/Story";
 import Feed from "./pages/Feed";
@@ -31,8 +29,6 @@ function App() {
                   <Route path="/members/basic" element={<Members planType="Basic" />} />
                   <Route path="/members/classic" element={<Members planType="Classic" />} />
                   <Route path="/members/business" element={<Members planType="Business" />} />
-                  <Route path="/payment-reports" element={<PaymentReports />} />
-                  <Route path="/revenue" element={<Revenue />} />
                   <Route path="/schedule" element={<Schedule />} />
                   <Route path="/story" element={<Story />} />
                   <Route path="/feed" element={<Feed />} />
