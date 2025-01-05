@@ -1,30 +1,31 @@
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Product } from "./types";
-import { Scissors, Package, Sparkles, Percent } from "lucide-react";
+import { Scissors, Package, Sparkles, Percent, Pencil } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 interface ProductCardProps {
   product: Product;
   barbers: { id: string; name: string }[];
   onSelect: (product: Product) => void;
+  onEdit?: (product: Product) => void;
 }
 
-export function ProductCard({ product, onSelect }: ProductCardProps) {
+export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
   const isNew = new Date(product.created_at).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000;
   const hasCommissions = product.commission_rates && Object.keys(product.commission_rates).length > 0;
 
   return (
     <Card
-      className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer ${
+      className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg ${
         product.stock === 0 ? 'opacity-50' : ''
       } ${isNew ? 'bg-[#FEF7CD]/30' : ''}`}
-      onClick={() => {
-        if (product.stock > 0 || product.is_service) {
-          onSelect(product);
-        } else {
-          toast.error("Produto sem estoque");
-        }
-      }}
     >
       {isNew && (
         <div className="absolute left-2 top-2 z-10">
@@ -35,6 +36,24 @@ export function ProductCard({ product, onSelect }: ProductCardProps) {
       )}
 
       <div className="absolute right-2 top-2 z-10 flex gap-2">
+        {onEdit && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-gray-500/10 p-2 text-gray-600 hover:bg-gray-500/20"
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onEdit(product)}>
+                Editar produto
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
         {hasCommissions && (
           <div className="rounded-full bg-green-500/10 p-2 text-green-600" title="Tem comissões">
             <Percent className="h-4 w-4" />
@@ -51,7 +70,16 @@ export function ProductCard({ product, onSelect }: ProductCardProps) {
         )}
       </div>
 
-      <div className="aspect-square w-full overflow-hidden">
+      <div 
+        className="aspect-square w-full overflow-hidden cursor-pointer"
+        onClick={() => {
+          if (product.stock > 0 || product.is_service) {
+            onSelect(product);
+          } else {
+            toast.error("Produto sem estoque");
+          }
+        }}
+      >
         {product.image_url ? (
           <img
             src={product.image_url}
