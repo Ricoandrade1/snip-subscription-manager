@@ -5,8 +5,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
 
 interface Product {
   id: string;
@@ -16,6 +18,16 @@ interface Product {
   stock?: number;
   brand?: string | null;
   category?: string | null;
+}
+
+interface Brand {
+  id: string;
+  name: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
 }
 
 const formSchema = z.object({
@@ -35,6 +47,9 @@ interface ProductServiceFormProps {
 }
 
 export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFormProps) {
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,6 +62,24 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
     },
   });
 
+  useEffect(() => {
+    fetchBrandsAndCategories();
+  }, []);
+
+  const fetchBrandsAndCategories = async () => {
+    const [brandsResponse, categoriesResponse] = await Promise.all([
+      supabase.from("brands").select("*").order("name"),
+      supabase.from("categories").select("*").order("name"),
+    ]);
+
+    if (brandsResponse.data) {
+      setBrands(brandsResponse.data);
+    }
+    if (categoriesResponse.data) {
+      setCategories(categoriesResponse.data);
+    }
+  };
+
   const onSubmit = async (values: FormValues) => {
     try {
       const productData = {
@@ -54,8 +87,8 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
         description: values.description,
         price: values.price ? parseFloat(values.price) : 0,
         stock: values.stock ? parseInt(values.stock) : 0,
-        brand: values.brand || null,
-        category: values.category || null,
+        brand_id: values.brand || null,
+        category_id: values.category || null,
       };
 
       const { error } = initialData
@@ -150,9 +183,20 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
           render={({ field }) => (
             <FormItem>
               <FormLabel>Marca</FormLabel>
-              <FormControl>
-                <Input placeholder="Digite a marca" {...field} />
-              </FormControl>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma marca" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {brands.map((brand) => (
+                    <SelectItem key={brand.id} value={brand.id}>
+                      {brand.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -164,9 +208,20 @@ export function ProductServiceForm({ initialData, onSuccess }: ProductServiceFor
           render={({ field }) => (
             <FormItem>
               <FormLabel>Categoria</FormLabel>
-              <FormControl>
-                <Input placeholder="Digite a categoria" {...field} />
-              </FormControl>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma categoria" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
