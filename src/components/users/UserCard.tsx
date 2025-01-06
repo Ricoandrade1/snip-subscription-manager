@@ -1,4 +1,4 @@
-import { UserCog } from "lucide-react";
+import { Pencil, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { RoleManager } from "@/components/barber-list/RoleManager";
@@ -67,7 +67,8 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
   };
 
   return (
-    <Card className={cn("transition-colors", getCardStyle())}>
+    <Card className={cn("transition-colors group relative", getCardStyle())}>
+      <Pencil className="absolute top-2 right-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity text-barber-light/60" />
       <CardHeader className="pb-2">
         <div className="flex items-center space-x-2">
           <UserCog className={cn("h-5 w-5", getIconStyle())} />
