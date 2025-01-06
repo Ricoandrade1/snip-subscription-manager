@@ -1,6 +1,8 @@
+import { ThemeType } from 'jspdf-autotable';
+
 export interface TableConfig {
   startY: number;
-  theme: string;
+  theme: ThemeType;
   styles: {
     fontSize: number;
     cellPadding: number;

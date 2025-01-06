@@ -12,7 +12,7 @@ export const tableHeaders = [
 
 export const tableConfig: TableConfig = {
   startY: 50,
-  theme: 'grid',
+  theme: 'grid' as const,
   styles: {
     fontSize: 8,
     cellPadding: 2,
