@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "./lib/supabase/client";
 import { Toaster } from "sonner";
 import { toast } from "sonner";
 
@@ -32,61 +32,33 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    const initSession = async () => {
+    const checkSession = async () => {
       try {
-        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error('Error getting session:', error);
-          await handleLogout();
-          return;
-        }
-        
-        if (currentSession) {
-          setSession(currentSession);
-          setIsAdmin(currentSession.user.user_metadata.role === 'admin');
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          setSession(session);
+          setIsAdmin(session.user.user_metadata.role === 'admin');
         }
       } catch (error) {
-        console.error('Error in session initialization:', error);
-        await handleLogout();
+        console.error('Error checking session:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    const handleLogout = async () => {
-      await supabase.auth.signOut();
-      setSession(null);
-      setIsAdmin(false);
-      navigate('/login');
-    };
+    checkSession();
 
-    initSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session);
-      
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         setSession(session);
         setIsAdmin(session.user.user_metadata.role === 'admin');
-        
         if (event === 'SIGNED_IN') {
-          if (session.user.email === 'admin@example.com') {
-            try {
-              await supabase.auth.updateUser({
-                data: { role: 'admin' }
-              });
-            } catch (error) {
-              console.error('Error updating user role:', error);
-            }
-          }
-          
           toast.success('Login realizado com sucesso!');
           navigate('/');
         }
       } else {
         setSession(null);
         setIsAdmin(false);
-        
         if (event === 'SIGNED_OUT') {
           toast.success('Logout realizado com sucesso!');
           navigate('/login');
@@ -94,29 +66,27 @@ function App() {
       }
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-16 w-16 animate-spin rounded-full border-4 border-barber-gold border-t-transparent" />
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-barber-gold" />
       </div>
     );
   }
 
+  // Rotas públicas que não requerem autenticação
   const publicRoutes = ['/login', '/reset-password'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
 
+  // Redirecionar para login se não estiver autenticado e tentar acessar rota privada
   if (!session && !isPublicRoute) {
     return <LoginForm />;
   }
 
+  // Redirecionar para dashboard se estiver autenticado e tentar acessar rota pública
   if (session && isPublicRoute) {
     navigate('/');
     return null;
