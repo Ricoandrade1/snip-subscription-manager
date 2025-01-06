@@ -16,7 +16,7 @@ export default function DashboardStats({
   onToggleSubscribers,
   onToggleRevenue,
 }: DashboardStatsProps) {
-  const stats = useDashboardStats();
+  const { totalSubscribers, activeSubscribers, monthlyRevenue } = useDashboardStats();
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -33,7 +33,7 @@ export default function DashboardStats({
           </Button>
         </div>
         <p className="text-2xl font-bold text-barber-gold mt-2">
-          {showSubscribers ? stats.totalSubscribers : "***"}
+          {showSubscribers ? totalSubscribers : "***"}
         </p>
       </Card>
 
@@ -50,7 +50,7 @@ export default function DashboardStats({
           </Button>
         </div>
         <p className="text-2xl font-bold text-barber-gold mt-2">
-          {showSubscribers ? stats.activeSubscribers : "***"}
+          {showSubscribers ? activeSubscribers : "***"}
         </p>
       </Card>
 
@@ -67,7 +67,7 @@ export default function DashboardStats({
           </Button>
         </div>
         <p className="text-2xl font-bold text-barber-gold mt-2">
-          {showRevenue ? `${stats.monthlyRevenue}€` : "***"}
+          {showRevenue ? `${monthlyRevenue}€` : "***"}
         </p>
       </Card>
     </div>

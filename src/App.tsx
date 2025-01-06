@@ -7,7 +7,14 @@ import { Routes, Route } from "react-router-dom";
 import Index from "@/pages/Index";
 
 // Create a client
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  },
+});
 
 function App() {
   return (
