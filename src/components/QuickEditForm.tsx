@@ -9,6 +9,7 @@ import { formSchema, FormValues } from "./member-form/schema";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { StatusField } from "./member-form/StatusField";
+import { isAfter } from "date-fns";
 
 interface QuickEditFormProps {
   member: Member;
@@ -25,7 +26,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       nif: member.nif || "",
       plan: member.plan || "Basic",
       payment_date: member.payment_date ? new Date(member.payment_date) : undefined,
-      status: member.payment_date ? (member.status as "pago" | "atrasado" | "cancelado") : undefined,
+      status: member.status as "pago" | "atrasado" | "cancelado",
     },
   });
 
@@ -61,8 +62,10 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
           plan_id: planData.id,
           payment_date: data.payment_date?.toISOString() || null,
           last_plan_change: new Date().toISOString(),
-          // Only set status if payment_date exists
-          status: data.payment_date ? data.status : null
+          // Set status based on payment date
+          status: data.payment_date 
+            ? (isAfter(data.payment_date, new Date()) ? "pago" : "atrasado")
+            : "atrasado"
         };
         
         await onSubmit(formattedData);
@@ -72,8 +75,10 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         const formattedData = {
           ...data,
           payment_date: data.payment_date?.toISOString() || null,
-          // Only set status if payment_date exists
-          status: data.payment_date ? data.status : null
+          // Set status based on payment date
+          status: data.payment_date 
+            ? (isAfter(data.payment_date, new Date()) ? "pago" : "atrasado")
+            : "atrasado"
         };
         
         await onSubmit(formattedData);
