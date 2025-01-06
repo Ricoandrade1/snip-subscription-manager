@@ -30,7 +30,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   }, [session, navigate]);
 
   const { filters, handleFilterChange, filteredMembers } = useMembers({
-    members: members || [], // Garante que members seja um array
+    members: members || [],
     planFilter,
   });
 
@@ -46,6 +46,14 @@ export function MembersTable({ planFilter }: MembersTableProps) {
         member.plan = planData.title as Member["plan"];
       }
     }
+
+    // Normalize status if needed
+    if (member.status === 'active') {
+      member.status = 'pago';
+    } else if (member.status === 'inactive') {
+      member.status = 'cancelado';
+    }
+
     setSelectedMember(member);
     setDialogOpen(true);
   };
@@ -62,8 +70,16 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     );
   }
 
+  // Normalize status for all members
+  const normalizedMembers = filteredMembers.map(member => ({
+    ...member,
+    status: member.status === 'active' ? 'pago' : 
+            member.status === 'inactive' ? 'cancelado' : 
+            member.status
+  }));
+
   // Remove duplicatas baseado no ID do membro
-  const uniqueMembers = filteredMembers.filter((member, index, self) =>
+  const uniqueMembers = normalizedMembers.filter((member, index, self) =>
     index === self.findIndex((m) => m.id === member.id)
   );
 
@@ -82,7 +98,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
               <MemberTableRow
                 key={member.id}
                 member={member}
-                memberCode={getMemberCode({ member, members })}
+                memberCode={getMemberCode({ member, members: normalizedMembers })}
                 onClick={() => handleRowClick(member)}
               />
             ))}
