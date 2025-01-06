@@ -6,6 +6,7 @@ interface CartPaymentProps {
   subtotal: number;
   discountPercentage: number;
   onDiscountChange: (value: number) => void;
+  vatAmount: number;
   total: number;
   onClearCart: () => void;
 }
@@ -15,6 +16,7 @@ export function CartPayment({
   subtotal,
   discountPercentage,
   onDiscountChange,
+  vatAmount,
   total, 
   onClearCart 
 }: CartPaymentProps) {
@@ -24,6 +26,7 @@ export function CartPayment({
       subtotal={subtotal}
       discountPercentage={discountPercentage}
       onDiscountChange={onDiscountChange}
+      vatAmount={vatAmount}
       total={total}
       onClearCart={onClearCart}
     />

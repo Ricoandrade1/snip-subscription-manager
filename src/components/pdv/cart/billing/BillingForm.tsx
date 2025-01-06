@@ -15,6 +15,7 @@ interface BillingFormProps {
   subtotal: number;
   discountPercentage: number;
   onDiscountChange: (value: number) => void;
+  vatAmount: number;
   total: number;
   onClearCart: () => void;
 }
@@ -30,6 +31,7 @@ export function BillingForm({
   subtotal,
   discountPercentage,
   onDiscountChange,
+  vatAmount,
   total, 
   onClearCart 
 }: BillingFormProps) {
@@ -46,7 +48,7 @@ export function BillingForm({
       }
       setSellerCommissions(prev => ({
         ...prev,
-        [seller.id]: seller.commission_rate
+        [seller.id]: 0 // Initialize commission to 0
       }));
       return [...current, seller];
     });
@@ -97,6 +99,8 @@ export function BillingForm({
     }
   };
 
+  const discountAmount = (subtotal * discountPercentage) / 100;
+
   return (
     <Card className="p-4 space-y-4">
       <SellerSelector
@@ -106,7 +110,7 @@ export function BillingForm({
 
       <CommissionDisplay
         selectedSellers={selectedSellers}
-        total={total}
+        total={subtotal} // Use subtotal for commission calculation
         commissionRates={sellerCommissions}
         onCommissionChange={handleCommissionChange}
       />
@@ -141,7 +145,17 @@ export function BillingForm({
             ({new Intl.NumberFormat("pt-PT", {
               style: "currency",
               currency: "EUR",
-            }).format(subtotal * discountPercentage / 100)})
+            }).format(discountAmount)})
+          </span>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <span className="text-sm">IVA:</span>
+          <span className="text-sm">
+            {new Intl.NumberFormat("pt-PT", {
+              style: "currency",
+              currency: "EUR",
+            }).format(vatAmount)}
           </span>
         </div>
 

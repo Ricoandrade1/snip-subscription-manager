@@ -19,9 +19,30 @@ export function Cart({
   onClearCart,
 }: CartProps) {
   const [discountPercentage, setDiscountPercentage] = useState(0);
-  const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  
+  // Calculate subtotal (before VAT and discount)
+  const subtotal = items.reduce((acc, item) => {
+    const priceWithoutVAT = item.vat_included 
+      ? item.price / (1 + item.vat_rate / 100)
+      : item.price;
+    return acc + priceWithoutVAT * item.quantity;
+  }, 0);
+
+  // Calculate discount amount
   const discountAmount = (subtotal * discountPercentage) / 100;
-  const total = subtotal - discountAmount;
+  
+  // Calculate VAT after discount
+  const vatAmount = items.reduce((acc, item) => {
+    const itemSubtotal = item.vat_included 
+      ? (item.price / (1 + item.vat_rate / 100)) * item.quantity
+      : item.price * item.quantity;
+    const itemDiscount = (itemSubtotal * discountPercentage) / 100;
+    const vatableAmount = itemSubtotal - itemDiscount;
+    return acc + (vatableAmount * item.vat_rate / 100);
+  }, 0);
+
+  // Calculate final total
+  const total = subtotal - discountAmount + vatAmount;
 
   return (
     <Card className="h-full flex flex-col">
@@ -50,6 +71,7 @@ export function Cart({
           subtotal={subtotal}
           discountPercentage={discountPercentage}
           onDiscountChange={setDiscountPercentage}
+          vatAmount={vatAmount}
           total={total}
           onClearCart={onClearCart}
         />
