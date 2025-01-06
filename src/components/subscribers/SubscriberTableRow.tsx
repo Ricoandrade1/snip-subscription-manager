@@ -25,44 +25,16 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
     }
   };
 
-  const getStatusBadgeColor = (status: string) => {
-    switch (status) {
-      case "pago":
-      case "active":
-        return "bg-green-500/20 text-green-500 hover:bg-green-500/30";
-      case "pendente":
-        return "bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30";
-      case "cancelado":
-      case "inactive":
-        return "bg-red-500/20 text-red-500 hover:bg-red-500/30";
-      default:
-        return "bg-gray-500/20 text-gray-500 hover:bg-gray-500/30";
-    }
-  };
-
-  const normalizeStatus = (status: string) => {
-    switch (status) {
-      case "active":
-        return "pago";
-      case "inactive":
-        return "cancelado";
-      default:
-        return status;
-    }
-  };
-
   const formatDate = (date: string | null) => {
     if (!date) return '-';
     return format(new Date(date), "dd/MM/yyyy", { locale: ptBR });
   };
 
-  const getNextPaymentDate = (paymentDate: string | null, status: string) => {
-    if (!paymentDate || status === 'cancelado' || status === 'inactive') return '-';
+  const getNextPaymentDate = (paymentDate: string | null) => {
+    if (!paymentDate) return '-';
     const nextPayment = addDays(new Date(paymentDate), 30);
     return format(nextPayment, "dd/MM/yyyy", { locale: ptBR });
   };
-
-  const normalizedStatus = normalizeStatus(subscriber.status);
 
   return (
     <TableRow 
@@ -79,17 +51,12 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
           {subscriber.plan}
         </Badge>
       </TableCell>
-      <TableCell>
-        <Badge className={`${getStatusBadgeColor(subscriber.status)} whitespace-nowrap`}>
-          {normalizedStatus}
-        </Badge>
-      </TableCell>
       <TableCell className="text-barber-light whitespace-nowrap">{subscriber.phone || '-'}</TableCell>
       <TableCell className="text-barber-light whitespace-nowrap">
         {formatDate(subscriber.payment_date)}
       </TableCell>
       <TableCell className="text-barber-light whitespace-nowrap">
-        {getNextPaymentDate(subscriber.payment_date, normalizedStatus)}
+        {getNextPaymentDate(subscriber.payment_date)}
       </TableCell>
     </TableRow>
   );
