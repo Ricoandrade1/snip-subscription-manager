@@ -3,6 +3,7 @@ import { Product } from "./types";
 import { CartHeader } from "./cart/CartHeader";
 import { CartItem } from "./cart/CartItem";
 import { CartPayment } from "./cart/CartPayment";
+import { useState } from "react";
 
 interface CartProps {
   items: (Product & { quantity: number })[];
@@ -17,7 +18,10 @@ export function Cart({
   onRemoveItem,
   onClearCart,
 }: CartProps) {
-  const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const [discountPercentage, setDiscountPercentage] = useState(0);
+  const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const discountAmount = (subtotal * discountPercentage) / 100;
+  const total = subtotal - discountAmount;
 
   return (
     <Card className="h-full flex flex-col">
@@ -43,6 +47,9 @@ export function Cart({
       <div className="p-4 border-t flex-shrink-0">
         <CartPayment
           items={items}
+          subtotal={subtotal}
+          discountPercentage={discountPercentage}
+          onDiscountChange={setDiscountPercentage}
           total={total}
           onClearCart={onClearCart}
         />

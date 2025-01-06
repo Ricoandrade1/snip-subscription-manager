@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import { Product } from "../../types";
 import { SellerSelector } from "../payment/SellerSelector";
@@ -11,6 +12,9 @@ import { toast } from "sonner";
 
 interface BillingFormProps {
   items: (Product & { quantity: number })[];
+  subtotal: number;
+  discountPercentage: number;
+  onDiscountChange: (value: number) => void;
   total: number;
   onClearCart: () => void;
 }
@@ -21,7 +25,14 @@ interface Seller {
   commission_rate: number;
 }
 
-export function BillingForm({ items, total, onClearCart }: BillingFormProps) {
+export function BillingForm({ 
+  items, 
+  subtotal,
+  discountPercentage,
+  onDiscountChange,
+  total, 
+  onClearCart 
+}: BillingFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<string>("cash");
   const [selectedSellers, setSelectedSellers] = useState<Seller[]>([]);
@@ -48,6 +59,13 @@ export function BillingForm({ items, total, onClearCart }: BillingFormProps) {
     }));
   };
 
+  const handleDiscountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(event.target.value);
+    if (value >= 0 && value <= 100) {
+      onDiscountChange(value);
+    }
+  };
+
   const handleFinishSale = async () => {
     if (items.length === 0) {
       toast.error("Adicione itens ao carrinho para finalizar a venda");
@@ -66,7 +84,8 @@ export function BillingForm({ items, total, onClearCart }: BillingFormProps) {
         total,
         paymentMethod,
         selectedSellers,
-        sellerCommissions
+        sellerCommissions,
+        discountPercentage
       });
       toast.success("Venda finalizada com sucesso!");
       onClearCart();
@@ -97,14 +116,44 @@ export function BillingForm({ items, total, onClearCart }: BillingFormProps) {
         onValueChange={setPaymentMethod}
       />
 
-      <div className="flex justify-between items-center text-lg font-bold pt-4 border-t">
-        <span>Total:</span>
-        <span>
-          {new Intl.NumberFormat("pt-PT", {
-            style: "currency",
-            currency: "EUR",
-          }).format(total)}
-        </span>
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <span className="text-sm">Subtotal:</span>
+          <span className="text-sm">
+            {new Intl.NumberFormat("pt-PT", {
+              style: "currency",
+              currency: "EUR",
+            }).format(subtotal)}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-sm">Desconto (%):</span>
+          <Input
+            type="number"
+            min="0"
+            max="100"
+            value={discountPercentage}
+            onChange={handleDiscountChange}
+            className="w-20 h-8"
+          />
+          <span className="text-sm text-muted-foreground">
+            ({new Intl.NumberFormat("pt-PT", {
+              style: "currency",
+              currency: "EUR",
+            }).format(subtotal * discountPercentage / 100)})
+          </span>
+        </div>
+
+        <div className="flex justify-between items-center text-lg font-bold pt-2 border-t">
+          <span>Total:</span>
+          <span>
+            {new Intl.NumberFormat("pt-PT", {
+              style: "currency",
+              currency: "EUR",
+            }).format(total)}
+          </span>
+        </div>
       </div>
 
       <div className="flex gap-2">
