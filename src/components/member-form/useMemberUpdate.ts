@@ -15,7 +15,6 @@ export const useMemberUpdate = (
   const handleSubmit = async (data: FormValues) => {
     try {
       setIsSubmitting(true);
-      console.log('Dados do formulário:', data);
       
       // Prepare update data
       const updateData: Partial<Member> = {
@@ -24,7 +23,7 @@ export const useMemberUpdate = (
         phone: data.phone,
         nif: data.nif,
         status: data.status,
-        payment_date: data.payment_date?.toISOString() || null,
+        payment_date: data.payment_date ? new Date(data.payment_date).toISOString() : null,
       };
 
       // Se o status mudou para "pago", atualize a data de pagamento para hoje se não houver uma data definida
@@ -33,9 +32,6 @@ export const useMemberUpdate = (
         updateData.payment_date = today.toISOString();
         form.setValue('payment_date', today);
       }
-
-      console.log('Status sendo enviado:', updateData.status);
-      console.log('Data de pagamento:', updateData.payment_date);
 
       // Check if plan has changed
       if (data.plan !== member.plan) {
@@ -66,15 +62,9 @@ export const useMemberUpdate = (
         updateData.last_plan_change = new Date().toISOString();
       }
 
-      console.log('Dados de atualização:', updateData);
       await onSubmit(updateData);
       
-      // Atualiza o formulário com os novos valores
-      form.reset({
-        ...data,
-        payment_date: updateData.payment_date ? new Date(updateData.payment_date) : undefined,
-      });
-      
+      toast.success("Membro atualizado com sucesso!");
     } catch (error) {
       console.error('Error updating member:', error);
       toast.error("Erro ao atualizar membro");
