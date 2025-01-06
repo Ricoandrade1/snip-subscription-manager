@@ -1,7 +1,5 @@
 import { Auth } from "@supabase/auth-ui-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 const customTheme = {
   default: {
@@ -52,33 +50,6 @@ const customTheme = {
 };
 
 export const LoginForm = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate('/');
-      }
-    };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session) {
-        // Set admin role in user metadata after successful login
-        if (session.user.email === 'admin@example.com') {
-          await supabase.auth.updateUser({
-            data: { role: 'admin' }
-          });
-        }
-        navigate('/');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-barber-black p-4">
       <div className="w-full max-w-[420px] space-y-8">
