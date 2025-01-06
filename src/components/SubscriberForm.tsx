@@ -9,6 +9,7 @@ import { PersonalInfoFields } from "./PersonalInfoFields";
 import { PlanFields } from "./PlanFields";
 import { PaymentDateField } from "./PaymentDateField";
 import { supabase } from "@/lib/supabase/client";
+import { MemberStatus } from "@/contexts/types";
 
 const formSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -71,7 +72,7 @@ export function SubscriberForm() {
         nif: data.nif || "",
         plan_id: plansData.id,
         payment_date: data.payment_date ? data.payment_date.toISOString() : null,
-        status: data.payment_date ? "pago" : "pendente"
+        status: (data.payment_date ? "pago" : "pendente") as MemberStatus
       };
 
       await addMember(memberData);
