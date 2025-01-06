@@ -4,6 +4,7 @@ import { Subscriber } from "./types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Member } from "@/contexts/types";
+import { addDays } from "date-fns";
 
 interface EditSubscriberDialogProps {
   subscriber: Subscriber | null;
@@ -14,11 +15,9 @@ interface EditSubscriberDialogProps {
 export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSubscriberDialogProps) {
   if (!subscriber) return null;
 
-  // Convert Subscriber to Member type for QuickEditForm
   const memberData: Member = {
     ...subscriber,
     plan: subscriber.plan,
-    // Map status values correctly
     status: subscriber.status === "atrasado" ? "atrasado" : 
            subscriber.status === "cancelado" ? "cancelado" : "pago",
     due_date: undefined,
@@ -26,7 +25,6 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
 
   const handleSubmit = async (data: Partial<Member>) => {
     try {
-      // Get plan_id if plan is being updated
       let updateData = { ...data };
       
       if (data.plan) {
@@ -38,16 +36,22 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
 
         if (planError) throw planError;
 
-        // Update the data with plan_id
         updateData.plan_id = planData.id;
-        // Remove plan from data as it's not a column in the members table
         delete updateData.plan;
       }
 
-      // Ensure status is one of the allowed values
+      // Se o status for "pago", atualiza a data de pagamento para 30 dias à frente
+      if (updateData.status === 'pago') {
+        const nextPaymentDate = addDays(new Date(), 30);
+        updateData.payment_date = nextPaymentDate.toISOString().split('T')[0];
+      }
+
+      // Garante que o status seja um dos valores permitidos
       if (updateData.status && !['pago', 'atrasado', 'cancelado'].includes(updateData.status)) {
         updateData.status = 'pago';
       }
+
+      console.log('Dados de atualização:', updateData);
 
       const { error } = await supabase
         .from('members')
