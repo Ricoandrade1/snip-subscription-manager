@@ -44,11 +44,11 @@ export function Cart({
   const total = subtotal + vatAmount - discountAmount;
 
   return (
-    <Card className="h-full flex flex-col bg-white shadow-md">
+    <Card className="h-full flex flex-col">
       <CartHeader itemCount={items.length} />
       
       <ScrollArea className="flex-1">
-        <div className="p-6 space-y-4">
+        <div className="p-4 space-y-3">
           {items.map((item) => (
             <CartItem
               key={item.id}
@@ -60,7 +60,7 @@ export function Cart({
         </div>
       </ScrollArea>
 
-      <div className="p-6 border-t border-gray-100 flex-shrink-0 bg-gray-50">
+      <div className="p-4 border-t border-gray-100">
         <CartPayment
           items={items}
           subtotal={subtotal}

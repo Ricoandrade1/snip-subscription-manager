@@ -14,22 +14,22 @@ export function CartItem({
   onRemoveItem,
 }: CartItemProps) {
   return (
-    <div className="flex items-center gap-4 p-4 border border-gray-100 rounded-lg bg-white hover:shadow-sm transition-shadow">
+    <div className="flex items-center gap-3 p-3 border rounded-lg">
       {item.image_url ? (
         <img
           src={item.image_url}
           alt={item.name}
-          className="w-16 h-16 object-cover rounded-md"
+          className="w-14 h-14 object-cover rounded"
         />
       ) : (
-        <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-gray-400 text-sm">
+        <div className="w-14 h-14 bg-muted rounded flex items-center justify-center">
           Sem imagem
         </div>
       )}
 
-      <div className="flex-1 min-w-0">
-        <h3 className="font-medium text-gray-900 truncate">{item.name}</h3>
-        <p className="text-sm text-gray-500">
+      <div className="flex-1">
+        <h3 className="font-medium">{item.name}</h3>
+        <p className="text-sm text-muted-foreground">
           {new Intl.NumberFormat("pt-PT", {
             style: "currency",
             currency: "EUR",
@@ -37,36 +37,36 @@ export function CartItem({
         </p>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         <Button
           variant="outline"
           size="icon"
           onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
           disabled={item.quantity <= 1}
-          className="h-8 w-8"
+          className="h-7 w-7"
         >
-          <Minus className="h-4 w-4" />
+          <Minus className="h-3 w-3" />
         </Button>
 
-        <span className="w-8 text-center font-medium">{item.quantity}</span>
+        <span className="w-6 text-center">{item.quantity}</span>
 
         <Button
           variant="outline"
           size="icon"
           onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
           disabled={!item.is_service && item.quantity >= item.stock}
-          className="h-8 w-8"
+          className="h-7 w-7"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3 w-3" />
         </Button>
 
         <Button
           variant="ghost"
           size="icon"
           onClick={() => onRemoveItem(item.id)}
-          className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 ml-2"
+          className="h-7 w-7 ml-1"
         >
-          <Trash className="h-4 w-4" />
+          <Trash className="h-3 w-3" />
         </Button>
       </div>
     </div>
