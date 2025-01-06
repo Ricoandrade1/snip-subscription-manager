@@ -197,7 +197,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "plans"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       payments: {
@@ -235,7 +235,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "members"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       plans: {
@@ -328,7 +328,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "categories"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       profiles: {
@@ -391,7 +391,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "sales"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       sales: {

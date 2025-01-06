@@ -6,6 +6,7 @@ import { Plus, Edit, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 interface Category {
   id: string;
@@ -17,23 +18,53 @@ export default function Categories() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    // Check authentication status when component mounts
+    checkAuth();
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate('/login');
+      }
+    });
 
-  const fetchCategories = async () => {
-    const { data, error } = await supabase
-      .from("categories")
-      .select("*")
-      .order("name");
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
-    if (error) {
-      toast.error("Erro ao carregar categorias");
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate('/login');
       return;
     }
+    fetchCategories();
+  };
 
-    setCategories(data || []);
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("*")
+        .order("name");
+
+      if (error) {
+        if (error.message?.includes('JWT')) {
+          navigate('/login');
+          return;
+        }
+        toast.error("Erro ao carregar categorias");
+        return;
+      }
+
+      setCategories(data || []);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error("Erro ao carregar categorias");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,25 +75,33 @@ export default function Categories() {
       return;
     }
 
-    const { error } = editingCategory
-      ? await supabase
-          .from("categories")
-          .update({ name: newCategoryName })
-          .eq("id", editingCategory.id)
-      : await supabase
-          .from("categories")
-          .insert([{ name: newCategoryName }]);
+    try {
+      const { error } = editingCategory
+        ? await supabase
+            .from("categories")
+            .update({ name: newCategoryName })
+            .eq("id", editingCategory.id)
+        : await supabase
+            .from("categories")
+            .insert([{ name: newCategoryName }]);
 
-    if (error) {
+      if (error) {
+        if (error.message?.includes('JWT')) {
+          navigate('/login');
+          return;
+        }
+        throw error;
+      }
+
+      toast.success(editingCategory ? "Categoria atualizada" : "Categoria criada");
+      setIsDialogOpen(false);
+      setNewCategoryName("");
+      setEditingCategory(null);
+      fetchCategories();
+    } catch (error) {
+      console.error("Error saving category:", error);
       toast.error("Erro ao salvar categoria");
-      return;
     }
-
-    toast.success(editingCategory ? "Categoria atualizada" : "Categoria criada");
-    setIsDialogOpen(false);
-    setNewCategoryName("");
-    setEditingCategory(null);
-    fetchCategories();
   };
 
   const handleEdit = (category: Category) => {
@@ -72,25 +111,33 @@ export default function Categories() {
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase
-      .from("categories")
-      .delete()
-      .eq("id", id);
+    try {
+      const { error } = await supabase
+        .from("categories")
+        .delete()
+        .eq("id", id);
 
-    if (error) {
+      if (error) {
+        if (error.message?.includes('JWT')) {
+          navigate('/login');
+          return;
+        }
+        throw error;
+      }
+
+      toast.success("Categoria deletada");
+      fetchCategories();
+    } catch (error) {
+      console.error("Error deleting category:", error);
       toast.error("Erro ao deletar categoria");
-      return;
     }
-
-    toast.success("Categoria deletada");
-    fetchCategories();
   };
 
   return (
-    <div className="min-h-screen bg-barber-black p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div className="flex justify-between items-center bg-barber-gray rounded-lg p-6">
-          <h1 className="text-3xl font-bold text-barber-gold">Categorias</h1>
+    <div className="p-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Categorias</h1>
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open);
             if (!open) {
@@ -99,16 +146,14 @@ export default function Categories() {
             }
           }}>
             <DialogTrigger asChild>
-              <Button className="bg-barber-gold hover:bg-barber-gold/90 text-black">
+              <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 Nova Categoria
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-barber-gray border-barber-gold">
+            <DialogContent>
               <DialogHeader>
-                <DialogTitle className="text-barber-gold">
-                  {editingCategory ? "Editar Categoria" : "Nova Categoria"}
-                </DialogTitle>
+                <DialogTitle>{editingCategory ? "Editar Categoria" : "Nova Categoria"}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -116,13 +161,9 @@ export default function Categories() {
                     placeholder="Nome da categoria"
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="bg-barber-black border-barber-gold/50 focus:border-barber-gold text-white"
                   />
                 </div>
-                <Button 
-                  type="submit"
-                  className="w-full bg-barber-gold hover:bg-barber-gold/90 text-black"
-                >
+                <Button type="submit">
                   {editingCategory ? "Atualizar" : "Criar"}
                 </Button>
               </form>
@@ -130,17 +171,13 @@ export default function Categories() {
           </Dialog>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((category) => (
-            <Card 
-              key={category.id} 
-              className="bg-barber-gray border-barber-gold/20 hover:border-barber-gold/50 transition-colors p-6 relative group"
-            >
-              <div className="absolute top-4 right-4 space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Card key={category.id} className="p-4 relative group">
+              <div className="absolute top-2 right-2 space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-barber-gold hover:text-barber-gold/80 hover:bg-barber-black/50"
                   onClick={() => handleEdit(category)}
                 >
                   <Edit className="h-4 w-4" />
@@ -148,13 +185,12 @@ export default function Categories() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-red-500 hover:text-red-400 hover:bg-barber-black/50"
                   onClick={() => handleDelete(category.id)}
                 >
                   <Trash className="h-4 w-4" />
                 </Button>
               </div>
-              <h3 className="text-xl font-medium text-barber-gold">{category.name}</h3>
+              <h3 className="font-medium">{category.name}</h3>
             </Card>
           ))}
         </div>
