@@ -52,6 +52,7 @@ function App() {
       if (session) {
         setSession(session);
         setIsAdmin(session.user.user_metadata.role === 'admin');
+        // Only redirect on sign in
         if (event === 'SIGNED_IN') {
           toast.success('Login realizado com sucesso!');
           navigate('/');
@@ -59,6 +60,7 @@ function App() {
       } else {
         setSession(null);
         setIsAdmin(false);
+        // Only redirect on sign out
         if (event === 'SIGNED_OUT') {
           toast.success('Logout realizado com sucesso!');
           navigate('/login');
