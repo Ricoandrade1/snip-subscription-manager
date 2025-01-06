@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { Member } from "@/contexts/MemberContext";
 import { EditMemberDialog } from "./EditMemberDialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MembersFilter } from "./members/MembersFilter";
+import { MembersFilter } from "./MembersFilter";
 import { MemberTableRow } from "./members/MemberTableRow";
 import { MembersTableHeader } from "./members/MembersTableHeader";
 import { useMembers } from "./members/useMembers";
@@ -42,13 +42,15 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     );
   }
 
-  if (filteredMembers.length === 0) {
+  if (!members || members.length === 0) {
     return (
       <div className="text-center py-8">
         <p className="text-barber-light/60">Nenhum membro encontrado</p>
       </div>
     );
   }
+
+  const displayMembers = filteredMembers.length > 0 ? filteredMembers : members;
 
   return (
     <div className="space-y-6">
@@ -58,7 +60,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
         <Table>
           <MembersTableHeader />
           <TableBody>
-            {filteredMembers.map((member) => (
+            {displayMembers.map((member) => (
               <MemberTableRow
                 key={member.id}
                 member={member}
