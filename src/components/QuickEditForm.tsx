@@ -2,13 +2,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Member } from "@/contexts/types";
 import { Form } from "@/components/ui/form";
-import { PersonalInfoFields } from "./member-form/PersonalInfoFields";
-import { PlanFields } from "./member-form/PlanFields";
-import { PaymentDateField } from "./PaymentDateField";
 import { formSchema, FormValues } from "./member-form/schema";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { StatusField } from "./member-form/StatusField";
+import { useMemberUpdate } from "./member-form/useMemberUpdate";
+import { MemberFormFields } from "./member-form/MemberFormFields";
 
 interface QuickEditFormProps {
   member: Member;
@@ -29,88 +25,20 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
     },
   });
 
-  const handleSubmit = async (data: FormValues) => {
-    try {
-      console.log('Dados do formulário:', data);
-      
-      // Prepare update data
-      const updateData: Partial<Member> = {
-        name: data.name,
-        nickname: data.nickname,
-        phone: data.phone,
-        nif: data.nif,
-        status: data.status,
-        payment_date: data.payment_date?.toISOString() || null,
-      };
-
-      // Se o status mudou para "pago", atualize a data de pagamento para hoje se não houver uma data definida
-      if (data.status === 'pago' && !data.payment_date) {
-        const today = new Date();
-        updateData.payment_date = today.toISOString();
-        form.setValue('payment_date', today);
-      }
-
-      console.log('Status sendo enviado:', updateData.status);
-      console.log('Data de pagamento:', updateData.payment_date);
-
-      // Check if plan has changed
-      if (data.plan !== member.plan) {
-        // Get plan details
-        const { data: planData, error: planError } = await supabase
-          .from('plans')
-          .select('id, price')
-          .eq('title', data.plan)
-          .single();
-
-        if (planError) throw planError;
-
-        // Create a sales record for the plan change
-        const { error: salesError } = await supabase
-          .from('sales')
-          .insert([{
-            total: planData.price,
-            payment_method: 'card',
-            is_plan_change: true,
-            sellers: JSON.stringify([]),
-            status: 'completed'
-          }]);
-
-        if (salesError) throw salesError;
-
-        // Update member with new plan_id and last_plan_change timestamp
-        updateData.plan_id = planData.id;
-        updateData.last_plan_change = new Date().toISOString();
-      }
-
-      console.log('Dados de atualização:', updateData);
-      await onSubmit(updateData);
-      
-      // Atualiza o formulário com os novos valores
-      form.reset({
-        ...data,
-        payment_date: updateData.payment_date ? new Date(updateData.payment_date) : undefined,
-      });
-      
-    } catch (error) {
-      console.error('Error updating member:', error);
-      toast.error("Erro ao atualizar membro");
-    }
-  };
+  const { handleSubmit, isSubmitting } = useMemberUpdate(member, form, onSubmit);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <PersonalInfoFields form={form} />
-        <PlanFields form={form} />
-        <PaymentDateField form={form} />
-        <StatusField form={form} />
+        <MemberFormFields form={form} />
         
         <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-barber-gold hover:bg-barber-gold/90 text-white px-4 py-2 rounded-md"
+            disabled={isSubmitting}
+            className="bg-barber-gold hover:bg-barber-gold/90 text-white px-4 py-2 rounded-md disabled:opacity-50"
           >
-            Salvar Alterações
+            {isSubmitting ? "Salvando..." : "Salvar Alterações"}
           </button>
         </div>
       </form>
