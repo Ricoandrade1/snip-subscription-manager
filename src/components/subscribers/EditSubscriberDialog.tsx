@@ -4,7 +4,6 @@ import { Subscriber } from "./types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Member } from "@/contexts/types";
-import { addDays } from "date-fns";
 
 interface EditSubscriberDialogProps {
   subscriber: Subscriber | null;
@@ -24,7 +23,6 @@ export function EditSubscriberDialog({
   const memberData: Member = {
     ...subscriber,
     plan: subscriber.plan,
-    status: subscriber.status,
     due_date: undefined,
   };
 
@@ -45,12 +43,9 @@ export function EditSubscriberDialog({
         delete updateData.plan;
       }
 
-      // Garante que a data de pagamento seja atualizada corretamente
       if (data.payment_date) {
         updateData.payment_date = new Date(data.payment_date).toISOString();
       }
-
-      console.log('Dados de atualização:', updateData);
 
       const { error } = await supabase
         .from('members')
