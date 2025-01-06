@@ -23,18 +23,23 @@ export function PaymentDateField({
     
     const today = new Date();
     const thirtyDaysAgo = addDays(today, -30);
+    const paymentDateObj = new Date(paymentDate);
     
     // Se a data de pagamento é no futuro
-    if (isAfter(paymentDate, today)) {
+    if (isAfter(paymentDateObj, today)) {
       return 'pago';
     }
     
     // Se a data de pagamento está dentro dos últimos 30 dias
-    if (isAfter(paymentDate, thirtyDaysAgo)) {
+    if (isAfter(paymentDateObj, thirtyDaysAgo)) {
       return 'pago';
     }
     
     // Se a data de pagamento é mais antiga que 30 dias
+    if (isBefore(paymentDateObj, thirtyDaysAgo)) {
+      return 'pendente';
+    }
+    
     return 'cancelado';
   };
 
