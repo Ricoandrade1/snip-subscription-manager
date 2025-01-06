@@ -58,20 +58,6 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
     }
   };
 
-  const getTitleStyle = () => {
-    if (isAdmin) return "text-barber-light";
-    if (isSeller) return "text-barber-light";
-    if (isBarber) return "text-barber-light";
-    return "text-barber-light";
-  };
-
-  const getIconStyle = () => {
-    if (isAdmin) return "text-barber-gold";
-    if (isSeller) return "text-blue-400";
-    if (isBarber) return "text-gray-400";
-    return "text-gray-400";
-  };
-
   const handleEditClick = () => {
     onSelectUser(user.id);
   };
@@ -90,8 +76,8 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
           />
           <CardHeader className="pb-2">
             <div className="flex items-center space-x-2">
-              <UserCog className={cn("h-5 w-5", getIconStyle())} />
-              <h3 className={cn("text-lg font-semibold truncate", getTitleStyle())}>
+              <UserCog className="h-5 w-5 text-barber-gold" />
+              <h3 className="text-lg font-semibold truncate text-barber-light">
                 {user.email || "Usuário sem email"}
               </h3>
             </div>
@@ -139,7 +125,7 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
                   </DialogTrigger>
                   <DialogContent className={cn("border-barber-gold/20", getCardStyle())}>
                     <div className="space-y-4">
-                      <h2 className={cn("text-xl font-semibold text-barber-light")}>
+                      <h2 className="text-xl font-semibold text-barber-light">
                         Gerir Funções - {user.email || "Usuário sem email"}
                       </h2>
                       <RoleManager
