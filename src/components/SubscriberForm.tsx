@@ -15,12 +15,12 @@ import { DialogHeader, DialogTitle } from "./ui/dialog";
 import { ScrollArea } from "./ui/scroll-area";
 
 const formSchema = z.object({
-  name: z.string(),
-  nickname: z.string(),
-  phone: z.string(),
-  nif: z.string(),
-  bankName: z.string(),
-  iban: z.string(),
+  name: z.string().min(1, "Nome é obrigatório"),
+  nickname: z.string().optional(),
+  phone: z.string().min(1, "Telefone é obrigatório"),
+  nif: z.string().optional(),
+  bankName: z.string().min(1, "Nome do banco é obrigatório"),
+  iban: z.string().min(1, "IBAN é obrigatório"),
   plan: z.enum(["Basic", "Classic", "Business"]).default("Basic"),
   payment_date: z.date().optional(),
 });
@@ -80,7 +80,8 @@ export function SubscriberForm() {
             plan_id: planData.id,
             payment_date: data.payment_date,
             bank_name: data.bankName,
-            iban: data.iban
+            iban: data.iban,
+            status: 'pendente'
           }
         ]);
 

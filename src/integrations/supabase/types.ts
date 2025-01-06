@@ -143,8 +143,10 @@ export type Database = {
       }
       members: {
         Row: {
+          bank_name: string | null
           created_at: string | null
           due_date: string | null
+          iban: string | null
           id: string
           last_plan_change: string | null
           name: string
@@ -156,8 +158,10 @@ export type Database = {
           status: string
         }
         Insert: {
+          bank_name?: string | null
           created_at?: string | null
           due_date?: string | null
+          iban?: string | null
           id?: string
           last_plan_change?: string | null
           name: string
@@ -169,8 +173,10 @@ export type Database = {
           status?: string
         }
         Update: {
+          bank_name?: string | null
           created_at?: string | null
           due_date?: string | null
+          iban?: string | null
           id?: string
           last_plan_change?: string | null
           name?: string
