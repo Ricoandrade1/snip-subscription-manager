@@ -37,36 +37,32 @@ function App() {
         const { data: { session: currentSession }, error } = await supabase.auth.getSession();
         if (error) {
           console.error('Error getting session:', error);
-          // If there's a session error, clear the session and redirect to login
-          await supabase.auth.signOut();
-          setSession(null);
-          setIsAdmin(false);
-          navigate('/login');
+          await handleLogout();
           return;
         }
         
         if (currentSession) {
-          console.log('Current session:', currentSession);
           setSession(currentSession);
           setIsAdmin(currentSession.user.user_metadata.role === 'admin');
         }
       } catch (error) {
         console.error('Error in session initialization:', error);
-        // On any error, clear the session and redirect to login
-        await supabase.auth.signOut();
-        setSession(null);
-        setIsAdmin(false);
-        navigate('/login');
+        await handleLogout();
       } finally {
         setLoading(false);
       }
     };
 
+    const handleLogout = async () => {
+      await supabase.auth.signOut();
+      setSession(null);
+      setIsAdmin(false);
+      navigate('/login');
+    };
+
     initSession();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session);
       
       if (session) {
@@ -74,7 +70,6 @@ function App() {
         setIsAdmin(session.user.user_metadata.role === 'admin');
         
         if (event === 'SIGNED_IN') {
-          // Update user metadata if admin
           if (session.user.email === 'admin@example.com') {
             try {
               await supabase.auth.updateUser({
@@ -92,7 +87,7 @@ function App() {
         setSession(null);
         setIsAdmin(false);
         
-        if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        if (event === 'SIGNED_OUT') {
           toast.success('Logout realizado com sucesso!');
           navigate('/login');
         }
@@ -112,16 +107,13 @@ function App() {
     );
   }
 
-  // Rotas públicas que não requerem autenticação
   const publicRoutes = ['/login', '/reset-password'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
 
-  // Redirecionar para login se não estiver autenticado e tentar acessar rota privada
   if (!session && !isPublicRoute) {
     return <LoginForm />;
   }
 
-  // Redirecionar para dashboard se estiver autenticado e tentar acessar rota pública
   if (session && isPublicRoute) {
     navigate('/');
     return null;

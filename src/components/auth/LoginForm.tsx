@@ -2,6 +2,7 @@ import { Auth } from "@supabase/auth-ui-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const customTheme = {
   default: {
@@ -64,12 +65,13 @@ export const LoginForm = () => {
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        // Set admin role in user metadata after successful login
         if (session.user.email === 'admin@example.com') {
-          await supabase.auth.updateUser({
+          supabase.auth.updateUser({
             data: { role: 'admin' }
+          }).catch(error => {
+            console.error('Error updating user role:', error);
           });
         }
         navigate('/');
@@ -91,7 +93,6 @@ export const LoginForm = () => {
           </p>
         </div>
 
-        {/* Credenciais de Admin */}
         <div className="bg-barber-gray/50 border border-barber-gray rounded-lg p-4">
           <p className="text-barber-gold font-medium text-sm mb-2">
             Credenciais de Administrador:
@@ -134,6 +135,10 @@ export const LoginForm = () => {
               },
             }}
             providers={[]}
+            onError={(error) => {
+              console.error('Auth error:', error);
+              toast.error('Erro ao fazer login. Verifique suas credenciais.');
+            }}
           />
         </div>
       </div>
