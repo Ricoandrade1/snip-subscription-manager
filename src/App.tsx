@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { AppSidebar } from "@/components/AppSidebar";
+import { UserMenu } from "@/components/auth/UserMenu";
 import Index from "@/pages/Index";
 import Members from "@/pages/Members";
 import Products from "@/pages/Products";
@@ -16,6 +17,7 @@ import ResetPassword from "@/pages/ResetPassword";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
+import { toast } from "sonner";
 
 function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -33,7 +35,13 @@ function App() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("Auth state changed:", _event, session);
       setSession(session);
+      if (_event === 'SIGNED_IN') {
+        toast.success('Login realizado com sucesso!');
+      } else if (_event === 'SIGNED_OUT') {
+        toast.success('Logout realizado com sucesso!');
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -53,18 +61,25 @@ function App() {
 
   // Se não estiver autenticado e tentar acessar uma página protegida
   if (!session && !isPublicPage) {
+    console.log("Redirecting to login - no session");
     return <Navigate to="/login" replace />;
   }
 
   // Se estiver autenticado e tentar acessar páginas de login/reset
   if (session && isPublicPage) {
+    console.log("Redirecting to home - has session");
     return <Navigate to="/" replace />;
   }
 
   return (
     <div className="min-h-screen flex w-full">
       {session && <AppSidebar />}
-      <main className={session ? "flex-1" : "w-full"}>
+      <main className={session ? "flex-1 relative" : "w-full"}>
+        {session && (
+          <div className="absolute top-4 right-4 z-50">
+            <UserMenu />
+          </div>
+        )}
         <Routes>
           <Route path="/login" element={<LoginForm />} />
           <Route path="/reset-password" element={<ResetPassword />} />

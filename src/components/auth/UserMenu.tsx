@@ -4,7 +4,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -16,10 +15,11 @@ export const UserMenu = () => {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       navigate("/login");
-      toast.success("Logout realizado com sucesso");
     } catch (error) {
+      console.error("Erro ao fazer logout:", error);
       toast.error("Erro ao fazer logout");
     }
   };
