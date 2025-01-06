@@ -76,7 +76,10 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick, onDeleteC
       </TableCell>
       <TableCell className="text-barber-light">{subscriber.nickname || '-'}</TableCell>
       <TableCell>
-        <Badge className={`${getPlanBadgeColor(subscriber.plan)} whitespace-nowrap`}>
+        <Badge 
+          key={`${subscriber.id}-${subscriber.plan}`} 
+          className={`${getPlanBadgeColor(subscriber.plan)} whitespace-nowrap`}
+        >
           {subscriber.plan}
         </Badge>
       </TableCell>
@@ -88,7 +91,10 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick, onDeleteC
         {getNextPaymentDate(subscriber.payment_date)}
       </TableCell>
       <TableCell>
-        <Badge className={`${getStatusBadgeColor(subscriber.status)} whitespace-nowrap`}>
+        <Badge 
+          key={`${subscriber.id}-${subscriber.status}`}
+          className={`${getStatusBadgeColor(subscriber.status)} whitespace-nowrap`}
+        >
           {formatStatus(subscriber.status)}
         </Badge>
       </TableCell>
