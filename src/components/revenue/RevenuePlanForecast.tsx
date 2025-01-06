@@ -53,36 +53,35 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
   const calculateMonthlyRevenue = () => {
     // Filtra apenas membros com status 'pago'
     const activeMembers = members.filter(member => member.status === 'pago');
-    console.log('Membros ativos:', activeMembers);
+    console.log('Membros ativos:', activeMembers.length);
     
     let totalRevenue = 0;
     
+    // Mapeia os valores dos planos para um objeto para fácil acesso
+    const planPrices: { [key: string]: number } = {
+      'Basic': 29.99,
+      'Classic': 49.99,
+      'Business': 99.99
+    };
+    
     activeMembers.forEach(member => {
-      // Encontra o plano do membro usando plan_id
-      const memberPlan = plans.find(p => p.id === member.plan_id);
+      console.log('-------------------');
+      console.log(`Membro: ${member.name}`);
+      console.log(`Plano: ${member.plan}`);
       
-      if (memberPlan) {
-        console.log('-------------------');
-        console.log(`Membro: ${member.name}`);
-        console.log(`Plano ID: ${member.plan_id}`);
-        console.log(`Plano encontrado: ${memberPlan.title}`);
-        console.log(`Preço do plano: ${memberPlan.price}`);
-        
-        // Converte o preço para número e adiciona ao total
-        const planPrice = Number(memberPlan.price);
-        if (!isNaN(planPrice)) {
-          totalRevenue += planPrice;
-          console.log(`Subtotal após adicionar ${member.name}: ${totalRevenue}`);
-        } else {
-          console.log(`Erro: Preço inválido para o plano ${memberPlan.title}`);
-        }
+      // Usa o preço do plano diretamente do mapeamento
+      const planPrice = planPrices[member.plan];
+      if (planPrice) {
+        totalRevenue += planPrice;
+        console.log(`Preço do plano ${member.plan}: ${planPrice}€`);
+        console.log(`Subtotal após adicionar ${member.name}: ${totalRevenue}€`);
       } else {
-        console.log(`Nenhum plano encontrado para o membro ${member.name} (ID do plano: ${member.plan_id})`);
+        console.log(`Erro: Plano não encontrado para ${member.name}`);
       }
     });
     
     console.log('-------------------');
-    console.log('Receita mensal total:', totalRevenue);
+    console.log('Receita mensal total:', totalRevenue.toFixed(2), '€');
     return totalRevenue;
   };
 
