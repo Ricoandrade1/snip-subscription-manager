@@ -47,6 +47,7 @@ export function PaymentDateField({
                   status = 'inactive'; // Payment overdue
                 }
                 
+                console.log('Status atualizado:', status);
                 form.setValue('status', status);
               }}
               className="h-10"

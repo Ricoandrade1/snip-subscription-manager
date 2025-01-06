@@ -2,6 +2,7 @@ import { FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "./schema";
+import { MemberStatus } from "@/contexts/types";
 
 interface StatusFieldProps {
   form: UseFormReturn<FormValues>;
@@ -16,7 +17,10 @@ export function StatusField({ form }: StatusFieldProps) {
         <FormItem className="space-y-3">
           <FormLabel className="text-barber-light">Status</FormLabel>
           <RadioGroup
-            onValueChange={field.onChange}
+            onValueChange={(value: MemberStatus) => {
+              field.onChange(value);
+              console.log('Status alterado para:', value);
+            }}
             defaultValue={field.value}
             className="flex flex-col space-y-1"
           >

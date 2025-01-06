@@ -31,6 +31,8 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
 
   const handleSubmit = async (data: FormValues) => {
     try {
+      console.log('Dados do formulário:', data);
+      
       // Check if plan has changed
       if (data.plan !== member.plan) {
         // Get plan details
