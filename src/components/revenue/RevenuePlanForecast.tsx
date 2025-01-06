@@ -50,13 +50,18 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
   };
 
   const calculateMonthlyRevenue = () => {
-    return members.reduce((total, member) => {
-      if (member.status === 'pago') {
-        const memberPlan = plans.find(p => p.id === member.plan_id);
-        return total + (memberPlan?.price || 0);
+    const activeMembers = members.filter(member => member.status === 'pago');
+    const totalRevenue = activeMembers.reduce((total, member) => {
+      const memberPlan = plans.find(p => p.id === member.plan_id);
+      if (memberPlan) {
+        console.log(`Member ${member.name} with plan ${memberPlan.title} contributes ${memberPlan.price}`);
+        return total + memberPlan.price;
       }
       return total;
     }, 0);
+    
+    console.log('Total monthly revenue:', totalRevenue);
+    return totalRevenue;
   };
 
   const forecasts = [
