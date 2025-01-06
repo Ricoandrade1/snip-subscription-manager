@@ -9,12 +9,14 @@ interface PaymentDateFieldProps {
   form: UseFormReturn<FormValues>;
   name?: keyof FormValues;
   label?: string;
+  disabled?: boolean;
 }
 
 export function PaymentDateField({ 
   form, 
   name = "payment_date",
-  label = "Data de Pagamento" 
+  label = "Data de Pagamento",
+  disabled = false
 }: PaymentDateFieldProps) {
   const calculateStatus = (paymentDate: Date | null): MemberStatus => {
     if (!paymentDate) return 'cancelado';
@@ -47,6 +49,7 @@ export function PaymentDateField({
             <Input
               type="date"
               {...field}
+              disabled={disabled}
               value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
               onChange={(e) => {
                 const date = e.target.value ? new Date(e.target.value) : null;
@@ -62,7 +65,7 @@ export function PaymentDateField({
                   form.setValue('status', 'cancelado');
                 }
               }}
-              className="h-10"
+              className={`h-10 ${disabled ? 'bg-gray-100' : ''}`}
             />
           </FormControl>
         </FormItem>
