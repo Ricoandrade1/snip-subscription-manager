@@ -14,32 +14,35 @@ interface MembersFilterProps {
 
 export function MembersFilter({ filters, onFilterChange }: MembersFilterProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-barber-gray rounded-lg">
       <div className="space-y-2">
-        <Label htmlFor="name-filter">Nome</Label>
+        <Label htmlFor="name-filter" className="text-barber-light">Nome</Label>
         <Input
           id="name-filter"
           placeholder="Filtrar por nome..."
           value={filters.name}
           onChange={(e) => onFilterChange('name', e.target.value)}
+          className="bg-black/40 border-0 text-barber-light placeholder:text-barber-light/50"
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="phone-filter">Telefone</Label>
+        <Label htmlFor="phone-filter" className="text-barber-light">Telefone</Label>
         <Input
           id="phone-filter"
           placeholder="Filtrar por telefone..."
           value={filters.phone}
           onChange={(e) => onFilterChange('phone', e.target.value)}
+          className="bg-black/40 border-0 text-barber-light placeholder:text-barber-light/50"
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="nif-filter">Apelido</Label>
+        <Label htmlFor="nif-filter" className="text-barber-light">NIF</Label>
         <Input
           id="nif-filter"
-          placeholder="Filtrar por apelido..."
+          placeholder="Filtrar por NIF..."
           value={filters.nif}
           onChange={(e) => onFilterChange('nif', e.target.value)}
+          className="bg-black/40 border-0 text-barber-light placeholder:text-barber-light/50"
         />
       </div>
     </div>

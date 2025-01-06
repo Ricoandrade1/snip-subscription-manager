@@ -14,55 +14,34 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
   const getPlanBadgeColor = (plan: string) => {
     switch (plan) {
       case "Basic":
-        return "bg-blue-500";
+        return "bg-blue-500 hover:bg-blue-600";
       case "Classic":
-        return "bg-purple-500";
+        return "bg-purple-500 hover:bg-purple-600";
       case "Business":
-        return "bg-amber-500";
+        return "bg-barber-gold hover:bg-barber-gold/90";
       default:
-        return "bg-gray-500";
+        return "bg-gray-500 hover:bg-gray-600";
     }
   };
-
-  const getPaymentStatus = () => {
-    if (!member.payment_date) return { label: "Pendente", color: "bg-yellow-500" };
-    
-    const paymentDate = new Date(member.payment_date);
-    const today = new Date();
-    
-    if (paymentDate < today) {
-      return { label: "Atrasado", color: "bg-red-500" };
-    }
-    return { label: "Em dia", color: "bg-green-500" };
-  };
-
-  const status = getPaymentStatus();
 
   return (
     <TableRow 
-      className="cursor-pointer hover:bg-muted/50"
+      className="cursor-pointer hover:bg-barber-gray/50 border-b border-barber-gray"
       onClick={onClick}
     >
-      <TableCell className="font-medium">{memberCode}</TableCell>
-      <TableCell>{member.name}</TableCell>
-      <TableCell>{member.nickname || '-'}</TableCell>
+      <TableCell className="font-medium text-barber-light">{memberCode}</TableCell>
+      <TableCell className="text-barber-light">{member.name}</TableCell>
+      <TableCell className="text-barber-light">{member.nickname || '-'}</TableCell>
       <TableCell>
-        <div className="flex items-center gap-2">
-          <Badge className={`${getPlanBadgeColor(member.plan)}`}>
-            {member.plan}
-          </Badge>
-        </div>
+        <Badge className={`${getPlanBadgeColor(member.plan)}`}>
+          {member.plan}
+        </Badge>
       </TableCell>
-      <TableCell>{member.phone || '-'}</TableCell>
-      <TableCell>
+      <TableCell className="text-barber-light">{member.phone || '-'}</TableCell>
+      <TableCell className="text-barber-light">
         {member.payment_date 
           ? format(new Date(member.payment_date), "dd/MM/yyyy", { locale: ptBR })
           : '-'}
-      </TableCell>
-      <TableCell>
-        <Badge className={status.color}>
-          {status.label}
-        </Badge>
       </TableCell>
     </TableRow>
   );

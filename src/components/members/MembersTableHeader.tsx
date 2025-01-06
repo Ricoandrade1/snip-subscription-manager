@@ -4,13 +4,12 @@ export function MembersTableHeader() {
   return (
     <TableHeader>
       <TableRow>
-        <TableHead>Código</TableHead>
-        <TableHead>Nome</TableHead>
-        <TableHead>Apelido</TableHead>
-        <TableHead>Plano</TableHead>
-        <TableHead>Telefone</TableHead>
-        <TableHead>Data de Pagamento</TableHead>
-        <TableHead>Status</TableHead>
+        <TableHead className="text-barber-light">Código</TableHead>
+        <TableHead className="text-barber-light">Nome</TableHead>
+        <TableHead className="text-barber-light">Apelido</TableHead>
+        <TableHead className="text-barber-light">Plano</TableHead>
+        <TableHead className="text-barber-light">Telefone</TableHead>
+        <TableHead className="text-barber-light">Data de Pagamento</TableHead>
       </TableRow>
     </TableHeader>
   );

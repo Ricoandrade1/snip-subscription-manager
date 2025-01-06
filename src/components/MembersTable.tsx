@@ -40,7 +40,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   if (filteredMembers.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground">Nenhum membro encontrado</p>
+        <p className="text-barber-light/60">Nenhum membro encontrado</p>
       </div>
     );
   }
@@ -49,22 +49,24 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     <div className="space-y-6">
       <MembersFilter filters={filters} onFilterChange={handleFilterChange} />
 
-      <Table>
-        <MembersTableHeader />
-        <TableBody>
-          {filteredMembers.map((member) => (
-            <MemberTableRow
-              key={member.id}
-              member={member}
-              memberCode={getMemberCode({ member, members })}
-              onClick={() => {
-                setSelectedMember(member);
-                setDialogOpen(true);
-              }}
-            />
-          ))}
-        </TableBody>
-      </Table>
+      <div className="rounded-lg overflow-hidden border border-barber-gray">
+        <Table>
+          <MembersTableHeader />
+          <TableBody>
+            {filteredMembers.map((member) => (
+              <MemberTableRow
+                key={member.id}
+                member={member}
+                memberCode={getMemberCode({ member, members })}
+                onClick={() => {
+                  setSelectedMember(member);
+                  setDialogOpen(true);
+                }}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </div>
 
       <EditMemberDialog
         member={selectedMember}
