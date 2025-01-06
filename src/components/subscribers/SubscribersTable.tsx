@@ -24,7 +24,8 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
     filters, 
     handleFilterChange, 
     filteredSubscribers,
-    stats 
+    stats,
+    refetch 
   } = useSubscribers({ planFilter, statusFilter });
 
   const handleSubscriberClick = (subscriber: Subscriber) => {
@@ -82,6 +83,7 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
         subscriber={selectedSubscriber}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
+        onSuccess={refetch}
       />
     </div>
   );

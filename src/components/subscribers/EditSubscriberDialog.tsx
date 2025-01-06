@@ -10,9 +10,15 @@ interface EditSubscriberDialogProps {
   subscriber: Subscriber | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 }
 
-export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSubscriberDialogProps) {
+export function EditSubscriberDialog({ 
+  subscriber, 
+  open, 
+  onOpenChange,
+  onSuccess 
+}: EditSubscriberDialogProps) {
   if (!subscriber) return null;
 
   const memberData: Member = {
@@ -60,8 +66,10 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
       toast.success('Assinante atualizado com sucesso!');
       onOpenChange(false);
       
-      // Recarrega a página para atualizar os dados
-      window.location.reload();
+      // Chama o callback de sucesso em vez de recarregar a página
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error('Error updating subscriber:', error);
       toast.error('Erro ao atualizar assinante');
