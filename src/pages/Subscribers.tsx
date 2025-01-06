@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { SubscribersTable } from "@/components/subscribers/SubscribersTable";
+import { MembersTable } from "@/components/MembersTable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UserPlus, Users } from "lucide-react";
 import { useEffect } from "react";
-import { supabase } from "@/lib/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
+import { SubscriberForm } from "@/components/SubscriberForm";
 
 export default function Subscribers() {
   const navigate = useNavigate();
@@ -68,7 +69,7 @@ export default function Subscribers() {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-3xl bg-barber-gray border-barber-gold/20">
-              {/* Formulário de cadastro será implementado aqui */}
+              <SubscriberForm />
             </DialogContent>
           </Dialog>
         </header>
@@ -90,19 +91,19 @@ export default function Subscribers() {
           </TabsList>
 
           <TabsContent value="all">
-            <SubscribersTable />
+            <MembersTable />
           </TabsContent>
 
           <TabsContent value="basic">
-            <SubscribersTable planFilter="Basic" />
+            <MembersTable planFilter="Basic" />
           </TabsContent>
 
           <TabsContent value="classic">
-            <SubscribersTable planFilter="Classic" />
+            <MembersTable planFilter="Classic" />
           </TabsContent>
 
           <TabsContent value="business">
-            <SubscribersTable planFilter="Business" />
+            <MembersTable planFilter="Business" />
           </TabsContent>
         </Tabs>
       </div>

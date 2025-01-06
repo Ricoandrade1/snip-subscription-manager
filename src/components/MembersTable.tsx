@@ -29,26 +29,6 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     }
   }, [session, navigate]);
 
-  useEffect(() => {
-    const fetchMemberPlan = async (member: Member) => {
-      if (member.plan_id) {
-        const { data: planData } = await supabase
-          .from('plans')
-          .select('title')
-          .eq('id', member.plan_id)
-          .single();
-        
-        if (planData) {
-          member.plan = planData.title as Member["plan"];
-        }
-      }
-    };
-
-    if (selectedMember && !selectedMember.plan) {
-      fetchMemberPlan(selectedMember);
-    }
-  }, [selectedMember]);
-
   const { filters, handleFilterChange, filteredMembers } = useMembers({
     members,
     planFilter,
