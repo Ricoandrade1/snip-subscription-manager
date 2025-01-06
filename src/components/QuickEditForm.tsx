@@ -57,28 +57,28 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         if (salesError) throw salesError;
 
         // Update member with new plan_id and last_plan_change timestamp
-        const formattedData = {
+        const formattedData: Partial<Member> = {
           ...data,
           plan_id: planData.id,
           payment_date: data.payment_date?.toISOString() || null,
           last_plan_change: new Date().toISOString(),
           // Set status based on payment date
           status: data.payment_date 
-            ? (isAfter(data.payment_date, new Date()) ? "pago" : "atrasado")
-            : "atrasado"
+            ? (isAfter(data.payment_date, new Date()) ? "pago" : "atrasado") as Member["status"]
+            : "atrasado" as Member["status"]
         };
         
         await onSubmit(formattedData);
         toast.success("Plano atualizado e venda registrada com sucesso!");
       } else {
         // Regular update without plan change
-        const formattedData = {
+        const formattedData: Partial<Member> = {
           ...data,
           payment_date: data.payment_date?.toISOString() || null,
           // Set status based on payment date
           status: data.payment_date 
-            ? (isAfter(data.payment_date, new Date()) ? "pago" : "atrasado")
-            : "atrasado"
+            ? (isAfter(data.payment_date, new Date()) ? "pago" : "atrasado") as Member["status"]
+            : "atrasado" as Member["status"]
         };
         
         await onSubmit(formattedData);
