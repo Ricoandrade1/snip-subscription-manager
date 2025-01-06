@@ -146,6 +146,7 @@ export type Database = {
           created_at: string | null
           due_date: string | null
           id: string
+          last_plan_change: string | null
           name: string
           nickname: string | null
           nif: string | null
@@ -158,6 +159,7 @@ export type Database = {
           created_at?: string | null
           due_date?: string | null
           id?: string
+          last_plan_change?: string | null
           name: string
           nickname?: string | null
           nif?: string | null
@@ -170,6 +172,7 @@ export type Database = {
           created_at?: string | null
           due_date?: string | null
           id?: string
+          last_plan_change?: string | null
           name?: string
           nickname?: string | null
           nif?: string | null
@@ -386,6 +389,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          is_plan_change: boolean | null
           payment_method: string
           sellers: Json | null
           status: string
@@ -395,6 +399,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          is_plan_change?: boolean | null
           payment_method: string
           sellers?: Json | null
           status?: string
@@ -404,6 +409,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          is_plan_change?: boolean | null
           payment_method?: string
           sellers?: Json | null
           status?: string
