@@ -53,10 +53,14 @@ export function PaymentDateField({
                 field.onChange(date);
                 
                 // Atualiza o status automaticamente com base na data
-                const status = calculateStatus(date);
-                console.log('Data selecionada:', date);
-                console.log('Status calculado:', status);
-                form.setValue('status', status);
+                if (date) {
+                  const status = calculateStatus(date);
+                  console.log('Data selecionada:', date);
+                  console.log('Status calculado:', status);
+                  form.setValue('status', status);
+                } else {
+                  form.setValue('status', 'inactive');
+                }
               }}
               className="h-10"
             />
