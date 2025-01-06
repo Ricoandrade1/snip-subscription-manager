@@ -11,6 +11,8 @@ export interface Subscriber {
   created_at?: string;
   payment_date?: string | null;
   status: SubscriberStatus;
+  bank_name: string | null;
+  iban: string | null;
 }
 
 export interface SubscriberStats {
