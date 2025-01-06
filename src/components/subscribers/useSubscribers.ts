@@ -59,18 +59,20 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
         throw error;
       }
 
-      const formattedSubscribers: Subscriber[] = data.map(member => ({
-        id: member.id,
-        name: member.name,
-        nickname: member.nickname,
-        phone: member.phone,
-        nif: member.nif,
-        plan: member.plans.title as "Basic" | "Classic" | "Business",
-        plan_id: member.plan_id,
-        status: member.status as 'active' | 'overdue' | 'cancelled',
-        created_at: member.created_at,
-        payment_date: member.payment_date,
-      }));
+      const formattedSubscribers: Subscriber[] = data
+        .filter(member => member.plans) // Filter out members without plans
+        .map(member => ({
+          id: member.id,
+          name: member.name,
+          nickname: member.nickname,
+          phone: member.phone,
+          nif: member.nif,
+          plan: member.plans?.title as "Basic" | "Classic" | "Business",
+          plan_id: member.plan_id,
+          status: member.status as 'active' | 'overdue' | 'cancelled',
+          created_at: member.created_at,
+          payment_date: member.payment_date,
+        }));
 
       setSubscribers(formattedSubscribers);
     } catch (error) {
@@ -98,7 +100,7 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
         totalSubscribers: acc.totalSubscribers + 1,
         activeSubscribers: acc.activeSubscribers + (member.status === 'active' ? 1 : 0),
         overdueSubscribers: acc.overdueSubscribers + (member.status === 'overdue' ? 1 : 0),
-        monthlyRevenue: acc.monthlyRevenue + (member.status === 'active' ? member.plans.price : 0),
+        monthlyRevenue: acc.monthlyRevenue + (member.status === 'active' && member.plans?.price ? member.plans.price : 0),
       }), {
         totalSubscribers: 0,
         activeSubscribers: 0,
