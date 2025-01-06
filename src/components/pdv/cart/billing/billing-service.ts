@@ -13,6 +13,7 @@ interface SaleData {
   paymentMethod: string;
   selectedSellers: Seller[];
   sellerCommissions: Record<string, number>;
+  discountPercentage: number;  // Added this field
 }
 
 export async function finalizeSale({
@@ -20,25 +21,27 @@ export async function finalizeSale({
   total,
   paymentMethod,
   selectedSellers,
-  sellerCommissions
+  sellerCommissions,
+  discountPercentage
 }: SaleData) {
   const { data: sale, error: saleError } = await supabase
     .from("sales")
     .insert({
       total,
       payment_method: paymentMethod,
-      status: "completed",
-      sellers: selectedSellers.map(s => ({
-        id: s.id,
-        commission: (total * sellerCommissions[s.id]) / 100
-      }))
+      sellers: selectedSellers.map(seller => ({
+        id: seller.id,
+        name: seller.name,
+        commission_rate: sellerCommissions[seller.id]
+      })),
+      discount_percentage: discountPercentage  // Store the discount percentage
     })
     .select()
     .single();
 
   if (saleError) throw saleError;
 
-  const saleItems = items.map((item) => ({
+  const saleItems = items.map(item => ({
     sale_id: sale.id,
     product_id: item.id,
     quantity: item.quantity,
