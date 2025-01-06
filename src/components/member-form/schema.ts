@@ -7,7 +7,7 @@ export const formSchema = z.object({
   nif: z.string().optional(),
   plan: z.enum(["Basic", "Classic", "Business"]),
   payment_date: z.date().optional(),
-  status: z.enum(["active", "inactive"]).default("active"),
+  status: z.enum(["active", "inactive"]),
 });
 
 export type FormValues = z.infer<typeof formSchema>;

@@ -25,7 +25,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       nif: member.nif || "",
       plan: member.plan || "Basic",
       payment_date: member.payment_date ? new Date(member.payment_date) : undefined,
-      status: member.status === "overdue" ? "inactive" : member.status || "active",
+      status: member.status as "active" | "inactive",
     },
   });
 
@@ -61,8 +61,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
           plan_id: planData.id,
           payment_date: data.payment_date?.toISOString() || null,
           last_plan_change: new Date().toISOString(),
-          // Ensure status is either 'active' or 'inactive'
-          status: data.status === "overdue" ? "inactive" : data.status
+          status: data.status
         };
         
         await onSubmit(formattedData);
@@ -72,8 +71,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         const formattedData = {
           ...data,
           payment_date: data.payment_date?.toISOString() || null,
-          // Ensure status is either 'active' or 'inactive'
-          status: data.status === "overdue" ? "inactive" : data.status
+          status: data.status
         };
         
         await onSubmit(formattedData);
