@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 interface UseSubscribersProps {
   planFilter?: "Basic" | "Classic" | "Business";
+  statusFilter?: string;
 }
 
 interface SubscriberStats {
@@ -14,7 +15,7 @@ interface SubscriberStats {
   monthlyRevenue: number;
 }
 
-export function useSubscribers({ planFilter }: UseSubscribersProps) {
+export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscribersProps) {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<SubscriberStats>({
@@ -33,7 +34,7 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
   useEffect(() => {
     fetchSubscribers();
     calculateStats();
-  }, [planFilter]);
+  }, [planFilter, statusFilter]);
 
   const fetchSubscribers = async () => {
     try {
@@ -60,7 +61,7 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
       }
 
       const formattedSubscribers: Subscriber[] = data
-        .filter(member => member.plans) // Filter out members without plans
+        .filter(member => member.plans)
         .map(member => ({
           id: member.id,
           name: member.name,
@@ -122,7 +123,24 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
     const matchName = subscriber.name.toLowerCase().includes(filters.name.toLowerCase());
     const matchPhone = !filters.phone || (subscriber.phone && subscriber.phone.toLowerCase().includes(filters.phone.toLowerCase()));
     const matchNif = !filters.nif || (subscriber.nif && subscriber.nif.toLowerCase().includes(filters.nif.toLowerCase()));
-    const matchStatus = filters.status === 'all' || subscriber.status === filters.status;
+    
+    let matchStatus = true;
+    if (statusFilter !== 'all') {
+      switch (statusFilter) {
+        case 'active':
+          matchStatus = subscriber.status === 'active';
+          break;
+        case 'overdue':
+          matchStatus = subscriber.status === 'overdue';
+          break;
+        case 'total':
+          matchStatus = true;
+          break;
+        case 'revenue':
+          matchStatus = subscriber.status === 'active';
+          break;
+      }
+    }
 
     return matchName && matchPhone && matchNif && matchStatus;
   });

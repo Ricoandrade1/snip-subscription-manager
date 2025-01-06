@@ -1,135 +1,184 @@
-import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Users, TrendingUp, AlertCircle, DollarSign } from "lucide-react";
+import { Eye, EyeOff, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
-interface SubscribersStatsProps {
-  stats: {
-    totalSubscribers: number;
-    activeSubscribers: number;
-    overdueSubscribers: number;
-    monthlyRevenue: number;
-  };
+interface SubscriberStats {
+  totalSubscribers: number;
+  activeSubscribers: number;
+  overdueSubscribers: number;
+  monthlyRevenue: number;
 }
 
-export function SubscribersStats({ stats }: SubscribersStatsProps) {
-  const [showStats, setShowStats] = useState({
-    total: true,
-    active: true,
-    overdue: true,
-    revenue: true
-  });
+interface SubscribersStatsProps {
+  stats: SubscriberStats;
+  onFilterChange: (status: string) => void;
+}
 
-  const toggleStat = (stat: keyof typeof showStats) => {
-    setShowStats(prev => ({ ...prev, [stat]: !prev[stat] }));
+export function SubscribersStats({ stats, onFilterChange }: SubscribersStatsProps) {
+  const [showTotal, setShowTotal] = useState(true);
+  const [showActive, setShowActive] = useState(true);
+  const [showOverdue, setShowOverdue] = useState(true);
+  const [showRevenue, setShowRevenue] = useState(true);
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+
+  const handleCardClick = (status: string) => {
+    if (status === selectedStatus) {
+      setSelectedStatus('all');
+      onFilterChange('all');
+    } else {
+      setSelectedStatus(status);
+      onFilterChange(status);
+    }
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <Card className="p-6 bg-barber-gray border-barber-gold/20 hover:border-barber-gold/40 transition-colors">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-barber-gold/10 rounded-lg">
-              <Users className="w-6 h-6 text-barber-gold" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-barber-light/60">Total de Assinantes</p>
-              {showStats.total ? (
-                <h3 className="text-2xl font-bold text-barber-light">{stats.totalSubscribers}</h3>
-              ) : (
-                <h3 className="text-2xl font-bold text-barber-light">****</h3>
-              )}
-            </div>
-          </div>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <Card 
+        className={`p-4 cursor-pointer transition-colors ${
+          selectedStatus === 'total' ? 'bg-barber-gold/20 border-barber-gold' : ''
+        }`}
+        onClick={() => handleCardClick('total')}
+      >
+        <div className="flex items-center justify-between space-y-0">
+          <p className="text-sm font-medium text-barber-light">Total de Assinantes</p>
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => toggleStat('total')}
-            className="text-barber-gold hover:text-barber-gold/80 hover:bg-barber-gold/10"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowTotal(!showTotal);
+            }}
           >
-            {showStats.total ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showTotal ? (
+              <Eye className="h-4 w-4 text-barber-light" />
+            ) : (
+              <EyeOff className="h-4 w-4 text-barber-light" />
+            )}
           </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <Users className="h-8 w-8 text-barber-gold" />
+          <div className="flex items-baseline">
+            {showTotal ? (
+              <h3 className="text-2xl font-semibold text-barber-gold">
+                {stats.totalSubscribers}
+              </h3>
+            ) : (
+              <h3 className="text-2xl font-semibold text-barber-gold">****</h3>
+            )}
+          </div>
         </div>
       </Card>
 
-      <Card className="p-6 bg-barber-gray border-green-500/20 hover:border-green-500/40 transition-colors">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-500/10 rounded-lg">
-              <TrendingUp className="w-6 h-6 text-green-500" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-barber-light/60">Assinantes Ativos</p>
-              {showStats.active ? (
-                <h3 className="text-2xl font-bold text-barber-light">{stats.activeSubscribers}</h3>
-              ) : (
-                <h3 className="text-2xl font-bold text-barber-light">****</h3>
-              )}
-            </div>
-          </div>
+      <Card 
+        className={`p-4 cursor-pointer transition-colors ${
+          selectedStatus === 'active' ? 'bg-green-500/20 border-green-500' : ''
+        }`}
+        onClick={() => handleCardClick('active')}
+      >
+        <div className="flex items-center justify-between space-y-0">
+          <p className="text-sm font-medium text-barber-light">Assinantes Ativos</p>
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => toggleStat('active')}
-            className="text-green-500 hover:text-green-500/80 hover:bg-green-500/10"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowActive(!showActive);
+            }}
           >
-            {showStats.active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showActive ? (
+              <Eye className="h-4 w-4 text-barber-light" />
+            ) : (
+              <EyeOff className="h-4 w-4 text-barber-light" />
+            )}
           </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <Users className="h-8 w-8 text-green-500" />
+          <div className="flex items-baseline">
+            {showActive ? (
+              <h3 className="text-2xl font-semibold text-green-500">
+                {stats.activeSubscribers}
+              </h3>
+            ) : (
+              <h3 className="text-2xl font-semibold text-green-500">****</h3>
+            )}
+          </div>
         </div>
       </Card>
 
-      <Card className="p-6 bg-barber-gray border-red-500/20 hover:border-red-500/40 transition-colors">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-red-500/10 rounded-lg">
-              <AlertCircle className="w-6 h-6 text-red-500" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-barber-light/60">Assinantes Atrasados</p>
-              {showStats.overdue ? (
-                <h3 className="text-2xl font-bold text-barber-light">{stats.overdueSubscribers}</h3>
-              ) : (
-                <h3 className="text-2xl font-bold text-barber-light">****</h3>
-              )}
-            </div>
-          </div>
+      <Card 
+        className={`p-4 cursor-pointer transition-colors ${
+          selectedStatus === 'overdue' ? 'bg-red-500/20 border-red-500' : ''
+        }`}
+        onClick={() => handleCardClick('overdue')}
+      >
+        <div className="flex items-center justify-between space-y-0">
+          <p className="text-sm font-medium text-barber-light">Assinantes Atrasados</p>
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => toggleStat('overdue')}
-            className="text-red-500 hover:text-red-500/80 hover:bg-red-500/10"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowOverdue(!showOverdue);
+            }}
           >
-            {showStats.overdue ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showOverdue ? (
+              <Eye className="h-4 w-4 text-barber-light" />
+            ) : (
+              <EyeOff className="h-4 w-4 text-barber-light" />
+            )}
           </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <Users className="h-8 w-8 text-red-500" />
+          <div className="flex items-baseline">
+            {showOverdue ? (
+              <h3 className="text-2xl font-semibold text-red-500">
+                {stats.overdueSubscribers}
+              </h3>
+            ) : (
+              <h3 className="text-2xl font-semibold text-red-500">****</h3>
+            )}
+          </div>
         </div>
       </Card>
 
-      <Card className="p-6 bg-barber-gray border-barber-gold/20 hover:border-barber-gold/40 transition-colors">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-barber-gold/10 rounded-lg">
-              <DollarSign className="w-6 h-6 text-barber-gold" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-barber-light/60">Receita Mensal</p>
-              {showStats.revenue ? (
-                <h3 className="text-2xl font-bold text-barber-light">
-                  R$ {stats.monthlyRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                </h3>
-              ) : (
-                <h3 className="text-2xl font-bold text-barber-light">R$ ****</h3>
-              )}
-            </div>
-          </div>
+      <Card 
+        className={`p-4 cursor-pointer transition-colors ${
+          selectedStatus === 'revenue' ? 'bg-blue-500/20 border-blue-500' : ''
+        }`}
+        onClick={() => handleCardClick('revenue')}
+      >
+        <div className="flex items-center justify-between space-y-0">
+          <p className="text-sm font-medium text-barber-light">Receita Mensal</p>
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => toggleStat('revenue')}
-            className="text-barber-gold hover:text-barber-gold/80 hover:bg-barber-gold/10"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowRevenue(!showRevenue);
+            }}
           >
-            {showStats.revenue ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showRevenue ? (
+              <Eye className="h-4 w-4 text-barber-light" />
+            ) : (
+              <EyeOff className="h-4 w-4 text-barber-light" />
+            )}
           </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <Users className="h-8 w-8 text-blue-500" />
+          <div className="flex items-baseline">
+            {showRevenue ? (
+              <h3 className="text-2xl font-semibold text-blue-500">
+                R$ {stats.monthlyRevenue.toFixed(2)}
+              </h3>
+            ) : (
+              <h3 className="text-2xl font-semibold text-blue-500">****</h3>
+            )}
+          </div>
         </div>
       </Card>
     </div>

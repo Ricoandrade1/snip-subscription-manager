@@ -16,6 +16,7 @@ interface SubscribersTableProps {
 export function SubscribersTable({ planFilter }: SubscribersTableProps) {
   const [selectedSubscriber, setSelectedSubscriber] = useState<Subscriber | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const { 
     subscribers, 
@@ -24,11 +25,15 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
     handleFilterChange, 
     filteredSubscribers,
     stats 
-  } = useSubscribers({ planFilter });
+  } = useSubscribers({ planFilter, statusFilter });
 
   const handleSubscriberClick = (subscriber: Subscriber) => {
     setSelectedSubscriber(subscriber);
     setDialogOpen(true);
+  };
+
+  const handleStatusFilterChange = (status: string) => {
+    setStatusFilter(status);
   };
 
   if (isLoading) {
@@ -46,7 +51,10 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
 
   return (
     <div className="space-y-6">
-      <SubscribersStats stats={stats} />
+      <SubscribersStats 
+        stats={stats}
+        onFilterChange={handleStatusFilterChange}
+      />
       
       <SubscribersFilter 
         filters={filters} 
