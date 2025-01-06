@@ -21,5 +21,6 @@ export function getMemberCode({ member, members }: MemberCodeProps) {
   // Create the sequence number with leading zeros (4 digits)
   const sequenceNumber = String(memberIndex + 1).padStart(4, '0');
   
+  // Return the formatted code
   return `${member.plan} ${sequenceNumber}`;
 }
