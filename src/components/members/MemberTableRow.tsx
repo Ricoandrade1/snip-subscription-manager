@@ -24,43 +24,9 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
     }
   };
 
-  const getStatusBadgeColor = (status: string) => {
-    switch (status) {
-      case "pago":
-        return "bg-green-500/20 text-green-500";
-      case "pendente":
-        return "bg-yellow-500/20 text-yellow-500";
-      case "cancelado":
-        return "bg-red-500/20 text-red-500";
-      case "active":
-        return "bg-green-500/20 text-green-500";
-      default:
-        return "bg-gray-500/20 text-gray-500";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "pago":
-        return "Pago";
-      case "pendente":
-        return "Pendente";
-      case "cancelado":
-        return "Cancelado";
-      case "active":
-        return "Pago";
-      case "inactive":
-        return "Cancelado";
-      default:
-        return status;
-    }
-  };
-
   return (
     <TableRow 
-      className={`cursor-pointer hover:bg-barber-gray/50 transition-colors ${
-        member.status === 'pendente' ? 'border-b border-yellow-500/20' : 'border-b border-barber-gray'
-      }`}
+      className="cursor-pointer hover:bg-barber-gray/50 transition-colors border-b border-barber-gray"
       onClick={onClick}
     >
       <TableCell className="font-medium text-barber-light">{memberCode}</TableCell>
@@ -69,11 +35,6 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
       <TableCell>
         <Badge className={`${getPlanBadgeColor(member.plan)}`}>
           {member.plan}
-        </Badge>
-      </TableCell>
-      <TableCell>
-        <Badge className={`${getStatusBadgeColor(member.status)}`}>
-          {getStatusLabel(member.status)}
         </Badge>
       </TableCell>
       <TableCell className="text-barber-light">{member.phone || '-'}</TableCell>
