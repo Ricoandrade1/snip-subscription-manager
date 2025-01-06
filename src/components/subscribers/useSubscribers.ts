@@ -68,7 +68,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
           plan_id: member.plan_id,
           created_at: member.created_at,
           payment_date: member.payment_date,
-          status: (member.status || 'pendente') as SubscriberStatus
+          status: member.status as SubscriberStatus
         }));
 
       setSubscribers(formattedSubscribers);
@@ -85,7 +85,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     const stats = subscribersList.reduce((acc, subscriber) => ({
       totalSubscribers: acc.totalSubscribers + 1,
       activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
-      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
+      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0), // Changed from 'pendente' to 'cancelado'
       monthlyRevenue: acc.monthlyRevenue + (subscriber.status === 'pago' ? 50 : 0),
     }), {
       totalSubscribers: 0,
@@ -136,7 +136,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
             matchStatusFilter = subscriber.status === 'pago';
             break;
           case 'overdue':
-            matchStatusFilter = subscriber.status === 'pendente';
+            matchStatusFilter = subscriber.status === 'cancelado'; // Changed from 'pendente' to 'cancelado'
             break;
           case 'total':
             matchStatusFilter = true;
