@@ -27,7 +27,7 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
         .select('id, title, price');
       
       if (!error && data) {
-        console.log('Fetched plans:', data);
+        console.log('Planos disponíveis:', data);
         setPlans(data);
       }
     };
@@ -52,20 +52,24 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
 
   const calculateMonthlyRevenue = () => {
     const activeMembers = members.filter(member => member.status === 'pago');
-    console.log('Active members:', activeMembers.length);
+    console.log('Membros ativos:', activeMembers);
     
-    const totalRevenue = activeMembers.reduce((total, member) => {
+    let totalRevenue = 0;
+    
+    activeMembers.forEach(member => {
       const memberPlan = plans.find(p => p.id === member.plan_id);
       if (memberPlan) {
-        console.log(`Member ${member.name} - Plan ID: ${member.plan_id} - Plan: ${memberPlan.title} - Price: ${memberPlan.price}`);
-        return total + Number(memberPlan.price);
+        console.log(`Membro: ${member.name}`);
+        console.log(`Plano ID: ${member.plan_id}`);
+        console.log(`Plano encontrado: ${memberPlan.title}`);
+        console.log(`Preço do plano: ${memberPlan.price}€`);
+        totalRevenue += Number(memberPlan.price);
+      } else {
+        console.log(`Nenhum plano encontrado para o membro ${member.name} (ID do plano: ${member.plan_id})`);
       }
-      console.log(`No plan found for member ${member.name} with plan ID ${member.plan_id}`);
-      return total;
-    }, 0);
+    });
     
-    console.log('Plans available:', plans);
-    console.log('Final total monthly revenue:', totalRevenue);
+    console.log('Receita mensal total:', totalRevenue);
     return totalRevenue;
   };
 
