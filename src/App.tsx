@@ -22,12 +22,16 @@ import { toast } from "sonner";
 function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     // Verificar sessão inicial
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      if (session?.user) {
+        setIsAdmin(session.user.user_metadata.role === 'admin');
+      }
       setLoading(false);
     });
 
@@ -37,10 +41,14 @@ function App() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       console.log("Auth state changed:", _event, session);
       setSession(session);
+      if (session?.user) {
+        setIsAdmin(session.user.user_metadata.role === 'admin');
+      }
       if (_event === 'SIGNED_IN') {
         toast.success('Login realizado com sucesso!');
       } else if (_event === 'SIGNED_OUT') {
         toast.success('Logout realizado com sucesso!');
+        setIsAdmin(false);
       }
     });
 
@@ -69,6 +77,12 @@ function App() {
   if (session && isPublicPage) {
     console.log("Redirecting to home - has session");
     return <Navigate to="/" replace />;
+  }
+
+  // Se não for admin, redirecionar para página de acesso negado ou home
+  if (session && !isAdmin && !isPublicPage) {
+    toast.error('Acesso restrito a administradores');
+    return <Navigate to="/login" replace />;
   }
 
   return (

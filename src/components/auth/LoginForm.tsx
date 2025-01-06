@@ -64,8 +64,14 @@ export const LoginForm = () => {
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session) {
+        // Set admin role in user metadata after successful login
+        if (session.user.email === 'admin@example.com') {
+          await supabase.auth.updateUser({
+            data: { role: 'admin' }
+          });
+        }
         navigate('/');
       }
     });
@@ -76,7 +82,6 @@ export const LoginForm = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-barber-black p-4">
       <div className="w-full max-w-[420px] space-y-8">
-        {/* Logo ou Título */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-barber-gold">
             Barber Pro
@@ -86,44 +91,21 @@ export const LoginForm = () => {
           </p>
         </div>
 
-        {/* Credenciais de Teste */}
+        {/* Credenciais de Admin */}
         <div className="bg-barber-gray/50 border border-barber-gray rounded-lg p-4">
           <p className="text-barber-gold font-medium text-sm mb-2">
-            Credenciais de teste:
+            Credenciais de Administrador:
           </p>
           <div className="space-y-1 text-sm text-barber-light/80">
             <p>Email: admin@example.com</p>
-            <p>Senha: 1234</p>
+            <p>Senha: admin123</p>
           </div>
         </div>
 
-        {/* Formulário de Login */}
         <div className="bg-barber-gray/30 backdrop-blur-sm rounded-lg p-6 border border-barber-gray/50">
           <Auth
             supabaseClient={supabase}
-            appearance={{
-              theme: customTheme,
-              style: {
-                button: {
-                  fontWeight: '500',
-                  padding: '12px 16px',
-                  transition: 'all 0.2s ease',
-                },
-                anchor: {
-                  color: '#BF9B30',
-                  textDecoration: 'none',
-                  fontSize: '14px',
-                },
-                message: {
-                  fontSize: '14px',
-                  margin: '12px 0',
-                  color: '#F5F5F5',
-                },
-                container: {
-                  width: '100%',
-                },
-              },
-            }}
+            appearance={{ theme: customTheme }}
             localization={{
               variables: {
                 sign_in: {
