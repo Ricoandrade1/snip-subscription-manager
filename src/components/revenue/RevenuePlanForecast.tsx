@@ -51,13 +51,11 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
   };
 
   const calculateMonthlyRevenue = () => {
-    // Filtra apenas membros com status 'pago'
     const activeMembers = members.filter(member => member.status === 'pago');
     console.log('Membros ativos:', activeMembers.length);
     
     let totalRevenue = 0;
     
-    // Mapeia os valores dos planos para um objeto para fácil acesso
     const planPrices: { [key: string]: number } = {
       'Basic': 29.99,
       'Classic': 49.99,
@@ -69,7 +67,6 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
       console.log(`Membro: ${member.name}`);
       console.log(`Plano: ${member.plan}`);
       
-      // Usa o preço do plano diretamente do mapeamento
       const planPrice = planPrices[member.plan];
       if (planPrice) {
         totalRevenue += planPrice;

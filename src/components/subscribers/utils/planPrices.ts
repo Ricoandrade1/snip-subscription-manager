@@ -1,5 +1,5 @@
 export const PLAN_PRICES: { [key: string]: number } = {
-  'Basic': 30,
-  'Classic': 40,
-  'Business': 50
+  'Basic': 29.99,
+  'Classic': 49.99,
+  'Business': 99.99
 };
