@@ -24,11 +24,11 @@ const formSchema = z.object({
   payment_date: z.date().optional(),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+export type SubscriberFormData = z.infer<typeof formSchema>;
 
 export function SubscriberForm() {
   const navigate = useNavigate();
-  const form = useForm<FormValues>({
+  const form = useForm<SubscriberFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       plan: "Basic",
@@ -47,7 +47,7 @@ export function SubscriberForm() {
     checkAuth();
   }, [navigate]);
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: SubscriberFormData) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
