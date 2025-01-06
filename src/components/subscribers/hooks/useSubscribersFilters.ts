@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FilterState } from "../types/subscriber-hooks";
+import { FilterState } from "../types/subscriber";
 
 export function useSubscribersFilters() {
   const [filters, setFilters] = useState<FilterState>({

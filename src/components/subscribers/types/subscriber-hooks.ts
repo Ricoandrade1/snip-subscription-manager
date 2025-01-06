@@ -1,4 +1,4 @@
-import { FilterState, Subscriber, SubscriberStats } from "./subscriber";
+import { FilterState as BaseFilterState, Subscriber, SubscriberStats } from "./subscriber";
 
 export interface UseSubscribersProps {
   planFilter?: "Basic" | "Classic" | "Business";
@@ -15,3 +15,6 @@ export interface UseSubscribersStatsProps {
   stats: SubscriberStats;
   setStats: (stats: SubscriberStats) => void;
 }
+
+// Re-export FilterState from subscriber.ts
+export type { FilterState } from "./subscriber";
