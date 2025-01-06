@@ -1,17 +1,19 @@
 import { ThemeType } from 'jspdf-autotable';
 
+type RGBColor = [number, number, number];
+
 export interface TableConfig {
   startY: number;
   theme: ThemeType;
   styles: {
     fontSize: number;
     cellPadding: number;
-    lineColor: number[];
+    lineColor: RGBColor;
     lineWidth: number;
   };
   headStyles: {
-    fillColor: number[];
-    textColor: number[];
+    fillColor: RGBColor;
+    textColor: RGBColor;
     fontStyle: string;
     halign: string;
   };
