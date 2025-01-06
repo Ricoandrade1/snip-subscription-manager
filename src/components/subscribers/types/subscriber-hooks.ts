@@ -1,4 +1,4 @@
-import { Subscriber, SubscriberStats } from "./subscriber";
+import { Subscriber, SubscriberStats, FilterState } from "./subscriber";
 
 export interface UseSubscribersProps {
   planFilter?: "Basic" | "Classic" | "Business";
