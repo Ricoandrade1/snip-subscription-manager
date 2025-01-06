@@ -1,27 +1,26 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { SubscriberForm } from "@/components/SubscriberForm";
 import { SubscribersTable } from "@/components/subscribers/SubscribersTable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSession } from '@supabase/auth-helpers-react';
 import { UserPlus, Users } from "lucide-react";
 import { useEffect } from "react";
+import { supabase } from "@/lib/supabase/client";
 
-interface SubscribersProps {
-  planFilter?: "Basic" | "Classic" | "Business";
-}
-
-export default function Subscribers({ planFilter }: SubscribersProps) {
+export default function Subscribers() {
   const navigate = useNavigate();
   const location = useLocation();
-  const session = useSession();
 
   useEffect(() => {
-    if (!session) {
-      navigate('/login');
-    }
-  }, [session, navigate]);
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+      }
+    };
+    
+    checkSession();
+  }, [navigate]);
 
   const getInitialTab = () => {
     const currentPath = location.pathname;
@@ -48,10 +47,6 @@ export default function Subscribers({ planFilter }: SubscribersProps) {
     }
   };
 
-  if (!session) {
-    return null;
-  }
-
   return (
     <div className="p-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -73,12 +68,12 @@ export default function Subscribers({ planFilter }: SubscribersProps) {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-3xl bg-barber-gray border-barber-gold/20">
-              <SubscriberForm />
+              {/* Formulário de cadastro será implementado aqui */}
             </DialogContent>
           </Dialog>
         </header>
 
-        <Tabs value={getInitialTab()} className="w-full" onValueChange={handleTabChange}>
+        <Tabs defaultValue={getInitialTab()} className="w-full" onValueChange={handleTabChange}>
           <TabsList className="w-full justify-start bg-barber-gray">
             <TabsTrigger value="all" className="text-barber-light data-[state=active]:bg-barber-gold data-[state=active]:text-barber-black">
               Todos

@@ -2,7 +2,6 @@ import {
   LayoutDashboard,
   DollarSign,
   Package,
-  Building,
   Tags,
   Grid,
   Store,
