@@ -49,33 +49,11 @@ const Index = () => {
       return;
     }
 
-    // If no plans exist in the database, use these default values
-    const defaultPlans = [
-      {
-        id: 1,
-        title: "Basic",
-        price: 30,
-        features: ["Somente barba", "1 vez por semana", "Agendamento prioritário"],
-        totalSubscribers: getMembersByPlan("Basic")
-      },
-      {
-        id: 2,
-        title: "Classic",
-        price: 40,
-        features: ["Somente cabelo", "1 vez por semana", "Agendamento prioritário"],
-        totalSubscribers: getMembersByPlan("Classic")
-      },
-      {
-        id: 3,
-        title: "Business",
-        price: 50,
-        features: ["Cabelo e barba", "1 vez por semana", "Agendamento VIP", "Produtos exclusivos"],
-        totalSubscribers: getMembersByPlan("Business")
-      }
-    ];
-
-    const plansWithSubscribers = (data?.length ? data : defaultPlans).map(plan => ({
-      ...plan,
+    const plansWithSubscribers = data.map(plan => ({
+      id: plan.id,
+      title: plan.title,
+      price: plan.price,
+      features: plan.features || [],
       totalSubscribers: getMembersByPlan(plan.title as "Basic" | "Classic" | "Business")
     }));
 
