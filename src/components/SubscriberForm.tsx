@@ -8,7 +8,7 @@ import { useMemberContext } from "@/contexts/MemberContext";
 import { PersonalInfoFields } from "./PersonalInfoFields";
 import { PlanFields } from "./PlanFields";
 import { PaymentDateField } from "./PaymentDateField";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 
 const formSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -38,12 +38,11 @@ export function SubscriberForm() {
 
   const handleSubmit = async (data: SubscriberFormData) => {
     try {
-      console.log('Dados do formulário:', data);
-      
       const { data: plansData, error: planError } = await supabase
         .from('plans')
         .select('id, title')
-        .eq('title', data.plan);
+        .eq('title', data.plan)
+        .single();
 
       if (planError) {
         console.error('Erro ao buscar plano:', planError);
@@ -55,7 +54,7 @@ export function SubscriberForm() {
         return;
       }
 
-      if (!plansData || plansData.length === 0) {
+      if (!plansData) {
         console.error('Plano não encontrado:', data.plan);
         toast({
           title: "Erro ao cadastrar assinante",
@@ -65,24 +64,21 @@ export function SubscriberForm() {
         return;
       }
 
-      const planId = plansData[0].id;
-      console.log('Plano encontrado:', plansData[0]);
-
       const memberData = {
         name: data.name,
         nickname: data.nickname || "",
         phone: data.phone || "",
         nif: data.nif || "",
-        plan_id: planId,
+        plan_id: plansData.id,
         payment_date: data.payment_date ? data.payment_date.toISOString() : null,
-        status: data.payment_date ? "pago" as const : "cancelado" as const
+        status: data.payment_date ? "pago" : "pendente"
       };
 
       await addMember(memberData);
       
       toast({
         title: "Assinante cadastrado com sucesso!",
-        description: `Membro ${data.name} cadastrado no plano ${data.plan}.`,
+        description: `${data.name} foi cadastrado no plano ${data.plan}.`,
       });
       
       form.reset();

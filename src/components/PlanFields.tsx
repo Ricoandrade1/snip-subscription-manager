@@ -19,7 +19,7 @@ export function PlanFields({ form }: PlanFieldsProps) {
             <RadioGroup
               onValueChange={field.onChange}
               defaultValue={field.value}
-              className="flex flex-row justify-center gap-4"
+              className="flex flex-col space-y-2"
             >
               <FormItem className="flex items-center space-x-2">
                 <FormControl>
