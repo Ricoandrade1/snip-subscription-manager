@@ -72,24 +72,28 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
         <div className="flex items-center space-x-2">
           <UserCog className={cn("h-5 w-5", getIconStyle())} />
           <h3 className={cn("text-lg font-semibold truncate", getTitleStyle())}>
-            {user.email}
+            {user.email || "Usuário sem email"}
           </h3>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            {user.roles?.map((role) => (
-              <span
-                key={role}
-                className={cn(
-                  "px-2 py-1 rounded-full text-xs border",
-                  getRoleStyle(role)
-                )}
-              >
-                {role}
-              </span>
-            ))}
+            {user.roles?.length > 0 ? (
+              user.roles.map((role) => (
+                <span
+                  key={role}
+                  className={cn(
+                    "px-2 py-1 rounded-full text-xs border",
+                    getRoleStyle(role)
+                  )}
+                >
+                  {role}
+                </span>
+              ))
+            ) : (
+              <span className="text-gray-400 text-sm">Sem funções atribuídas</span>
+            )}
           </div>
           
           <div className="flex justify-end pt-2">
@@ -116,12 +120,12 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
               <DialogContent className={cn("border-barber-gold/20", getCardStyle())}>
                 <div className="space-y-4">
                   <h2 className={cn("text-xl font-semibold", getTitleStyle())}>
-                    Gerir Funções - {user.email}
+                    Gerir Funções - {user.email || "Usuário sem email"}
                   </h2>
                   <RoleManager
                     barber={{
                       id: user.id,
-                      name: user.email || '',
+                      name: user.email || 'Usuário sem email',
                       roles: user.roles || []
                     }}
                     onSuccess={onRoleUpdateSuccess}
