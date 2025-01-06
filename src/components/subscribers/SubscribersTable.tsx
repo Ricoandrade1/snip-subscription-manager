@@ -68,7 +68,7 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
       toast.success('Assinante excluído com sucesso');
       setDeleteDialogOpen(false);
       setAdminPassword('');
-      refetch();
+      await refetch(); // Explicitly call refetch after successful deletion
     } catch (error) {
       console.error('Erro ao excluir assinante:', error);
       toast.error('Erro ao excluir assinante');
