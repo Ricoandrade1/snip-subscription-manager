@@ -8,7 +8,7 @@ export interface Subscriber {
   nif: string | null;
   plan: "Basic" | "Classic" | "Business";
   plan_id: number | null;
-  created_at?: string;
+  created_at: string;  // Changed to required to match subscriber.ts
   payment_date?: string | null;
   status: SubscriberStatus;
   bank_name: string | null;
