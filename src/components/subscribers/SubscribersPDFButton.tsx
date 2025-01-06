@@ -22,6 +22,7 @@ interface FieldOption {
 
 const FIELD_OPTIONS: FieldOption[] = [
   { id: 'name', label: 'Nome' },
+  { id: 'nickname', label: 'Apelido' },
   { id: 'phone', label: 'Telefone' },
   { id: 'nif', label: 'NIF' },
   { id: 'plan', label: 'Plano' },
@@ -29,6 +30,9 @@ const FIELD_OPTIONS: FieldOption[] = [
   { id: 'payment_date', label: 'Data Pagamento' },
   { id: 'bank_name', label: 'Banco' },
   { id: 'iban', label: 'IBAN' },
+  { id: 'created_at', label: 'Data de Cadastro' },
+  { id: 'due_date', label: 'Data de Vencimento' },
+  { id: 'last_plan_change', label: 'Última Mudança de Plano' }
 ];
 
 export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps) {
@@ -41,6 +45,11 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
       cancelado: "Cancelado"
     };
     return statusMap[status] || status;
+  };
+
+  const formatDate = (date: string | null | undefined) => {
+    if (!date) return '-';
+    return format(new Date(date), 'dd/MM/yyyy', { locale: ptBR });
   };
 
   const generatePDF = () => {
@@ -71,6 +80,8 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
           switch (field) {
             case 'name':
               return subscriber.name;
+            case 'nickname':
+              return subscriber.nickname || '-';
             case 'phone':
               return subscriber.phone || '-';
             case 'nif':
@@ -80,13 +91,17 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
             case 'status':
               return formatStatus(subscriber.status);
             case 'payment_date':
-              return subscriber.payment_date 
-                ? format(new Date(subscriber.payment_date), 'dd/MM/yyyy', { locale: ptBR }) 
-                : '-';
+              return formatDate(subscriber.payment_date);
             case 'bank_name':
               return subscriber.bank_name || '-';
             case 'iban':
               return subscriber.iban || '-';
+            case 'created_at':
+              return formatDate(subscriber.created_at);
+            case 'due_date':
+              return formatDate(subscriber.due_date);
+            case 'last_plan_change':
+              return formatDate(subscriber.last_plan_change);
             default:
               return '-';
           }
