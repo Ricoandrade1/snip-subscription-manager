@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useEffect } from "react";
 import { useMemberSelection } from "./members/useMemberSelection";
+import { useMemberContext } from "@/contexts/MemberContext";
 
 interface MembersTableProps {
   planFilter?: "Basic" | "Classic" | "Business";
