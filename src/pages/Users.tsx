@@ -53,7 +53,7 @@ export default function Users() {
   };
 
   return (
-    <div className="p-8">
+    <div className="min-h-screen bg-barber-black p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         <header className="flex items-center justify-between">
           <div className="space-y-1">
@@ -89,16 +89,16 @@ export default function Users() {
             users.map((user) => (
               <div
                 key={user.id}
-                className="p-6 rounded-lg bg-barber-gray border border-barber-gold/20 space-y-4"
+                className="p-6 rounded-lg bg-barber-gray border border-barber-gold/20 space-y-4 hover:border-barber-gold/40 transition-colors"
               >
-                <h3 className="text-xl font-semibold text-barber-gold">
+                <h3 className="text-xl font-semibold text-barber-gold truncate">
                   {user.email}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {user.roles?.map((role) => (
                     <span
                       key={role}
-                      className="px-2 py-1 rounded-full text-xs bg-barber-gold/10 text-barber-gold"
+                      className="px-2 py-1 rounded-full text-xs bg-barber-gold/10 text-barber-gold border border-barber-gold/20"
                     >
                       {role}
                     </span>
@@ -111,6 +111,7 @@ export default function Users() {
                         variant="outline" 
                         size="sm"
                         onClick={() => setSelectedUser(user)}
+                        className="hover:bg-barber-gold/10 hover:text-barber-gold border-barber-gold/20"
                       >
                         Gerir Funções
                       </Button>
