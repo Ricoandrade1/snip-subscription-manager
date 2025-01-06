@@ -53,6 +53,8 @@ export function PaymentDateField({
               value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
               onChange={(e) => {
                 const date = e.target.value ? new Date(e.target.value) : null;
+                
+                // Atualiza o valor do campo
                 field.onChange(date);
                 
                 // Atualiza o status automaticamente com base na data

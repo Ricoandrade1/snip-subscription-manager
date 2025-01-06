@@ -45,14 +45,9 @@ export function EditSubscriberDialog({
         delete updateData.plan;
       }
 
-      // Atualiza a data de pagamento baseado no status
-      if (data.status === 'pago') {
-        updateData.payment_date = addDays(new Date(), 30).toISOString();
-      } else if (data.status === 'pendente') {
-        // Mantém a data de pagamento atual
-        updateData.payment_date = subscriber.payment_date;
-      } else if (data.status === 'cancelado') {
-        updateData.payment_date = null;
+      // Garante que a data de pagamento seja atualizada corretamente
+      if (data.payment_date) {
+        updateData.payment_date = new Date(data.payment_date).toISOString();
       }
 
       console.log('Dados de atualização:', updateData);
@@ -70,7 +65,6 @@ export function EditSubscriberDialog({
       toast.success('Assinante atualizado com sucesso!');
       onOpenChange(false);
       
-      // Chama o callback de sucesso em vez de recarregar a página
       if (onSuccess) {
         onSuccess();
       }
