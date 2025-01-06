@@ -19,3 +19,13 @@ export interface SubscriberStats {
   overdueSubscribers: number;
   monthlyRevenue: number;
 }
+
+export interface FilterState {
+  name: string;
+  phone: string;
+  nif: string;
+  status: string;
+  plan: string;
+  sortBy: "name" | "payment_date" | "plan";
+  sortOrder: "asc" | "desc";
+}
