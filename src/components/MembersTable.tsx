@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { MemberStatus } from "@/contexts/types";
 
 interface MembersTableProps {
   planFilter?: "Basic" | "Classic" | "Business";
@@ -48,14 +49,14 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     }
 
     // Normalize status if needed
-    const normalizedMember = {
+    const normalizedMember: Member = {
       ...member,
-      status: member.status === 'active' ? 'pago' :
+      status: (member.status === 'active' ? 'pago' :
               member.status === 'inactive' ? 'cancelado' :
               member.status === 'pago' ? 'pago' :
               member.status === 'cancelado' ? 'cancelado' :
               member.status === 'pendente' ? 'pendente' :
-              'pendente'
+              'pendente') as MemberStatus
     };
 
     setSelectedMember(normalizedMember);
@@ -75,14 +76,14 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   }
 
   // Normalize status for all members
-  const normalizedMembers = filteredMembers.map(member => ({
+  const normalizedMembers: Member[] = filteredMembers.map(member => ({
     ...member,
-    status: member.status === 'active' ? 'pago' :
+    status: (member.status === 'active' ? 'pago' :
             member.status === 'inactive' ? 'cancelado' :
             member.status === 'pago' ? 'pago' :
             member.status === 'cancelado' ? 'cancelado' :
             member.status === 'pendente' ? 'pendente' :
-            'pendente'
+            'pendente') as MemberStatus
   }));
 
   // Remove duplicatas baseado no ID do membro
