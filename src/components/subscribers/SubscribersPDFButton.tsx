@@ -29,13 +29,13 @@ const FIELD_OPTIONS: FieldOption[] = [
   { id: 'payment_date', label: 'Data Pagamento' },
   { id: 'bank_name', label: 'Banco' },
   { id: 'iban', label: 'IBAN' },
+  { id: 'status', label: 'Status' },
   { id: 'created_at', label: 'Data de Cadastro' },
-  { id: 'due_date', label: 'Data de Vencimento' },
-  { id: 'last_plan_change', label: 'Última Mudança de Plano' }
+  { id: 'due_date', label: 'Data de Vencimento' }
 ];
 
 export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps) {
-  const [selectedFields, setSelectedFields] = useState<string[]>(['name', 'phone', 'nif', 'plan']);
+  const [selectedFields, setSelectedFields] = useState<string[]>(['name', 'phone', 'nif', 'iban', 'plan', 'status']);
 
   const formatDate = (date: string | null | undefined) => {
     if (!date) return '-';
@@ -51,7 +51,7 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
 
       const doc = new jsPDF();
       
-      // Add header
+      // Add header with styling
       doc.setFontSize(20);
       doc.text("Relatório de Assinantes", 14, 22);
       
@@ -65,7 +65,7 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
         return option?.label || field;
       });
 
-      const tableData = subscribers.map(subscriber => {
+      const tableData = subscribers.map((subscriber, index) => {
         return selectedFields.map(field => {
           switch (field) {
             case 'name':
@@ -84,40 +84,49 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
               return subscriber.bank_name || '-';
             case 'iban':
               return subscriber.iban || '-';
+            case 'status':
+              return subscriber.status;
             case 'created_at':
               return formatDate(subscriber.created_at);
             case 'due_date':
               return formatDate(subscriber.due_date);
-            case 'last_plan_change':
-              return formatDate(subscriber.last_plan_change);
             default:
               return '-';
           }
         });
       });
 
-      // Add table
+      // Add table with improved styling for better print layout
       autoTable(doc, {
         head: [headers],
         body: tableData,
         startY: 50,
         theme: 'grid',
         styles: {
-          fontSize: 8,
-          cellPadding: 5,
+          fontSize: 9,
+          cellPadding: 3,
+          lineColor: [200, 200, 200],
+          lineWidth: 0.1,
         },
         headStyles: {
-          fillColor: [0, 0, 0],
+          fillColor: [51, 51, 51],
           textColor: [255, 255, 255],
           fontStyle: 'bold',
+          halign: 'center',
         },
         alternateRowStyles: {
           fillColor: [245, 245, 245],
         },
+        columnStyles: {
+          0: { cellWidth: 'auto' },
+          1: { cellWidth: 'auto' },
+          2: { cellWidth: 'auto' },
+        },
+        margin: { top: 10, right: 10, bottom: 10, left: 10 },
       });
 
-      // Save PDF
-      doc.save(`relatorio-assinantes-${format(new Date(), 'dd-MM-yyyy')}.pdf`);
+      // Save PDF with formatted name
+      doc.save(`relatorio-assinantes-${format(new Date(), 'dd-MM-yyyy-HH-mm')}.pdf`);
       toast.success("Relatório gerado com sucesso!");
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);

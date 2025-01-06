@@ -6,6 +6,7 @@ interface FilterState {
   name: string;
   phone: string;
   nif: string;
+  iban: string;
   status: string;
   plan: string;
   sortBy: 'name' | 'payment_date' | 'plan';
@@ -19,7 +20,7 @@ interface MembersFilterProps {
 
 export function MembersFilter({ filters, onFilterChange }: MembersFilterProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-7 gap-4 p-4 bg-barber-gray rounded-lg">
+    <div className="grid grid-cols-1 md:grid-cols-8 gap-4 p-4 bg-barber-gray rounded-lg">
       <div className="space-y-2">
         <Label htmlFor="name-filter" className="text-barber-light">Nome</Label>
         <Input
@@ -47,6 +48,16 @@ export function MembersFilter({ filters, onFilterChange }: MembersFilterProps) {
           placeholder="Filtrar por NIF..."
           value={filters.nif}
           onChange={(e) => onFilterChange('nif', e.target.value)}
+          className="bg-black/40 border-0 text-barber-light placeholder:text-barber-light/50"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="iban-filter" className="text-barber-light">IBAN</Label>
+        <Input
+          id="iban-filter"
+          placeholder="Filtrar por IBAN..."
+          value={filters.iban}
+          onChange={(e) => onFilterChange('iban', e.target.value)}
           className="bg-black/40 border-0 text-barber-light placeholder:text-barber-light/50"
         />
       </div>
