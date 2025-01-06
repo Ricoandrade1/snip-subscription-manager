@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
 import { UserCog, UserPlus } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { RoleManager } from "@/components/barber-list/RoleManager";
 import { useToast } from "@/components/ui/use-toast";
 import { Database } from "@/integrations/supabase/types";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Form } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -15,11 +22,35 @@ interface User {
   roles: UserAuthority[];
 }
 
+const userFormSchema = z.object({
+  email: z.string().email("Email inválido"),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+  name: z.string().min(1, "Nome é obrigatório"),
+  phone: z.string().min(1, "Telefone é obrigatório"),
+  nif: z.string().optional(),
+  role: z.string().default("user"),
+});
+
+type UserFormValues = z.infer<typeof userFormSchema>;
+
 export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+
+  const form = useForm<UserFormValues>({
+    resolver: zodResolver(userFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      name: "",
+      phone: "",
+      nif: "",
+      role: "user",
+    },
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -52,6 +83,41 @@ export default function Users() {
     setSelectedUser(null);
   };
 
+  const onSubmit = async (data: UserFormValues) => {
+    try {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            name: data.name,
+            phone: data.phone,
+            nif: data.nif,
+            role: data.role,
+          },
+        },
+      });
+
+      if (signUpError) throw signUpError;
+
+      toast({
+        title: "Sucesso",
+        description: "Utilizador criado com sucesso!",
+      });
+      
+      setIsDialogOpen(false);
+      form.reset();
+      fetchUsers();
+    } catch (error) {
+      console.error('Error creating user:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível criar o utilizador.",
+      });
+    }
+  };
+
   return (
     <div className="p-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -65,20 +131,121 @@ export default function Users() {
               Gerencie as funções e permissões dos utilizadores
             </p>
           </div>
-          <Button 
-            variant="outline" 
-            className="flex items-center gap-2 hover:bg-barber-gold/10 hover:text-barber-gold border-barber-gold/20"
-            onClick={() => {
-              // TODO: Implement user creation dialog
-              toast({
-                title: "Em desenvolvimento",
-                description: "A funcionalidade de adicionar utilizadores será implementada em breve.",
-              });
-            }}
-          >
-            <UserPlus className="h-4 w-4" />
-            Adicionar Utilizador
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2 hover:bg-barber-gold/10 hover:text-barber-gold border-barber-gold/20"
+              >
+                <UserPlus className="h-4 w-4" />
+                Adicionar Utilizador
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-barber-gray border-barber-gold/20">
+              <ScrollArea className="max-h-[80vh]">
+                <div className="p-6">
+                  <h2 className="text-2xl font-bold text-barber-gold mb-6">Adicionar Novo Utilizador</h2>
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-barber-light">Email</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field} 
+                                type="email"
+                                className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-barber-light">Senha</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field} 
+                                type="password"
+                                className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-barber-light">Nome</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field}
+                                className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-barber-light">Telefone</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field}
+                                className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="nif"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-barber-light">NIF</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field}
+                                className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-barber-gold hover:bg-barber-gold/90 text-barber-black"
+                      >
+                        Criar Utilizador
+                      </Button>
+                    </form>
+                  </Form>
+                </div>
+              </ScrollArea>
+            </DialogContent>
+          </Dialog>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
