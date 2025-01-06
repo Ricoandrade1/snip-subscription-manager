@@ -23,6 +23,8 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
   const fetchSubscribers = async () => {
     try {
       setIsLoading(true);
+      console.log('Fetching subscribers...');
+      
       let query = supabase
         .from('members')
         .select(`
@@ -44,6 +46,8 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
         throw error;
       }
 
+      console.log('Raw data from database:', data);
+
       const formattedSubscribers: Subscriber[] = data
         .filter(member => member.plans)
         .map(member => ({
@@ -63,8 +67,11 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
           last_plan_change: member.last_plan_change
         }));
 
+      console.log('Formatted subscribers:', formattedSubscribers);
       setSubscribers(formattedSubscribers);
+      
       const calculatedStats = await calculateSubscriberStats(formattedSubscribers);
+      console.log('Calculated stats:', calculatedStats);
       setStats(calculatedStats);
     } catch (error) {
       console.error('Error fetching subscribers:', error);
@@ -74,8 +81,31 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     }
   };
 
+  // Set up real-time subscription
   useEffect(() => {
+    const channel = supabase
+      .channel('members-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'members'
+        },
+        (payload) => {
+          console.log('Real-time update received:', payload);
+          fetchSubscribers(); // Refresh the list when changes occur
+        }
+      )
+      .subscribe();
+
+    // Initial fetch
     fetchSubscribers();
+
+    // Cleanup subscription
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [planFilter, statusFilter]);
 
   const filteredSubscribers = sortSubscribers(

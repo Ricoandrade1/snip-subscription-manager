@@ -1,54 +1,31 @@
 import { Subscriber, SubscriberStats } from "../types/subscriber";
 import { supabase } from "@/lib/supabase/client";
 
-interface PlanPrices {
-  [key: string]: number;
-}
-
-async function fetchPlanPrices(): Promise<PlanPrices> {
-  const { data, error } = await supabase
-    .from('plans')
-    .select('title, price');
-
-  if (error) {
-    console.error('Error fetching plan prices:', error);
-    return {};
-  }
-
-  return data.reduce((acc: PlanPrices, plan) => {
-    acc[plan.title] = Number(plan.price);
-    return acc;
-  }, {});
-}
+const PLAN_PRICES = {
+  Basic: 30,
+  Classic: 49.99,
+  Business: 99.99
+};
 
 export async function calculateSubscriberStats(subscribers: Subscriber[]): Promise<SubscriberStats> {
-  console.log('Calculando estatísticas para', subscribers.length, 'assinantes');
+  console.log('Calculating stats for subscribers:', subscribers);
   
-  const planPrices = await fetchPlanPrices();
-  console.log('Preços dos planos:', planPrices);
-  
-  return subscribers.reduce((acc, subscriber) => {
-    console.log('-------------------');
-    console.log('Processando assinante:', subscriber.name);
-    console.log('Status:', subscriber.status);
-    console.log('Plano:', subscriber.plan);
+  const stats = subscribers.reduce((acc, subscriber) => {
+    console.log('Processing subscriber:', subscriber.name, 'Status:', subscriber.status, 'Plan:', subscriber.plan);
     
     let monthlyRevenue = 0;
     if (subscriber.status === 'pago') {
-      monthlyRevenue = planPrices[subscriber.plan] || 0;
-      console.log('Receita do plano:', monthlyRevenue, '€');
+      monthlyRevenue = PLAN_PRICES[subscriber.plan] || 0;
+      console.log(`Revenue from ${subscriber.name}: ${monthlyRevenue}€`);
     }
     
-    const newStats = {
+    return {
       totalSubscribers: acc.totalSubscribers + 1,
       activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
       overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
       pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
       monthlyRevenue: acc.monthlyRevenue + monthlyRevenue,
     };
-    
-    console.log('Receita mensal acumulada:', newStats.monthlyRevenue, '€');
-    return newStats;
   }, {
     totalSubscribers: 0,
     activeSubscribers: 0,
@@ -56,4 +33,7 @@ export async function calculateSubscriberStats(subscribers: Subscriber[]): Promi
     pendingSubscribers: 0,
     monthlyRevenue: 0,
   });
+
+  console.log('Final calculated stats:', stats);
+  return stats;
 }
