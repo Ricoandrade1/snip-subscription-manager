@@ -62,10 +62,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
           plan_id: planData.id,
           payment_date: data.payment_date?.toISOString() || null,
           last_plan_change: new Date().toISOString(),
-          // Set status based on payment date
-          status: data.payment_date 
-            ? (isAfter(data.payment_date, new Date()) ? "pago" : "atrasado") as Member["status"]
-            : "atrasado" as Member["status"]
+          status: data.status || 'atrasado'
         };
         
         await onSubmit(formattedData);
@@ -75,10 +72,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         const formattedData: Partial<Member> = {
           ...data,
           payment_date: data.payment_date?.toISOString() || null,
-          // Set status based on payment date
-          status: data.payment_date 
-            ? (isAfter(data.payment_date, new Date()) ? "pago" : "atrasado") as Member["status"]
-            : "atrasado" as Member["status"]
+          status: data.status || 'atrasado'
         };
         
         await onSubmit(formattedData);

@@ -47,8 +47,8 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
       }
 
       // Garante que o status seja um dos valores permitidos
-      if (updateData.status && !['pago', 'atrasado', 'cancelado'].includes(updateData.status)) {
-        updateData.status = 'pago';
+      if (!['pago', 'atrasado', 'cancelado'].includes(updateData.status || '')) {
+        updateData.status = 'atrasado';
       }
 
       console.log('Dados de atualização:', updateData);
@@ -65,6 +65,9 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
 
       toast.success('Assinante atualizado com sucesso!');
       onOpenChange(false);
+      
+      // Recarrega a página para atualizar os dados
+      window.location.reload();
     } catch (error) {
       console.error('Error updating subscriber:', error);
       toast.error('Erro ao atualizar assinante');
