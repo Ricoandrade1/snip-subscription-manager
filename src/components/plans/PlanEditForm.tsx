@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   title: z.string().min(2, "Título deve ter pelo menos 2 caracteres"),
@@ -33,6 +34,8 @@ interface PlanEditFormProps {
 
 export function PlanEditForm({ initialData, onClose }: PlanEditFormProps) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,6 +46,15 @@ export function PlanEditForm({ initialData, onClose }: PlanEditFormProps) {
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (!initialData.id) {
+      toast({
+        title: "Erro ao atualizar plano",
+        description: "ID do plano não encontrado.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const features = data.features.split("\n").filter(feature => feature.trim() !== "");
       
@@ -53,9 +65,14 @@ export function PlanEditForm({ initialData, onClose }: PlanEditFormProps) {
           price: data.price,
           features: features,
         })
-        .eq('id', initialData.id);
+        .eq('id', initialData.id)
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Invalidate and refetch plans data
+      await queryClient.invalidateQueries({ queryKey: ['plans'] });
 
       toast({
         title: "Plano atualizado com sucesso!",
