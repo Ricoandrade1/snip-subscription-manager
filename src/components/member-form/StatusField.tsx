@@ -27,6 +27,12 @@ export function StatusField({ form }: StatusFieldProps) {
               </FormLabel>
             </div>
             <div className="flex items-center space-x-3">
+              <RadioGroupItem value="pending" id="pending" className="border-barber-gold text-barber-gold" />
+              <FormLabel htmlFor="pending" className="text-barber-light">
+                Pendente
+              </FormLabel>
+            </div>
+            <div className="flex items-center space-x-3">
               <RadioGroupItem value="inactive" id="inactive" className="border-barber-gold text-barber-gold" />
               <FormLabel htmlFor="inactive" className="text-barber-light">
                 Cancelado

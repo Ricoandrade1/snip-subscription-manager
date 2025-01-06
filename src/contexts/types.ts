@@ -1,4 +1,4 @@
-export type MemberStatus = "active" | "inactive";
+export type MemberStatus = "active" | "inactive" | "pending";
 
 export type Member = {
   id: string;
