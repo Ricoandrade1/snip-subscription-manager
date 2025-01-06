@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UserPlus, Users } from "lucide-react";
 import { useEffect } from "react";
-import { supabase } from "@/lib/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Subscribers() {
   const navigate = useNavigate();
