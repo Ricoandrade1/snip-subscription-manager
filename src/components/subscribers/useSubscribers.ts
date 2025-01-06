@@ -49,7 +49,7 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
         nickname: member.nickname,
         phone: member.phone,
         nif: member.nif,
-        plan: member.plans.title,
+        plan: member.plans.title as "Basic" | "Classic" | "Business",
         status: member.status,
         created_at: member.created_at,
         payment_date: member.payment_date,
