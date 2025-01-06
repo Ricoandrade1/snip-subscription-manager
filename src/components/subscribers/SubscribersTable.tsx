@@ -75,6 +75,11 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
     }
   };
 
+  const handleDeleteDialogClose = () => {
+    setDeleteDialogOpen(false);
+    setAdminPassword('');
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -125,7 +130,7 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
         onSuccess={refetch}
       />
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={deleteDialogOpen} onOpenChange={handleDeleteDialogClose}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirmar Exclusão</DialogTitle>
@@ -151,10 +156,7 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
           <DialogFooter className="gap-2">
             <Button
               variant="outline"
-              onClick={() => {
-                setDeleteDialogOpen(false);
-                setAdminPassword('');
-              }}
+              onClick={handleDeleteDialogClose}
             >
               Cancelar
             </Button>
