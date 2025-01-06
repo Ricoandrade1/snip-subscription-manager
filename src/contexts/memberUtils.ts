@@ -28,7 +28,7 @@ export const fetchMembersFromDB = async () => {
     return [];
   }
 
-  const formattedMembers = membersData.map(member => ({
+  const formattedMembers: Member[] = membersData.map(member => ({
     id: member.id,
     name: member.name || '',
     nickname: member.nickname || '',
@@ -38,7 +38,7 @@ export const fetchMembersFromDB = async () => {
     plan: member.plans?.title as Member["plan"],
     created_at: member.created_at,
     payment_date: member.payment_date,
-    status: member.status || 'active'
+    status: (member.status === 'active' ? 'active' : 'inactive') as Member["status"]
   }));
 
   console.log('Membros formatados:', formattedMembers);
@@ -85,7 +85,7 @@ export const setupRealtimeSubscription = (setMembers: React.Dispatch<React.SetSt
               plan: newMember.plans?.title as Member["plan"],
               created_at: newMember.created_at,
               payment_date: newMember.payment_date,
-              status: newMember.status || 'active'
+              status: (newMember.status === 'active' ? 'active' : 'inactive') as Member["status"]
             };
             
             setMembers(current => [...current, formattedMember]);
@@ -118,7 +118,7 @@ export const setupRealtimeSubscription = (setMembers: React.Dispatch<React.SetSt
               plan: updatedMember.plans?.title as Member["plan"],
               created_at: updatedMember.created_at,
               payment_date: updatedMember.payment_date,
-              status: updatedMember.status || 'active'
+              status: (updatedMember.status === 'active' ? 'active' : 'inactive') as Member["status"]
             };
             
             setMembers(current => 
