@@ -16,6 +16,7 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
 
   const handleSubmit = async (data: Partial<Member>) => {
     try {
+      console.log('Enviando atualização:', data);
       // Remove created_at from the update data to preserve the original registration date
       const { created_at, ...updateData } = data;
       await updateMember(member.id, updateData);

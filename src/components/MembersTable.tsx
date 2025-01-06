@@ -50,9 +50,12 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     // Normalize status if needed
     const normalizedMember = {
       ...member,
-      status: member.status === 'active' ? 'pago' as const :
-              member.status === 'inactive' ? 'cancelado' as const :
-              member.status
+      status: member.status === 'active' ? 'pago' :
+              member.status === 'inactive' ? 'cancelado' :
+              member.status === 'pago' ? 'pago' :
+              member.status === 'cancelado' ? 'cancelado' :
+              member.status === 'pendente' ? 'pendente' :
+              'pendente'
     };
 
     setSelectedMember(normalizedMember);
@@ -74,9 +77,12 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   // Normalize status for all members
   const normalizedMembers = filteredMembers.map(member => ({
     ...member,
-    status: member.status === 'active' ? 'pago' as const :
-            member.status === 'inactive' ? 'cancelado' as const :
-            member.status
+    status: member.status === 'active' ? 'pago' :
+            member.status === 'inactive' ? 'cancelado' :
+            member.status === 'pago' ? 'pago' :
+            member.status === 'cancelado' ? 'cancelado' :
+            member.status === 'pendente' ? 'pendente' :
+            'pendente'
   }));
 
   // Remove duplicatas baseado no ID do membro
