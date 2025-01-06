@@ -3,7 +3,6 @@ import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "./lib/supabase/client";
 import { Toaster } from "sonner";
-import { toast } from "sonner";
 
 // Pages
 import Index from "./pages/Index";
@@ -52,16 +51,12 @@ function App() {
       if (session) {
         setSession(session);
         setIsAdmin(session.user.user_metadata.role === 'admin');
-        if (event === 'SIGNED_IN') {
-          toast.success('Login realizado com sucesso!');
+        if (event === 'SIGNED_OUT') {
+          navigate('/login');
         }
       } else {
         setSession(null);
         setIsAdmin(false);
-        if (event === 'SIGNED_OUT') {
-          toast.success('Logout realizado com sucesso!');
-          navigate('/login');
-        }
       }
     });
 
