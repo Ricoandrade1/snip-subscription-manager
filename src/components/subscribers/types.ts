@@ -13,6 +13,13 @@ export interface Subscriber {
   payment_date?: string | null;
 }
 
+export interface SubscriberStats {
+  totalSubscribers: number;
+  activeSubscribers: number;
+  overdueSubscribers: number;
+  monthlyRevenue: number;
+}
+
 export interface FilterState {
   name: string;
   phone: string;
@@ -21,11 +28,4 @@ export interface FilterState {
   plan: string;
   sortBy: 'name' | 'payment_date' | 'plan';
   sortOrder: 'asc' | 'desc';
-}
-
-export interface SubscriberStats {
-  totalSubscribers: number;
-  activeSubscribers: number;
-  overdueSubscribers: number;
-  monthlyRevenue: number;
 }
