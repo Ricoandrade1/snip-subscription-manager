@@ -25,7 +25,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       nif: member.nif || "",
       plan: member.plan || "Basic",
       payment_date: member.payment_date ? new Date(member.payment_date) : undefined,
-      status: member.status as "active" | "inactive",
+      status: member.payment_date ? (member.status as "active" | "inactive") : undefined,
     },
   });
 
@@ -61,7 +61,8 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
           plan_id: planData.id,
           payment_date: data.payment_date?.toISOString() || null,
           last_plan_change: new Date().toISOString(),
-          status: data.status
+          // Only set status if payment_date exists
+          status: data.payment_date ? data.status : null
         };
         
         await onSubmit(formattedData);
@@ -71,7 +72,8 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         const formattedData = {
           ...data,
           payment_date: data.payment_date?.toISOString() || null,
-          status: data.status
+          // Only set status if payment_date exists
+          status: data.payment_date ? data.status : null
         };
         
         await onSubmit(formattedData);
@@ -89,7 +91,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         <PersonalInfoFields form={form} />
         <PlanFields form={form} />
         <PaymentDateField form={form} />
-        <StatusField form={form} />
+        {form.watch('payment_date') && <StatusField form={form} />}
         
         <div className="flex justify-end">
           <button
