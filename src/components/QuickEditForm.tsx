@@ -9,6 +9,7 @@ import { formSchema, FormValues } from "./member-form/schema";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { StatusField } from "./member-form/StatusField";
+import { isAfter, isBefore, addDays } from "date-fns";
 
 interface QuickEditFormProps {
   member: Member;
@@ -29,6 +30,19 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
     },
   });
 
+  const calculateStatus = (paymentDate: Date | null): Member["status"] => {
+    if (!paymentDate) return "pendente";
+    
+    const today = new Date();
+    const nextDueDate = addDays(paymentDate, 30);
+    
+    if (isBefore(nextDueDate, today)) {
+      return "pendente";
+    }
+    
+    return "pago";
+  };
+
   const handleSubmit = async (data: FormValues) => {
     try {
       console.log('Dados do formulário:', data);
@@ -39,16 +53,13 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         nickname: data.nickname,
         phone: data.phone,
         nif: data.nif,
-        status: data.status,
         payment_date: data.payment_date?.toISOString() || null,
       };
 
-      // Se o status mudou para "pago", atualize a data de pagamento para hoje se não houver uma data definida
-      if (data.status === 'pago' && !data.payment_date) {
-        updateData.payment_date = new Date().toISOString();
-      }
-
-      console.log('Status sendo enviado:', updateData.status);
+      // Calculate status based on payment date
+      updateData.status = calculateStatus(data.payment_date || null);
+      
+      console.log('Status calculado:', updateData.status);
       console.log('Data de pagamento:', updateData.payment_date);
 
       // Check if plan has changed
@@ -94,7 +105,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         <PersonalInfoFields form={form} />
         <PlanFields form={form} />
         <PaymentDateField form={form} />
-        <StatusField form={form} />
+        <StatusField form={form} disabled={true} />
         
         <div className="flex justify-end">
           <button
