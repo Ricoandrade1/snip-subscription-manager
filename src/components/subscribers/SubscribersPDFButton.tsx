@@ -12,6 +12,15 @@ interface SubscribersPDFButtonProps {
 }
 
 export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps) {
+  const formatStatus = (status: string) => {
+    const statusMap: Record<string, string> = {
+      pago: "Pago",
+      pendente: "Pendente",
+      cancelado: "Cancelado"
+    };
+    return statusMap[status] || status;
+  };
+
   const formatDate = (date: string | null | undefined) => {
     if (!date) return '-';
     return format(new Date(date), 'dd/MM/yyyy', { locale: ptBR });
@@ -30,26 +39,37 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
       doc.text(`Total de assinantes: ${subscribers.length}`, 14, 42);
 
       // Define headers and data
-      const headers = ['Nome', 'Telefone', 'NIF', 'IBAN', 'Plano', 'Status'];
+      const headers = [
+        'Nome', 
+        'Telefone', 
+        'NIF', 
+        'Plano', 
+        'Data Pagamento',
+        'Próximo Pagamento',
+        'Status'
+      ];
 
       const tableData = subscribers.map(subscriber => [
-        subscriber.name,
+        subscriber.name || '-',
         subscriber.phone || '-',
         subscriber.nif || '-',
-        subscriber.iban || '-',
-        subscriber.plan,
-        subscriber.status
+        subscriber.plan || '-',
+        formatDate(subscriber.payment_date),
+        subscriber.payment_date 
+          ? formatDate(new Date(new Date(subscriber.payment_date).setMonth(new Date(subscriber.payment_date).getMonth() + 1)))
+          : '-',
+        formatStatus(subscriber.status)
       ]);
 
-      // Add table with improved styling for better print layout
+      // Add table with improved styling
       autoTable(doc, {
         head: [headers],
         body: tableData,
         startY: 50,
         theme: 'grid',
         styles: {
-          fontSize: 9,
-          cellPadding: 3,
+          fontSize: 8,
+          cellPadding: 2,
           lineColor: [200, 200, 200],
           lineWidth: 0.1,
         },
@@ -59,15 +79,16 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
           fontStyle: 'bold',
           halign: 'center',
         },
-        alternateRowStyles: {
-          fillColor: [245, 245, 245],
-        },
         columnStyles: {
-          0: { cellWidth: 'auto' },
-          1: { cellWidth: 'auto' },
-          2: { cellWidth: 'auto' },
+          0: { cellWidth: 40 }, // Nome
+          1: { cellWidth: 25 }, // Telefone
+          2: { cellWidth: 20 }, // NIF
+          3: { cellWidth: 20 }, // Plano
+          4: { cellWidth: 25 }, // Data Pagamento
+          5: { cellWidth: 25 }, // Próximo Pagamento
+          6: { cellWidth: 20 }, // Status
         },
-        margin: { top: 10, right: 10, bottom: 10, left: 10 },
+        margin: { top: 10 },
       });
 
       // Save PDF with formatted name
