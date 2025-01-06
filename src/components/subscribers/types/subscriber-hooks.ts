@@ -1,7 +1,5 @@
 import { FilterState, Subscriber, SubscriberStats } from "./subscriber";
 
-export type { FilterState };
-
 export interface UseSubscribersProps {
   planFilter?: "Basic" | "Classic" | "Business";
   statusFilter?: string;

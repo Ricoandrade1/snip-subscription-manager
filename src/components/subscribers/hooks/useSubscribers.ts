@@ -1,9 +1,7 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Subscriber, SubscriberStats, SubscriberStatus } from "../types/subscriber";
-import { FilterState } from "../types/subscriber";
-import { toast } from "sonner";
-import { useSubscriberStats } from "./useSubscriberStats";
+import { useState } from "react";
+import { Subscriber } from "../types/subscriber";
+import { calculateSubscriberStats } from "./useSubscriberStats";
+import { FilterState } from "../types/subscriber-hooks";
 
 interface UseSubscribersProps {
   planFilter?: "Basic" | "Classic" | "Business";
@@ -13,14 +11,6 @@ interface UseSubscribersProps {
 export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscribersProps) {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [stats, setStats] = useState<SubscriberStats>({
-    totalSubscribers: 0,
-    activeSubscribers: 0,
-    overdueSubscribers: 0,
-    pendingSubscribers: 0,
-    monthlyRevenue: 0,
-  });
-  
   const [filters, setFilters] = useState<FilterState>({
     name: "",
     phone: "",
@@ -30,66 +20,6 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     sortBy: "name",
     sortOrder: "asc",
   });
-
-  const { calculateStats } = useSubscriberStats(subscribers);
-
-  useEffect(() => {
-    fetchSubscribers();
-  }, [planFilter, statusFilter]);
-
-  const fetchSubscribers = async () => {
-    try {
-      setIsLoading(true);
-      let query = supabase
-        .from('members')
-        .select(`
-          *,
-          plans (
-            id,
-            title,
-            price
-          )
-        `);
-
-      if (planFilter) {
-        query = query.eq('plans.title', planFilter);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        throw error;
-      }
-
-      const formattedSubscribers: Subscriber[] = data
-        .filter(member => member.plans)
-        .map(member => ({
-          id: member.id,
-          name: member.name,
-          nickname: member.nickname,
-          phone: member.phone,
-          nif: member.nif,
-          plan: member.plans?.title as "Basic" | "Classic" | "Business",
-          plan_id: member.plan_id,
-          created_at: member.created_at,
-          payment_date: member.payment_date,
-          status: member.status as SubscriberStatus,
-          bank_name: member.bank_name,
-          iban: member.iban,
-          due_date: member.due_date,
-          last_plan_change: member.last_plan_change
-        }));
-
-      setSubscribers(formattedSubscribers);
-      const newStats = calculateStats(formattedSubscribers);
-      setStats(newStats);
-    } catch (error) {
-      console.error('Error fetching subscribers:', error);
-      toast.error('Erro ao carregar assinantes');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleFilterChange = (field: keyof FilterState, value: string) => {
     setFilters(prev => ({ ...prev, [field]: value }));
@@ -150,6 +80,8 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     })
   );
 
+  const stats = calculateSubscriberStats(subscribers);
+
   return {
     subscribers,
     isLoading,
@@ -157,6 +89,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     handleFilterChange,
     filteredSubscribers,
     stats,
-    refetch: fetchSubscribers,
+    setSubscribers,
+    setIsLoading
   };
 }

@@ -8,13 +8,13 @@ export interface Subscriber {
   nif: string | null;
   plan: "Basic" | "Classic" | "Business";
   plan_id: number | null;
-  created_at: string;
-  payment_date: string | null;
+  created_at?: string;
+  payment_date?: string | null;
   status: SubscriberStatus;
   bank_name: string | null;
   iban: string | null;
-  due_date: string | null;
-  last_plan_change: string | null;
+  due_date?: string | null;
+  last_plan_change?: string | null;
 }
 
 export interface SubscriberStats {
