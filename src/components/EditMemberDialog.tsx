@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Member, useMemberContext } from "@/contexts/MemberContext";
 import { QuickEditForm } from "./QuickEditForm";
 import { toast } from "sonner";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface EditMemberDialogProps {
   member: Member | null;
@@ -34,7 +35,9 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
         <DialogHeader>
           <DialogTitle className="text-barber-light">Editar Membro</DialogTitle>
         </DialogHeader>
-        <QuickEditForm member={member} onSubmit={handleSubmit} />
+        <ScrollArea className="h-[80vh] pr-4">
+          <QuickEditForm member={member} onSubmit={handleSubmit} />
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

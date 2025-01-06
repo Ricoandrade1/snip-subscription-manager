@@ -1,4 +1,4 @@
-import { ThemeType } from 'jspdf-autotable';
+import { ThemeType, FontStyle } from 'jspdf-autotable';
 
 type RGBColor = [number, number, number];
 
@@ -14,11 +14,17 @@ export interface TableConfig {
   headStyles: {
     fillColor: RGBColor;
     textColor: RGBColor;
-    fontStyle: string;
+    fontStyle: FontStyle;
     halign: string;
   };
   columnStyles: {
-    [key: number]: { cellWidth: number };
+    [key: number]: {
+      cellWidth: number;
+    };
   };
-  margin: { top: number };
+  margin: {
+    top: number;
+  };
+  head: string[][];
+  body: string[][];
 }
