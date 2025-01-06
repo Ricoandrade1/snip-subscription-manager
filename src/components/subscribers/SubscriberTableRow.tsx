@@ -29,10 +29,8 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
     switch (status) {
       case "active":
         return "bg-green-500/20 text-green-500 hover:bg-green-500/30";
-      case "overdue":
+      case "inactive":
         return "bg-red-500/20 text-red-500 hover:bg-red-500/30";
-      case "cancelled":
-        return "bg-gray-500/20 text-gray-500 hover:bg-gray-500/30";
       default:
         return "bg-gray-500/20 text-gray-500 hover:bg-gray-500/30";
     }
@@ -42,9 +40,7 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
     switch (status) {
       case "active":
         return "Pago";
-      case "overdue":
-        return "Atrasado";
-      case "cancelled":
+      case "inactive":
         return "Cancelado";
       default:
         return status;
