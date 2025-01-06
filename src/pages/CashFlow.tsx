@@ -4,6 +4,7 @@ import { Cart } from "@/components/pdv/Cart";
 import { Product } from "@/components/pdv/types";
 import { ProductFilter } from "@/components/products/ProductFilter";
 import { toast } from "sonner";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function CashFlow() {
   const [cartItems, setCartItems] = useState<(Product & { quantity: number })[]>([]);
@@ -70,12 +71,14 @@ export default function CashFlow() {
             <ProductFilter filters={filters} onFilterChange={setFilters} />
           </div>
           
-          <div className="flex-1 overflow-y-auto pr-6 -mr-6">
-            <ProductList
-              filters={filters}
-              onProductSelect={handleProductSelect}
-            />
-          </div>
+          <ScrollArea className="flex-1">
+            <div className="pr-4">
+              <ProductList
+                filters={filters}
+                onProductSelect={handleProductSelect}
+              />
+            </div>
+          </ScrollArea>
         </div>
 
         {/* Cart Section */}

@@ -4,6 +4,7 @@ import { CartHeader } from "./cart/CartHeader";
 import { CartItem } from "./cart/CartItem";
 import { CartPayment } from "./cart/CartPayment";
 import { useState } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface CartProps {
   items: (Product & { quantity: number })[];
@@ -46,16 +47,18 @@ export function Cart({
     <Card className="h-full flex flex-col">
       <CartHeader itemCount={items.length} />
       
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {items.map((item) => (
-          <CartItem
-            key={item.id}
-            item={item}
-            onUpdateQuantity={onUpdateQuantity}
-            onRemoveItem={onRemoveItem}
-          />
-        ))}
-      </div>
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-4">
+          {items.map((item) => (
+            <CartItem
+              key={item.id}
+              item={item}
+              onUpdateQuantity={onUpdateQuantity}
+              onRemoveItem={onRemoveItem}
+            />
+          ))}
+        </div>
+      </ScrollArea>
 
       <div className="p-4 border-t flex-shrink-0">
         <CartPayment
