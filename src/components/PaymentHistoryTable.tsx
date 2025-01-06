@@ -36,7 +36,10 @@ export function PaymentHistoryTable({
       return;
     }
 
-    if (!selectedPayment) return;
+    if (!selectedPayment) {
+      toast.error("Nenhum pagamento selecionado");
+      return;
+    }
 
     try {
       const { error } = await supabase
@@ -45,13 +48,19 @@ export function PaymentHistoryTable({
         .eq("id", selectedPayment.id);
 
       if (error) {
+        console.error("Erro ao atualizar status:", error);
         throw error;
       }
 
-      toast.success("Status atualizado com sucesso");
+      // Atualiza a lista de pagamentos
       onPaymentUpdate();
+      
+      // Limpa os estados e fecha o diálogo
+      setSelectedPayment(null);
       setAdminPassword("");
       setIsDialogOpen(false);
+      
+      toast.success("Status atualizado com sucesso");
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
       toast.error("Erro ao atualizar status");
@@ -94,7 +103,7 @@ export function PaymentHistoryTable({
                 </td>
                 <td className="p-4 align-middle">
                   <Dialog 
-                    open={isDialogOpen && selectedPayment?.id === payment.id} 
+                    open={isDialogOpen && selectedPayment?.id === payment.id}
                     onOpenChange={(open) => {
                       setIsDialogOpen(open);
                       if (!open) {
@@ -104,10 +113,15 @@ export function PaymentHistoryTable({
                     }}
                   >
                     <DialogTrigger asChild>
-                      <PaymentStatusBadge
-                        status={payment.status}
-                        onClick={() => setSelectedPayment(payment)}
-                      />
+                      <div onClick={() => {
+                        setSelectedPayment(payment);
+                        setNewStatus(payment.status);
+                      }}>
+                        <PaymentStatusBadge
+                          status={payment.status}
+                          onClick={() => {}}
+                        />
+                      </div>
                     </DialogTrigger>
                     <PaymentStatusDialog
                       open={isDialogOpen}
