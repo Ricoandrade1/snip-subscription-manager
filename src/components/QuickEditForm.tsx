@@ -33,6 +33,16 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
     try {
       console.log('Dados do formulário:', data);
       
+      // Prepare update data
+      const updateData: Partial<Member> = {
+        name: data.name,
+        nickname: data.nickname,
+        phone: data.phone,
+        nif: data.nif,
+        payment_date: data.payment_date?.toISOString() || null,
+        status: data.status,
+      };
+
       // Check if plan has changed
       if (data.plan !== member.plan) {
         // Get plan details
@@ -58,29 +68,13 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         if (salesError) throw salesError;
 
         // Update member with new plan_id and last_plan_change timestamp
-        const formattedData: Partial<Member> = {
-          ...data,
-          plan_id: planData.id,
-          payment_date: data.payment_date?.toISOString() || null,
-          last_plan_change: new Date().toISOString(),
-          status: data.status as Member["status"]
-        };
-        
-        console.log('Dados de atualização:', formattedData);
-        await onSubmit(formattedData);
-        toast.success("Plano atualizado e venda registrada com sucesso!");
-      } else {
-        // Regular update without plan change
-        const formattedData: Partial<Member> = {
-          ...data,
-          payment_date: data.payment_date?.toISOString() || null,
-          status: data.status as Member["status"]
-        };
-        
-        console.log('Dados de atualização:', formattedData);
-        await onSubmit(formattedData);
-        toast.success("Membro atualizado com sucesso!");
+        updateData.plan_id = planData.id;
+        updateData.last_plan_change = new Date().toISOString();
       }
+
+      console.log('Dados de atualização:', updateData);
+      await onSubmit(updateData);
+      toast.success("Membro atualizado com sucesso!");
     } catch (error) {
       console.error('Error updating member:', error);
       toast.error("Erro ao atualizar membro");

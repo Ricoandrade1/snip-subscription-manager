@@ -21,7 +21,7 @@ export function StatusField({ form }: StatusFieldProps) {
               field.onChange(value);
               console.log('Status alterado para:', value);
             }}
-            defaultValue={field.value}
+            value={field.value}
             className="flex flex-col space-y-1"
           >
             <div className="flex items-center space-x-3">
