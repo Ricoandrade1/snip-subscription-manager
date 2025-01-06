@@ -9,13 +9,19 @@ interface ProductGridProps {
 }
 
 export function ProductGrid({ products, onProductSelect }: ProductGridProps) {
+  const handleClick = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onProductSelect(product);
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {products.map((product) => (
         <Card
           key={product.id}
           className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer hover:bg-muted/50"
-          onClick={() => onProductSelect(product)}
+          onClick={(e) => handleClick(e, product)}
         >
           <div className="relative">
             <AspectRatio ratio={1}>

@@ -12,14 +12,17 @@ interface ProductCardProps {
   onEdit?: (product: Product) => void;
 }
 
-export function ProductCard({ product, onSelect, onEdit }: ProductCardProps) {
+export function ProductCard({ product, barbers, onSelect, onEdit }: ProductCardProps) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelect(product);
+  };
+
   return (
     <Card
       className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer hover:bg-muted/50"
-      onClick={(e) => {
-        e.preventDefault();
-        onSelect(product);
-      }}
+      onClick={handleClick}
     >
       <div className="p-4">
         <div className="flex items-center justify-between gap-4">
