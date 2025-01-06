@@ -8,6 +8,7 @@ import { PaymentDateField } from "./PaymentDateField";
 import { formSchema, FormValues } from "./member-form/schema";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { StatusField } from "./member-form/StatusField";
 
 interface QuickEditFormProps {
   member: Member;
@@ -85,6 +86,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         <PersonalInfoFields form={form} />
         <PlanFields form={form} />
         <PaymentDateField form={form} />
+        <StatusField form={form} />
         
         <div className="flex justify-end">
           <button
