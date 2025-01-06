@@ -9,6 +9,9 @@ import { MemberTableRow } from "./members/MemberTableRow";
 import { MembersTableHeader } from "./members/MembersTableHeader";
 import { useMembers } from "./members/useMembers";
 import { getMemberCode } from "./members/MemberCode";
+import { useNavigate } from "react-router-dom";
+import { useSession } from "@supabase/auth-helpers-react";
+import { useEffect } from "react";
 
 interface MembersTableProps {
   planFilter?: "Basic" | "Classic" | "Business";
@@ -18,6 +21,14 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   const { members, isLoading } = useMemberContext();
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const navigate = useNavigate();
+  const session = useSession();
+
+  useEffect(() => {
+    if (!session) {
+      navigate('/login');
+    }
+  }, [session, navigate]);
 
   const { filters, handleFilterChange, filteredMembers } = useMembers({
     members,
@@ -28,6 +39,10 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     setSelectedMember(member);
     setDialogOpen(true);
   };
+
+  if (!session) {
+    return null;
+  }
 
   if (isLoading) {
     return (

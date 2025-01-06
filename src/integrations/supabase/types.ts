@@ -450,6 +450,10 @@ export type Database = {
         }
         Returns: number
       }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       user_authority: "admin" | "seller" | "manager" | "barber" | "owner"
