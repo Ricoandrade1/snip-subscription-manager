@@ -18,13 +18,17 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
   const memberData: Member = {
     ...subscriber,
     plan: subscriber.plan,
-    status: subscriber.status === "atrasado" ? "atrasado" : "pago",
+    // Map status values correctly
+    status: subscriber.status === "atrasado" ? "atrasado" : 
+           subscriber.status === "cancelado" ? "cancelado" : "pago",
     due_date: undefined,
   };
 
   const handleSubmit = async (data: Partial<Member>) => {
     try {
       // Get plan_id if plan is being updated
+      let updateData = { ...data };
+      
       if (data.plan) {
         const { data: planData, error: planError } = await supabase
           .from('plans')
@@ -35,14 +39,19 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
         if (planError) throw planError;
 
         // Update the data with plan_id
-        data.plan_id = planData.id;
+        updateData.plan_id = planData.id;
         // Remove plan from data as it's not a column in the members table
-        delete data.plan;
+        delete updateData.plan;
+      }
+
+      // Ensure status is one of the allowed values
+      if (updateData.status && !['pago', 'atrasado', 'cancelado'].includes(updateData.status)) {
+        updateData.status = 'pago';
       }
 
       const { error } = await supabase
         .from('members')
-        .update(data)
+        .update(updateData)
         .eq('id', subscriber.id);
 
       if (error) throw error;
