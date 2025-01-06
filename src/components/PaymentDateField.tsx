@@ -25,17 +25,17 @@ export function PaymentDateField({
     const thirtyDaysAgo = addDays(today, -30);
     const paymentDateObj = new Date(paymentDate);
     
-    // Se a data de pagamento é no futuro ou hoje
+    // Se a data de pagamento é no futuro ou hoje, status é pago
     if (isAfter(paymentDateObj, today) || paymentDateObj.toDateString() === today.toDateString()) {
       return 'pago';
     }
     
-    // Se a data de pagamento está dentro dos últimos 30 dias (inclusive)
+    // Se a data de pagamento está dentro dos últimos 30 dias (inclusive), status é pago
     if (!isBefore(paymentDateObj, thirtyDaysAgo)) {
       return 'pago';
     }
     
-    // Se a data de pagamento é mais antiga que 30 dias
+    // Se a data de pagamento é mais antiga que 30 dias, status é pendente
     return 'pendente';
   };
 
@@ -58,15 +58,12 @@ export function PaymentDateField({
                 // Atualiza o valor do campo
                 field.onChange(date);
                 
-                // Atualiza o status automaticamente com base na data
-                if (date) {
-                  const status = calculateStatus(date);
-                  console.log('Data selecionada:', date);
-                  console.log('Status calculado:', status);
-                  form.setValue('status', status);
-                } else {
-                  form.setValue('status', 'cancelado');
-                }
+                // Se uma data foi selecionada, define o status como 'pago'
+                // Se a data foi removida, define como 'cancelado'
+                const newStatus = date ? 'pago' : 'cancelado';
+                console.log('Data selecionada:', date);
+                console.log('Status calculado:', newStatus);
+                form.setValue('status', newStatus);
               }}
               className={`h-10 ${disabled ? 'bg-gray-100' : ''}`}
             />
