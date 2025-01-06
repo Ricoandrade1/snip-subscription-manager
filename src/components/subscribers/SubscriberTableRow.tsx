@@ -25,6 +25,28 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
     }
   };
 
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case "pago":
+        return "bg-green-500/20 text-green-500";
+      case "pendente":
+        return "bg-yellow-500/20 text-yellow-500";
+      case "cancelado":
+        return "bg-red-500/20 text-red-500";
+      default:
+        return "bg-gray-500/20 text-gray-500";
+    }
+  };
+
+  const formatStatus = (status: string) => {
+    const statusMap: Record<string, string> = {
+      pago: "Pago",
+      pendente: "Pendente",
+      cancelado: "Cancelado"
+    };
+    return statusMap[status] || status;
+  };
+
   const formatDate = (date: string | null) => {
     if (!date) return '-';
     return format(new Date(date), "dd/MM/yyyy", { locale: ptBR });
@@ -57,6 +79,11 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
       </TableCell>
       <TableCell className="text-barber-light whitespace-nowrap">
         {getNextPaymentDate(subscriber.payment_date)}
+      </TableCell>
+      <TableCell>
+        <Badge className={`${getStatusBadgeColor(subscriber.status)} whitespace-nowrap`}>
+          {formatStatus(subscriber.status)}
+        </Badge>
       </TableCell>
     </TableRow>
   );
