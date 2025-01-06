@@ -6,12 +6,34 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from "sonner";
 import { Subscriber } from "./types";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 interface SubscribersPDFButtonProps {
   subscribers: Subscriber[];
 }
 
+interface FieldOption {
+  id: keyof Subscriber | 'payment_date' | 'bank_name' | 'iban';
+  label: string;
+}
+
+const FIELD_OPTIONS: FieldOption[] = [
+  { id: 'name', label: 'Nome' },
+  { id: 'phone', label: 'Telefone' },
+  { id: 'nif', label: 'NIF' },
+  { id: 'plan', label: 'Plano' },
+  { id: 'status', label: 'Status' },
+  { id: 'payment_date', label: 'Data Pagamento' },
+  { id: 'bank_name', label: 'Banco' },
+  { id: 'iban', label: 'IBAN' },
+];
+
 export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps) {
+  const [selectedFields, setSelectedFields] = useState<string[]>(['name', 'phone', 'plan', 'status']);
+
   const formatStatus = (status: string) => {
     const statusMap: Record<string, string> = {
       pago: "Pago",
@@ -23,6 +45,11 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
 
   const generatePDF = () => {
     try {
+      if (selectedFields.length === 0) {
+        toast.error("Selecione pelo menos um campo para exportar");
+        return;
+      }
+
       const doc = new jsPDF();
       
       // Add header
@@ -33,21 +60,42 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
       doc.text(`Data de emissão: ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR })}`, 14, 32);
       doc.text(`Total de assinantes: ${subscribers.length}`, 14, 42);
 
-      // Prepare data for table
-      const tableData = subscribers.map(subscriber => [
-        subscriber.name,
-        subscriber.phone || '-',
-        subscriber.nif || '-',
-        subscriber.plan,
-        formatStatus(subscriber.status),
-        subscriber.payment_date ? format(new Date(subscriber.payment_date), 'dd/MM/yyyy', { locale: ptBR }) : '-',
-        subscriber.bank_name || '-',
-        subscriber.iban || '-'
-      ]);
+      // Prepare headers and data based on selected fields
+      const headers = selectedFields.map(field => {
+        const option = FIELD_OPTIONS.find(opt => opt.id === field);
+        return option?.label || field;
+      });
+
+      const tableData = subscribers.map(subscriber => {
+        return selectedFields.map(field => {
+          switch (field) {
+            case 'name':
+              return subscriber.name;
+            case 'phone':
+              return subscriber.phone || '-';
+            case 'nif':
+              return subscriber.nif || '-';
+            case 'plan':
+              return subscriber.plan;
+            case 'status':
+              return formatStatus(subscriber.status);
+            case 'payment_date':
+              return subscriber.payment_date 
+                ? format(new Date(subscriber.payment_date), 'dd/MM/yyyy', { locale: ptBR }) 
+                : '-';
+            case 'bank_name':
+              return subscriber.bank_name || '-';
+            case 'iban':
+              return subscriber.iban || '-';
+            default:
+              return '-';
+          }
+        });
+      });
 
       // Add table
       autoTable(doc, {
-        head: [['Nome', 'Telefone', 'NIF', 'Plano', 'Status', 'Data Pagamento', 'Banco', 'IBAN']],
+        head: [headers],
         body: tableData,
         startY: 50,
         theme: 'grid',
@@ -75,13 +123,45 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
   };
 
   return (
-    <Button 
-      onClick={generatePDF} 
-      variant="outline" 
-      className="bg-barber-black text-barber-light hover:bg-barber-gold hover:text-black"
-    >
-      <FileDown className="mr-2 h-4 w-4" />
-      Exportar PDF {subscribers.length > 0 && `(${subscribers.length})`}
-    </Button>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button 
+          variant="outline" 
+          className="bg-barber-black text-barber-light hover:bg-barber-gold hover:text-black"
+        >
+          <FileDown className="mr-2 h-4 w-4" />
+          Exportar PDF {subscribers.length > 0 && `(${subscribers.length})`}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80">
+        <div className="space-y-4">
+          <h4 className="font-medium leading-none">Selecione os campos para exportar</h4>
+          <div className="grid grid-cols-2 gap-4">
+            {FIELD_OPTIONS.map((option) => (
+              <div key={option.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={option.id}
+                  checked={selectedFields.includes(option.id)}
+                  onCheckedChange={(checked) => {
+                    setSelectedFields(old => 
+                      checked 
+                        ? [...old, option.id]
+                        : old.filter(field => field !== option.id)
+                    );
+                  }}
+                />
+                <Label htmlFor={option.id}>{option.label}</Label>
+              </div>
+            ))}
+          </div>
+          <Button 
+            onClick={generatePDF}
+            className="w-full bg-barber-black text-barber-light hover:bg-barber-gold hover:text-black"
+          >
+            Gerar PDF
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
