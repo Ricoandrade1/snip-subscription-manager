@@ -142,28 +142,29 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
       const matchPhone = !filters.phone || (subscriber.phone && subscriber.phone.toLowerCase().includes(filters.phone.toLowerCase()));
       const matchNif = !filters.nif || (subscriber.nif && subscriber.nif.toLowerCase().includes(filters.nif.toLowerCase()));
       const matchPlan = filters.plan === 'all' || subscriber.plan === filters.plan;
-      
-      let matchStatus = true;
+      const matchStatus = filters.status === 'all' || subscriber.status === filters.status;
+
+      let matchStatusFilter = true;
       if (statusFilter !== 'all') {
         switch (statusFilter) {
           case 'active':
-            matchStatus = subscriber.status === 'pago';
+            matchStatusFilter = subscriber.status === 'pago';
             break;
           case 'overdue':
-            matchStatus = subscriber.status === 'cancelado';
+            matchStatusFilter = subscriber.status === 'cancelado';
             break;
           case 'total':
-            matchStatus = true;
+            matchStatusFilter = true;
             break;
           case 'revenue':
-            matchStatus = subscriber.status === 'pago';
+            matchStatusFilter = subscriber.status === 'pago';
             break;
           default:
-            matchStatus = true;
+            matchStatusFilter = true;
         }
       }
 
-      return matchName && matchPhone && matchNif && matchStatus && matchPlan;
+      return matchName && matchPhone && matchNif && matchStatus && matchPlan && matchStatusFilter;
     })
   );
 
