@@ -19,6 +19,7 @@ interface Plan {
 
 export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastProps) {
   const [plans, setPlans] = useState<Plan[]>([]);
+  const [monthlyRevenue, setMonthlyRevenue] = useState(0);
   
   useEffect(() => {
     const fetchPlans = async () => {
@@ -29,11 +30,12 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
       if (!error && data) {
         console.log('Planos disponíveis:', data);
         setPlans(data);
+        calculateMonthlyRevenue(data);
       }
     };
     
     fetchPlans();
-  }, []);
+  }, [members]); // Add members as dependency
 
   const generatePDF = () => {
     // TODO: Implement PDF generation
@@ -50,30 +52,23 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
     return probability.toFixed(2);
   };
 
-  const calculateMonthlyRevenue = () => {
-    // Filtra apenas membros com status 'pago'
-    const activeMembers = members.filter(member => member.status === 'pago');
-    console.log('Membros ativos:', activeMembers.length);
+  const calculateMonthlyRevenue = (availablePlans: Plan[]) => {
+    // Filter only paid members
+    const paidMembers = members.filter(member => member.status === 'pago');
+    console.log('Membros pagantes:', paidMembers.length);
     
     let totalRevenue = 0;
     
-    // Mapeia os valores dos planos para um objeto para fácil acesso
-    const planPrices: { [key: string]: number } = {
-      'Basic': 29.99,
-      'Classic': 49.99,
-      'Business': 99.99
-    };
-    
-    activeMembers.forEach(member => {
+    paidMembers.forEach(member => {
       console.log('-------------------');
       console.log(`Membro: ${member.name}`);
       console.log(`Plano: ${member.plan}`);
       
-      // Usa o preço do plano diretamente do mapeamento
-      const planPrice = planPrices[member.plan];
-      if (planPrice) {
-        totalRevenue += planPrice;
-        console.log(`Preço do plano ${member.plan}: ${planPrice}€`);
+      // Find the plan price from the database
+      const memberPlan = availablePlans.find(plan => plan.title === member.plan);
+      if (memberPlan) {
+        totalRevenue += memberPlan.price;
+        console.log(`Preço do plano ${member.plan}: ${memberPlan.price}€`);
         console.log(`Subtotal após adicionar ${member.name}: ${totalRevenue}€`);
       } else {
         console.log(`Erro: Plano não encontrado para ${member.name}`);
@@ -82,7 +77,7 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
     
     console.log('-------------------');
     console.log('Receita mensal total:', totalRevenue.toFixed(2), '€');
-    return totalRevenue;
+    setMonthlyRevenue(totalRevenue);
   };
 
   const forecasts = [
@@ -114,7 +109,7 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
             {new Intl.NumberFormat('pt-BR', {
               style: 'currency',
               currency: 'EUR'
-            }).format(calculateMonthlyRevenue())}
+            }).format(monthlyRevenue)}
           </p>
         </CardContent>
       </Card>
