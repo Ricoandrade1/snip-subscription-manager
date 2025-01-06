@@ -4,14 +4,17 @@ import { Subscriber } from "./types";
 import { format, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getSubscriberCode } from "./utils/getSubscriberCode";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
 interface SubscriberTableRowProps {
   subscriber: Subscriber;
   subscribers: Subscriber[];
   onClick: () => void;
+  onDeleteClick: () => void;
 }
 
-export function SubscriberTableRow({ subscriber, subscribers, onClick }: SubscriberTableRowProps) {
+export function SubscriberTableRow({ subscriber, subscribers, onClick, onDeleteClick }: SubscriberTableRowProps) {
   const getPlanBadgeColor = (plan: string) => {
     switch (plan) {
       case "Basic":
@@ -60,13 +63,17 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
 
   return (
     <TableRow 
-      className="cursor-pointer hover:bg-barber-gray/50 border-b border-barber-gray transition-colors"
-      onClick={onClick}
+      className="hover:bg-barber-gray/50 border-b border-barber-gray transition-colors"
     >
       <TableCell className="font-medium text-barber-light whitespace-nowrap px-4">
         {getSubscriberCode(subscriber, subscribers)}
       </TableCell>
-      <TableCell className="text-barber-light">{subscriber.name}</TableCell>
+      <TableCell 
+        className="text-barber-light cursor-pointer"
+        onClick={onClick}
+      >
+        {subscriber.name}
+      </TableCell>
       <TableCell className="text-barber-light">{subscriber.nickname || '-'}</TableCell>
       <TableCell>
         <Badge className={`${getPlanBadgeColor(subscriber.plan)} whitespace-nowrap`}>
@@ -84,6 +91,19 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
         <Badge className={`${getStatusBadgeColor(subscriber.status)} whitespace-nowrap`}>
           {formatStatus(subscriber.status)}
         </Badge>
+      </TableCell>
+      <TableCell>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDeleteClick();
+          }}
+          className="text-red-500 hover:text-red-600 hover:bg-red-100/10"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </TableCell>
     </TableRow>
   );
