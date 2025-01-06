@@ -25,21 +25,21 @@ export function StatusField({ form }: StatusFieldProps) {
             className="flex flex-col space-y-1"
           >
             <div className="flex items-center space-x-3">
-              <RadioGroupItem value="active" id="active" className="border-barber-gold text-barber-gold" />
-              <FormLabel htmlFor="active" className="text-barber-light">
-                Ativo
+              <RadioGroupItem value="pago" id="pago" className="border-barber-gold text-barber-gold" />
+              <FormLabel htmlFor="pago" className="text-barber-light">
+                Pago
               </FormLabel>
             </div>
             <div className="flex items-center space-x-3">
-              <RadioGroupItem value="pending" id="pending" className="border-barber-gold text-barber-gold" />
-              <FormLabel htmlFor="pending" className="text-barber-light">
+              <RadioGroupItem value="pendente" id="pendente" className="border-barber-gold text-barber-gold" />
+              <FormLabel htmlFor="pendente" className="text-barber-light">
                 Pendente
               </FormLabel>
             </div>
             <div className="flex items-center space-x-3">
-              <RadioGroupItem value="inactive" id="inactive" className="border-barber-gold text-barber-gold" />
-              <FormLabel htmlFor="inactive" className="text-barber-light">
-                Inativo
+              <RadioGroupItem value="cancelado" id="cancelado" className="border-barber-gold text-barber-gold" />
+              <FormLabel htmlFor="cancelado" className="text-barber-light">
+                Cancelado
               </FormLabel>
             </div>
           </RadioGroup>

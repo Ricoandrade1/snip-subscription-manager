@@ -17,23 +17,23 @@ export function PaymentDateField({
   label = "Data de Pagamento" 
 }: PaymentDateFieldProps) {
   const calculateStatus = (paymentDate: Date | null): MemberStatus => {
-    if (!paymentDate) return 'inactive';
+    if (!paymentDate) return 'cancelado';
     
     const today = new Date();
     const thirtyDaysAgo = addDays(today, -30);
     
     // Se a data de pagamento é no futuro
     if (isAfter(paymentDate, today)) {
-      return 'active';
+      return 'pago';
     }
     
     // Se a data de pagamento está dentro dos últimos 30 dias
     if (isAfter(paymentDate, thirtyDaysAgo)) {
-      return 'active';
+      return 'pago';
     }
     
     // Se a data de pagamento é mais antiga que 30 dias
-    return 'inactive';
+    return 'cancelado';
   };
 
   return (
@@ -59,7 +59,7 @@ export function PaymentDateField({
                   console.log('Status calculado:', status);
                   form.setValue('status', status);
                 } else {
-                  form.setValue('status', 'inactive');
+                  form.setValue('status', 'cancelado');
                 }
               }}
               className="h-10"
