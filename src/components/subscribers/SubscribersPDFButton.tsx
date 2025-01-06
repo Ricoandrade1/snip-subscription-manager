@@ -49,17 +49,24 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
         'Status'
       ];
 
-      const tableData = subscribers.map(subscriber => [
-        subscriber.name || '-',
-        subscriber.phone || '-',
-        subscriber.nif || '-',
-        subscriber.plan || '-',
-        formatDate(subscriber.payment_date),
-        subscriber.payment_date 
-          ? formatDate(new Date(new Date(subscriber.payment_date).setMonth(new Date(subscriber.payment_date).getMonth() + 1)))
-          : '-',
-        formatStatus(subscriber.status)
-      ]);
+      const tableData = subscribers.map(subscriber => {
+        let nextPaymentDate = '-';
+        if (subscriber.payment_date) {
+          const date = new Date(subscriber.payment_date);
+          date.setMonth(date.getMonth() + 1);
+          nextPaymentDate = format(date, 'dd/MM/yyyy', { locale: ptBR });
+        }
+
+        return [
+          subscriber.name || '-',
+          subscriber.phone || '-',
+          subscriber.nif || '-',
+          subscriber.plan || '-',
+          formatDate(subscriber.payment_date),
+          nextPaymentDate,
+          formatStatus(subscriber.status)
+        ];
+      });
 
       // Add table with improved styling
       autoTable(doc, {
