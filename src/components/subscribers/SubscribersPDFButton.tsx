@@ -26,7 +26,6 @@ const FIELD_OPTIONS: FieldOption[] = [
   { id: 'phone', label: 'Telefone' },
   { id: 'nif', label: 'NIF' },
   { id: 'plan', label: 'Plano' },
-  { id: 'status', label: 'Status' },
   { id: 'payment_date', label: 'Data Pagamento' },
   { id: 'bank_name', label: 'Banco' },
   { id: 'iban', label: 'IBAN' },
@@ -36,16 +35,7 @@ const FIELD_OPTIONS: FieldOption[] = [
 ];
 
 export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps) {
-  const [selectedFields, setSelectedFields] = useState<string[]>(['name', 'phone', 'plan', 'status']);
-
-  const formatStatus = (status: string) => {
-    const statusMap: Record<string, string> = {
-      pago: "Pago",
-      pendente: "Pendente",
-      cancelado: "Cancelado"
-    };
-    return statusMap[status] || status;
-  };
+  const [selectedFields, setSelectedFields] = useState<string[]>(['name', 'phone', 'plan', 'payment_date']);
 
   const formatDate = (date: string | null | undefined) => {
     if (!date) return '-';
@@ -88,8 +78,6 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
               return subscriber.nif || '-';
             case 'plan':
               return subscriber.plan;
-            case 'status':
-              return formatStatus(subscriber.status);
             case 'payment_date':
               return formatDate(subscriber.payment_date);
             case 'bank_name':
