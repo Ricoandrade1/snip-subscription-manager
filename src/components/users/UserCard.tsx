@@ -92,7 +92,7 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
                 </span>
               ))
             ) : (
-              <span className="text-gray-400 text-sm">Sem funções atribuídas</span>
+              <span className="text-barber-light text-sm">Sem funções atribuídas</span>
             )}
           </div>
           
