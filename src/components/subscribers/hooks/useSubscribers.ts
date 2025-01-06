@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { Subscriber } from "../types/subscriber";
 import { calculateSubscriberStats } from "./useSubscriberStats";
-import { FilterState } from "../types/subscriber-hooks";
-
-interface UseSubscribersProps {
-  planFilter?: "Basic" | "Classic" | "Business";
-  statusFilter?: string;
-}
+import { FilterState, UseSubscribersProps } from "../types/subscriber-hooks";
 
 export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscribersProps) {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
