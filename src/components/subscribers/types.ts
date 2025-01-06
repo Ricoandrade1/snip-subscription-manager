@@ -7,6 +7,7 @@ export interface Subscriber {
   phone: string | null;
   nif: string | null;
   plan: "Basic" | "Classic" | "Business";
+  plan_id: number | null;
   status: SubscriberStatus;
   created_at?: string;
   payment_date?: string | null;

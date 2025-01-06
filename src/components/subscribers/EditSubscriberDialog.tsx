@@ -3,6 +3,7 @@ import { QuickEditForm } from "@/components/QuickEditForm";
 import { Subscriber } from "./types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Member } from "@/contexts/types";
 
 interface EditSubscriberDialogProps {
   subscriber: Subscriber | null;
@@ -13,7 +14,14 @@ interface EditSubscriberDialogProps {
 export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSubscriberDialogProps) {
   if (!subscriber) return null;
 
-  const handleSubmit = async (data: Partial<Subscriber>) => {
+  // Convert Subscriber to Member type for QuickEditForm
+  const memberData: Member = {
+    ...subscriber,
+    plan: subscriber.plan,
+    due_date: undefined,
+  };
+
+  const handleSubmit = async (data: Partial<Member>) => {
     try {
       const { error } = await supabase
         .from('members')
@@ -33,7 +41,7 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl bg-barber-gray border-barber-gold/20">
-        <QuickEditForm member={subscriber} onSubmit={handleSubmit} />
+        <QuickEditForm member={memberData} onSubmit={handleSubmit} />
       </DialogContent>
     </Dialog>
   );

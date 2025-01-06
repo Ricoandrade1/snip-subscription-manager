@@ -29,6 +29,7 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
         .select(`
           *,
           plans (
+            id,
             title
           )
         `);
@@ -50,7 +51,8 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
         phone: member.phone,
         nif: member.nif,
         plan: member.plans.title as "Basic" | "Classic" | "Business",
-        status: member.status,
+        plan_id: member.plan_id,
+        status: member.status as SubscriberStatus,
         created_at: member.created_at,
         payment_date: member.payment_date,
       }));
