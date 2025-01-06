@@ -29,8 +29,11 @@ export function useMembers({ members, planFilter }: UseMembersProps) {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
+  console.log("Todos os membros:", members);
+
   const filteredMembers = members
     .filter((member) => {
+      console.log("Membro sendo filtrado:", member);
       const matchName = member.name.toLowerCase().includes(filters.name.toLowerCase());
       const matchPhone = !filters.phone || (member.phone && member.phone.toLowerCase().includes(filters.phone.toLowerCase()));
       const matchNif = !filters.nif || (member.nif && member.nif.toLowerCase().includes(filters.nif.toLowerCase()));
@@ -55,6 +58,8 @@ export function useMembers({ members, planFilter }: UseMembersProps) {
           return 0;
       }
     });
+
+  console.log("Membros filtrados:", filteredMembers);
 
   return {
     filters,

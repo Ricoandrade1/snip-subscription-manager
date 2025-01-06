@@ -35,6 +35,8 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     }
   }, [session, navigate]);
 
+  console.log("Todos os membros recebidos:", members);
+
   const { filters, handleFilterChange, filteredMembers } = useMembers({
     members: members || [],
     planFilter,
@@ -56,6 +58,8 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   const uniqueMembers = filteredMembers.filter((member, index, self) =>
     index === self.findIndex((m) => m.id === member.id)
   );
+
+  console.log("Membros únicos após filtragem:", uniqueMembers);
 
   return (
     <div className="space-y-4">
