@@ -7,12 +7,6 @@ import { UserPlus, Users } from "lucide-react";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { SubscriberForm } from "@/components/SubscriberForm";
-</lov-replace>
-
-<lov-search>
-            <SubscribersPDFButton subscribers={subscribers} />
-</lov-search>
-<lov-replace>
 import { useSubscribers } from "@/components/subscribers/useSubscribers";
 
 export default function Subscribers() {
@@ -70,7 +64,6 @@ export default function Subscribers() {
             </p>
           </div>
           <div className="flex gap-2">
-            <SubscribersPDFButton subscribers={subscribers} />
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="bg-barber-gold hover:bg-barber-gold/90 text-barber-black">
