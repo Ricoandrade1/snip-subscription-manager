@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState, useEffect } from "react";
-import { SubmenuItem } from "./SubmenuItem";
 
 interface MenuItem {
   title: string;
@@ -54,10 +53,6 @@ export function NavigationMenuItem({
     }
   }, [hasActiveSubmenuItem]);
 
-  const handleNavigate = (url: string) => {
-    navigate(url);
-  };
-
   if (item.submenu) {
     return (
       <SidebarMenuItem>
@@ -81,17 +76,19 @@ export function NavigationMenuItem({
             <SidebarMenuSub>
               {item.submenu.map((subItem) => (
                 <SidebarMenuSubItem key={subItem.title}>
-                  <SubmenuItem
-                    title={subItem.title}
-                    url={subItem.url}
-                    isActive={isSubmenuActive(subItem)}
-                    subscriberCount={
-                      item.title === "Membros" && subItem.title !== "Todos"
-                        ? getSubscriberCount?.(subItem.title as "Basic" | "Classic" | "Business")
-                        : undefined
-                    }
-                    onClick={() => handleNavigate(subItem.url)}
-                  />
+                  <button
+                    onClick={() => navigate(subItem.url)}
+                    className={`w-full flex items-center justify-between p-2 rounded-md hover:bg-muted ${
+                      isSubmenuActive(subItem) ? "bg-muted" : ""
+                    }`}
+                  >
+                    <span>{subItem.title}</span>
+                    {item.title === "Membros" && subItem.title !== "Todos" && (
+                      <span className="ml-auto text-xs opacity-60">
+                        {getSubscriberCount?.(subItem.title as "Basic" | "Classic" | "Business")}
+                      </span>
+                    )}
+                  </button>
                 </SidebarMenuSubItem>
               ))}
             </SidebarMenuSub>
@@ -104,7 +101,7 @@ export function NavigationMenuItem({
   return (
     <SidebarMenuItem>
       <button
-        onClick={() => handleNavigate(item.url)}
+        onClick={() => navigate(item.url)}
         className={`flex items-center gap-2 p-2 w-full rounded-md hover:bg-muted ${
           isActiveRoute(item.url) ? "bg-muted" : ""
         }`}
