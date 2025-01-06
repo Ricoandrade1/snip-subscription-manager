@@ -35,18 +35,14 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
     }
 
     try {
-      // Verificar vendas associadas
+      // First check if there are any sales associated with this product
       const { data: saleItems, error: checkError } = await supabase
         .from('sale_items')
-        .select('id, sale_id')
+        .select('sale_id')
         .eq('product_id', product.id)
         .limit(1);
 
-      if (checkError) {
-        console.error('Erro ao verificar vendas:', checkError);
-        toast.error('Erro ao verificar vendas do produto');
-        return;
-      }
+      if (checkError) throw checkError;
 
       if (saleItems && saleItems.length > 0) {
         setSaleId(saleItems[0].sale_id);
@@ -54,18 +50,13 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
         return;
       }
 
-      // Prosseguir com a exclusão se não houver vendas
+      // If no sales are found, proceed with deletion
       const { error: deleteError } = await supabase
         .from('products')
         .delete()
-        .eq('id', product.id)
-        .select();
+        .eq('id', product.id);
 
-      if (deleteError) {
-        console.error('Erro ao excluir produto:', deleteError);
-        toast.error('Erro ao excluir produto');
-        return;
-      }
+      if (deleteError) throw deleteError;
       
       toast.success('Produto excluído com sucesso');
     } catch (error) {
@@ -98,7 +89,7 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
+          className="opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
           onClick={handleDelete}
         >
           <Trash2 className="h-4 w-4" />
@@ -113,7 +104,7 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-destructive">
+            <p>
               Este produto não pode ser excluído pois já possui vendas registradas no sistema.
             </p>
             {saleId && (
