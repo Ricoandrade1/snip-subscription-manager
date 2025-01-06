@@ -1,113 +1,121 @@
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { LoginForm } from "@/components/auth/LoginForm";
-import { AppSidebar } from "@/components/AppSidebar";
-import { UserMenu } from "@/components/auth/UserMenu";
-import Index from "@/pages/Index";
-import Subscribers from "@/pages/Subscribers";
-import Products from "@/pages/Products";
-import Barbers from "@/pages/Barbers";
-import Revenue from "@/pages/Revenue";
-import Categories from "@/pages/Categories";
-import Brands from "@/pages/Brands";
-import CashFlow from "@/pages/CashFlow";
-import Schedule from "@/pages/Schedule";
-import Feed from "@/pages/Feed";
-import Story from "@/pages/Story";
-import ResetPassword from "@/pages/ResetPassword";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { Session } from "@supabase/supabase-js";
+import { supabase } from "./lib/supabase/client";
+import { Toaster } from "sonner";
 import { toast } from "sonner";
+
+// Pages
+import Index from "./pages/Index";
+import Products from "./pages/Products";
+import Brands from "./pages/Brands";
+import Categories from "./pages/Categories";
+import Subscribers from "./pages/Subscribers";
+import Revenue from "./pages/Revenue";
+import Barbers from "./pages/Barbers";
+import CashFlow from "./pages/CashFlow";
+import Feed from "./pages/Feed";
+import Story from "./pages/Story";
+import Schedule from "./pages/Schedule";
+import ResetPassword from "./pages/ResetPassword";
+
+// Components
+import { LoginForm } from "./components/auth/LoginForm";
+import { AppSidebar } from "./components/AppSidebar";
+import { SidebarProvider } from "./components/ui/sidebar";
 
 function App() {
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // Initial session check
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setSession(session);
-        setIsAdmin(session.user.user_metadata.role === 'admin');
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          setSession(session);
+          setIsAdmin(session.user.user_metadata.role === 'admin');
+        }
+      } catch (error) {
+        console.error('Error checking session:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    };
 
-    // Listen for auth changes
+    checkSession();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         setSession(session);
         setIsAdmin(session.user.user_metadata.role === 'admin');
         if (event === 'SIGNED_IN') {
           toast.success('Login realizado com sucesso!');
+          navigate('/');
         }
       } else {
         setSession(null);
         setIsAdmin(false);
         if (event === 'SIGNED_OUT') {
           toast.success('Logout realizado com sucesso!');
+          navigate('/login');
         }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-barber-gold" />
       </div>
     );
   }
 
-  const publicPages = ["/login", "/reset-password"];
-  const isPublicPage = publicPages.includes(location.pathname);
+  // Rotas públicas que não requerem autenticação
+  const publicRoutes = ['/login', '/reset-password'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
 
-  if (!session && !isPublicPage) {
-    return <Navigate to="/login" replace />;
+  // Redirecionar para login se não estiver autenticado e tentar acessar rota privada
+  if (!session && !isPublicRoute) {
+    return <LoginForm />;
   }
 
-  if (session && isPublicPage) {
-    return <Navigate to="/" replace />;
-  }
-
-  if (session && !isAdmin && !isPublicPage) {
-    toast.error('Acesso restrito a administradores');
-    return <Navigate to="/login" replace />;
+  // Redirecionar para dashboard se estiver autenticado e tentar acessar rota pública
+  if (session && isPublicRoute) {
+    navigate('/');
+    return null;
   }
 
   return (
-    <div className="min-h-screen flex w-full">
-      {session && <AppSidebar />}
-      <main className={session ? "flex-1 relative" : "w-full"}>
-        {session && (
-          <div className="absolute top-4 right-4 z-50">
-            <UserMenu />
-          </div>
-        )}
-        <Routes>
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/" element={<Index />} />
-          <Route path="/subscribers" element={<Subscribers />} />
-          <Route path="/subscribers/basic" element={<Subscribers planFilter="Basic" />} />
-          <Route path="/subscribers/classic" element={<Subscribers planFilter="Classic" />} />
-          <Route path="/subscribers/business" element={<Subscribers planFilter="Business" />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/barbers" element={<Barbers />} />
-          <Route path="/revenue" element={<Revenue />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/brands" element={<Brands />} />
-          <Route path="/cash-flow" element={<CashFlow />} />
-          <Route path="/schedule" element={<Schedule />} />
-          <Route path="/feed" element={<Feed />} />
-          <Route path="/story" element={<Story />} />
-        </Routes>
-      </main>
-    </div>
+    <SidebarProvider>
+      <div className="flex">
+        {session && <AppSidebar />}
+        <main className="flex-1">
+          <Routes>
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/" element={<Index />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/brands" element={<Brands />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/subscribers/*" element={<Subscribers />} />
+            <Route path="/revenue" element={<Revenue />} />
+            <Route path="/barbers" element={<Barbers />} />
+            <Route path="/cash-flow" element={<CashFlow />} />
+            <Route path="/feed" element={<Feed />} />
+            <Route path="/story" element={<Story />} />
+            <Route path="/schedule" element={<Schedule />} />
+          </Routes>
+        </main>
+      </div>
+      <Toaster richColors position="top-right" />
+    </SidebarProvider>
   );
 }
 
