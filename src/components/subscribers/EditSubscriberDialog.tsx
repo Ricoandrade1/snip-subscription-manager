@@ -18,6 +18,7 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
   const memberData: Member = {
     ...subscriber,
     plan: subscriber.plan,
+    status: subscriber.status === "overdue" ? "inactive" : "active",
     due_date: undefined,
   };
 

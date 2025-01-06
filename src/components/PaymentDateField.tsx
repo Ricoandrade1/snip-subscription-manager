@@ -5,7 +5,7 @@ import { FormValues } from "./member-form/schema";
 
 interface PaymentDateFieldProps {
   form: UseFormReturn<FormValues>;
-  name?: string;
+  name?: keyof FormValues;
   label?: string;
 }
 
