@@ -25,7 +25,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       nif: member.nif || "",
       plan: member.plan || "Basic",
       payment_date: member.payment_date ? new Date(member.payment_date) : undefined,
-      status: member.payment_date ? (member.status as "active" | "inactive") : undefined,
+      status: member.payment_date ? (member.status as "pago" | "atrasado" | "cancelado") : undefined,
     },
   });
 

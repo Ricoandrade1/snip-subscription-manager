@@ -23,18 +23,26 @@ export function StatusField({ form }: StatusFieldProps) {
             >
               <FormItem className="flex items-center space-x-2">
                 <FormControl>
-                  <RadioGroupItem value="active" />
+                  <RadioGroupItem value="pago" />
                 </FormControl>
                 <FormLabel className="text-sm">
-                  Ativo
+                  Pago
                 </FormLabel>
               </FormItem>
               <FormItem className="flex items-center space-x-2">
                 <FormControl>
-                  <RadioGroupItem value="inactive" />
+                  <RadioGroupItem value="atrasado" />
                 </FormControl>
                 <FormLabel className="text-sm">
-                  Inativo
+                  Atrasado
+                </FormLabel>
+              </FormItem>
+              <FormItem className="flex items-center space-x-2">
+                <FormControl>
+                  <RadioGroupItem value="cancelado" />
+                </FormControl>
+                <FormLabel className="text-sm">
+                  Cancelado
                 </FormLabel>
               </FormItem>
             </RadioGroup>
