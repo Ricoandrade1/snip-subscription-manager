@@ -1,5 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Check, PenLine } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { PlanEditForm } from "../plans/PlanEditForm";
+import { useState } from "react";
 
 interface Plan {
   id: number;
@@ -14,6 +24,8 @@ interface PlansGridProps {
 }
 
 export default function PlansGrid({ plans }: PlansGridProps) {
+  const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
+
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {plans.map((plan) => (
@@ -21,7 +33,34 @@ export default function PlansGrid({ plans }: PlansGridProps) {
           key={plan.id}
           className="bg-barber-gray border-barber-gold/20 hover:border-barber-gold/40 transition-colors"
         >
-          <CardHeader>
+          <CardHeader className="relative">
+            <Dialog open={!!editingPlan} onOpenChange={(open) => !open && setEditingPlan(null)}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-4 top-4 text-barber-gold hover:text-barber-gold/80 hover:bg-barber-gold/10"
+                  onClick={() => setEditingPlan(plan)}
+                >
+                  <PenLine className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              {editingPlan && (
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Editar Plano {editingPlan.title}</DialogTitle>
+                  </DialogHeader>
+                  <PlanEditForm
+                    initialData={{
+                      title: editingPlan.title,
+                      price: editingPlan.price,
+                      features: editingPlan.features,
+                    }}
+                    onClose={() => setEditingPlan(null)}
+                  />
+                </DialogContent>
+              )}
+            </Dialog>
             <CardTitle className="text-2xl font-bold text-barber-gold">
               {plan.title}
             </CardTitle>
@@ -29,10 +68,7 @@ export default function PlansGrid({ plans }: PlansGridProps) {
           <CardContent className="space-y-4">
             <div>
               <span className="text-3xl font-bold text-barber-gold">
-                {new Intl.NumberFormat("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                }).format(plan.price)}
+                {plan.price}€
               </span>
               <span className="text-barber-light/60">/mês</span>
             </div>
