@@ -20,10 +20,6 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
   
   const { filters, handleFilterChange } = useSubscribersFilters();
 
-  useEffect(() => {
-    fetchSubscribers();
-  }, [planFilter, statusFilter]);
-
   const fetchSubscribers = async () => {
     try {
       setIsLoading(true);
@@ -68,7 +64,8 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
         }));
 
       setSubscribers(formattedSubscribers);
-      setStats(calculateSubscriberStats(formattedSubscribers));
+      const calculatedStats = await calculateSubscriberStats(formattedSubscribers);
+      setStats(calculatedStats);
     } catch (error) {
       console.error('Error fetching subscribers:', error);
       toast.error('Erro ao carregar assinantes');
@@ -76,6 +73,10 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchSubscribers();
+  }, [planFilter, statusFilter]);
 
   const filteredSubscribers = sortSubscribers(
     subscribers.filter((subscriber) => {
