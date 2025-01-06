@@ -32,14 +32,28 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    // Initialize session from local storage if available
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session) {
-        setIsAdmin(session.user.user_metadata.role === 'admin');
+    // Initialize session
+    const initSession = async () => {
+      try {
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error getting session:', error);
+          return;
+        }
+        
+        if (currentSession) {
+          console.log('Current session:', currentSession);
+          setSession(currentSession);
+          setIsAdmin(currentSession.user.user_metadata.role === 'admin');
+        }
+      } catch (error) {
+        console.error('Error in session initialization:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    };
+
+    initSession();
 
     // Listen for auth changes
     const {
@@ -52,6 +66,17 @@ function App() {
         setIsAdmin(session.user.user_metadata.role === 'admin');
         
         if (event === 'SIGNED_IN') {
+          // Update user metadata if admin
+          if (session.user.email === 'admin@example.com') {
+            try {
+              await supabase.auth.updateUser({
+                data: { role: 'admin' }
+              });
+            } catch (error) {
+              console.error('Error updating user role:', error);
+            }
+          }
+          
           toast.success('Login realizado com sucesso!');
           navigate('/');
         }
