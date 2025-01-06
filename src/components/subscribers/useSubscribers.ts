@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Subscriber, FilterState } from "./types";
 import { toast } from "sonner";
+import { isAfter, isBefore, parseISO } from "date-fns";
 
 interface UseSubscribersProps {
   planFilter?: "Basic" | "Classic" | "Business";
@@ -35,6 +36,21 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
   useEffect(() => {
     fetchSubscribers();
   }, [planFilter, statusFilter]);
+
+  const getSubscriberStatus = (paymentDate: string | null): 'pago' | 'atrasado' | 'cancelado' => {
+    if (!paymentDate) return 'atrasado';
+    
+    const today = new Date();
+    const nextPaymentDate = parseISO(paymentDate);
+    
+    // Se a data de pagamento é anterior a hoje, está atrasado
+    if (isBefore(nextPaymentDate, today)) {
+      return 'atrasado';
+    }
+    
+    // Se a data de pagamento é posterior ou igual a hoje, está pago
+    return 'pago';
+  };
 
   const fetchSubscribers = async () => {
     try {
@@ -70,7 +86,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
           nif: member.nif,
           plan: member.plans?.title as "Basic" | "Classic" | "Business",
           plan_id: member.plan_id,
-          status: member.status as 'pago' | 'atrasado' | 'cancelado',
+          status: getSubscriberStatus(member.payment_date),
           created_at: member.created_at,
           payment_date: member.payment_date,
         }));

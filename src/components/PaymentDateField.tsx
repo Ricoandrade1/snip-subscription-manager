@@ -2,6 +2,7 @@ import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/for
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "./member-form/schema";
+import { isAfter, parseISO } from "date-fns";
 
 interface PaymentDateFieldProps {
   form: UseFormReturn<FormValues>;
@@ -30,6 +31,11 @@ export function PaymentDateField({
                 const date = new Date(e.target.value);
                 console.log('Data selecionada:', date);
                 field.onChange(date);
+                
+                // Atualiza o status automaticamente com base na data
+                const today = new Date();
+                const status = isAfter(date, today) ? 'pago' : 'atrasado';
+                form.setValue('status', status as any);
               }}
               className="h-10"
             />
