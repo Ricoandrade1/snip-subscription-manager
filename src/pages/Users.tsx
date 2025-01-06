@@ -110,7 +110,7 @@ export default function Users() {
                 Adicionar Utilizador
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="bg-barber-gray border-barber-gold/20">
               <UserForm onSubmit={handleCreateUser} />
             </DialogContent>
           </Dialog>
