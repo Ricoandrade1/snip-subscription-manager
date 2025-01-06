@@ -6,7 +6,6 @@ import DashboardActions from "@/components/dashboard/DashboardActions";
 import PlansGrid from "@/components/dashboard/PlansGrid";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { SidebarProvider } from "@/components/ui/sidebar";
 
 const Index = () => {
   const { getMembersByPlan } = useMemberContext();
@@ -71,10 +70,28 @@ const Index = () => {
   }, 0);
 
   return (
-    <div className="p-8">
-      <div className="max-w-7xl mx-auto space-y-12">
+    <div className="min-h-screen bg-gradient-to-b from-barber-black to-barber-gray">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center" aria-hidden="true">
+            <div className="w-full border-t border-barber-gold/10"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-barber-black px-6 text-barber-gold text-sm">Dashboard</span>
+          </div>
+        </div>
+
         <DashboardHeader />
         
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center" aria-hidden="true">
+            <div className="w-full border-t border-barber-gold/10"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-barber-black px-6 text-barber-gold text-sm">Estatísticas</span>
+          </div>
+        </div>
+
         <DashboardStats
           totalSubscribers={totalSubscribers}
           monthlyRevenue={monthlyRevenue}
@@ -84,10 +101,28 @@ const Index = () => {
           onToggleRevenue={() => setShowRevenue(!showRevenue)}
         />
 
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center" aria-hidden="true">
+            <div className="w-full border-t border-barber-gold/10"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-barber-black px-6 text-barber-gold text-sm">Ações</span>
+          </div>
+        </div>
+
         <DashboardActions
           isDialogOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
         />
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center" aria-hidden="true">
+            <div className="w-full border-t border-barber-gold/10"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-barber-black px-6 text-barber-gold text-sm">Planos</span>
+          </div>
+        </div>
 
         <PlansGrid plans={plans} />
       </div>
