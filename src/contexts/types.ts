@@ -1,3 +1,5 @@
+export type MemberStatus = "active" | "inactive";
+
 export type Member = {
   id: string;
   name: string;
@@ -9,7 +11,7 @@ export type Member = {
   created_at?: string;
   due_date?: string;
   payment_date?: string | null;
-  status: "pago" | "atrasado" | "cancelado";
+  status: MemberStatus;
   last_plan_change?: string | null;
 };
 

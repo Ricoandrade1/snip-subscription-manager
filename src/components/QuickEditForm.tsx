@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Member } from "@/contexts/MemberContext";
+import { Member } from "@/contexts/types";
 import { Form } from "@/components/ui/form";
 import { PersonalInfoFields } from "./member-form/PersonalInfoFields";
 import { PlanFields } from "./member-form/PlanFields";
@@ -25,7 +25,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       nif: member.nif || "",
       plan: member.plan || "Basic",
       payment_date: member.payment_date ? new Date(member.payment_date) : undefined,
-      status: member.status === "active" ? "active" : "inactive",
+      status: member.status,
     },
   });
 
@@ -89,7 +89,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         <PersonalInfoFields form={form} />
         <PlanFields form={form} />
         <PaymentDateField form={form} />
-        {form.watch('payment_date') && <StatusField form={form} />}
+        <StatusField form={form} />
         
         <div className="flex justify-end">
           <button
