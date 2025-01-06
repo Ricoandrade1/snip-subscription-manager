@@ -430,6 +430,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_permissions: {
+        Row: {
+          created_at: string
+          id: string
+          permissions: Json
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          permissions?: Json
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          permissions?: Json
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       visits: {
         Row: {
           barber: string
@@ -475,6 +499,7 @@ export type Database = {
     }
     Enums: {
       user_authority: "admin" | "seller" | "manager" | "barber" | "owner"
+      user_role: "admin" | "owner" | "barber" | "cashier" | "manager"
     }
     CompositeTypes: {
       [_ in never]: never
