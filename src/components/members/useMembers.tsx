@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Member } from "@/contexts/MemberContext";
+import { Member, MemberStatus } from "@/contexts/types";
 
 interface FilterState {
   name: string;
@@ -22,50 +22,61 @@ export function useMembers({ members, planFilter }: UseMembersProps) {
     phone: "",
     nif: "",
     status: "all",
-    plan: "all",
+    plan: planFilter || "all",
     sortBy: "name",
-    sortOrder: "asc"
+    sortOrder: "asc",
   });
 
-  const handleFilterChange = (field: keyof FilterState, value: string) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
+  const normalizeStatus = (status: string): MemberStatus => {
+    switch (status.toLowerCase()) {
+      case 'active':
+      case 'pago':
+        return 'pago';
+      case 'inactive':
+      case 'cancelado':
+        return 'cancelado';
+      case 'pendente':
+        return 'pendente';
+      default:
+        return 'pendente';
+    }
   };
 
-  const sortMembers = (members: Member[]) => {
-    return [...members].sort((a, b) => {
-      const sortOrder = filters.sortOrder === 'asc' ? 1 : -1;
+  const handleFilterChange = (field: keyof FilterState, value: string) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const filteredMembers = members
+    .map(member => ({
+      ...member,
+      status: normalizeStatus(member.status)
+    }))
+    .filter((member) => {
+      const matchName = member.name.toLowerCase().includes(filters.name.toLowerCase());
+      const matchPhone = !filters.phone || (member.phone && member.phone.toLowerCase().includes(filters.phone.toLowerCase()));
+      const matchNif = !filters.nif || (member.nif && member.nif.toLowerCase().includes(filters.nif.toLowerCase()));
+      const matchStatus = filters.status === "all" || member.status === filters.status;
+      const matchPlan = filters.plan === "all" || member.plan === filters.plan;
+
+      return matchName && matchPhone && matchNif && matchStatus && matchPlan;
+    })
+    .sort((a, b) => {
+      const sortOrder = filters.sortOrder === "asc" ? 1 : -1;
       
       switch (filters.sortBy) {
-        case 'name':
+        case "name":
           return sortOrder * a.name.localeCompare(b.name);
-        case 'payment_date':
+        case "payment_date":
           if (!a.payment_date && !b.payment_date) return 0;
           if (!a.payment_date) return sortOrder;
           if (!b.payment_date) return -sortOrder;
           return sortOrder * (new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime());
-        case 'plan':
-          if (!a.plan && !b.plan) return 0;
-          if (!a.plan) return sortOrder;
-          if (!b.plan) return -sortOrder;
-          return sortOrder * (a.plan || '').localeCompare(b.plan || '');
+        case "plan":
+          return sortOrder * (a.plan || "").localeCompare(b.plan || "");
         default:
           return 0;
       }
     });
-  };
-
-  const filteredMembers = sortMembers(
-    members.filter((member) => {
-      const matchName = member.name.toLowerCase().includes(filters.name.toLowerCase());
-      const matchPhone = !filters.phone || (member.phone && member.phone.toLowerCase().includes(filters.phone.toLowerCase()));
-      const matchNif = !filters.nif || (member.nif && member.nif.toLowerCase().includes(filters.nif.toLowerCase()));
-      const matchStatus = filters.status === 'all' || member.status === filters.status;
-      const matchPlan = filters.plan === 'all' || member.plan === filters.plan;
-      const matchPlanFilter = !planFilter || member.plan === planFilter;
-
-      return matchName && matchPhone && matchNif && matchStatus && matchPlan && matchPlanFilter;
-    })
-  );
 
   return {
     filters,

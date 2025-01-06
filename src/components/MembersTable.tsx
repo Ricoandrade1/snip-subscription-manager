@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Table, TableBody } from "@/components/ui/table";
-import { Member, useMemberContext } from "@/contexts/MemberContext";
+import { Member } from "@/contexts/types";
 import { EditMemberDialog } from "./EditMemberDialog";
 import { MembersFilter } from "./members/MembersFilter";
 import { MemberTableRow } from "./members/MemberTableRow";
@@ -10,8 +10,7 @@ import { getMemberCode } from "./members/MemberCode";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { MemberStatus } from "@/contexts/types";
+import { useMemberSelection } from "./members/useMemberSelection";
 
 interface MembersTableProps {
   planFilter?: "Basic" | "Classic" | "Business";
@@ -24,6 +23,11 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   const navigate = useNavigate();
   const session = useSession();
 
+  const { handleMemberSelection } = useMemberSelection({
+    setSelectedMember,
+    setDialogOpen
+  });
+
   useEffect(() => {
     if (!session) {
       navigate('/login');
@@ -34,43 +38,6 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     members: members || [],
     planFilter,
   });
-
-  const normalizeStatus = (status: string): MemberStatus => {
-    switch (status.toLowerCase()) {
-      case 'active':
-      case 'pago':
-        return 'pago';
-      case 'inactive':
-      case 'cancelado':
-        return 'cancelado';
-      case 'pendente':
-        return 'pendente';
-      default:
-        return 'pendente';
-    }
-  };
-
-  const handleRowClick = async (member: Member) => {
-    if (member.plan_id && !member.plan) {
-      const { data: planData } = await supabase
-        .from('plans')
-        .select('title')
-        .eq('id', member.plan_id)
-        .single();
-      
-      if (planData) {
-        member.plan = planData.title as Member["plan"];
-      }
-    }
-
-    const normalizedMember: Member = {
-      ...member,
-      status: normalizeStatus(member.status)
-    };
-
-    setSelectedMember(normalizedMember);
-    setDialogOpen(true);
-  };
 
   if (!session) {
     return null;
@@ -84,14 +51,8 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     );
   }
 
-  // Normalize status for all members
-  const normalizedMembers: Member[] = filteredMembers.map(member => ({
-    ...member,
-    status: normalizeStatus(member.status)
-  }));
-
   // Remove duplicatas baseado no ID do membro
-  const uniqueMembers = normalizedMembers.filter((member, index, self) =>
+  const uniqueMembers = filteredMembers.filter((member, index, self) =>
     index === self.findIndex((m) => m.id === member.id)
   );
 
@@ -110,8 +71,8 @@ export function MembersTable({ planFilter }: MembersTableProps) {
               <MemberTableRow
                 key={member.id}
                 member={member}
-                memberCode={getMemberCode({ member, members: normalizedMembers })}
-                onClick={() => handleRowClick(member)}
+                memberCode={getMemberCode({ member, members: filteredMembers })}
+                onClick={() => handleMemberSelection(member)}
               />
             ))}
           </TableBody>
