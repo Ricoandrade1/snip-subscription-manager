@@ -51,17 +51,23 @@ export function NavigationMenuItem({
     if (hasActiveSubmenuItem) {
       setIsOpen(true);
     }
-  }, [hasActiveSubmenuItem]);
+  }, [hasActiveSubmenuItem, location.pathname]);
 
   const handleMainMenuClick = () => {
     if (item.submenu) {
       setIsOpen(!isOpen);
       if (item.title === "Assinantes") {
         navigate("/subscribers");
+      } else {
+        navigate(item.url);
       }
     } else {
       navigate(item.url);
     }
+  };
+
+  const handleSubmenuClick = (url: string) => {
+    navigate(url);
   };
 
   if (item.submenu) {
@@ -88,7 +94,7 @@ export function NavigationMenuItem({
               {item.submenu.map((subItem) => (
                 <SidebarMenuSubItem key={subItem.title}>
                   <button
-                    onClick={() => navigate(subItem.url)}
+                    onClick={() => handleSubmenuClick(subItem.url)}
                     className={`w-full flex items-center justify-between p-2 rounded-md hover:bg-muted ${
                       isSubmenuActive(subItem) ? "bg-muted" : ""
                     }`}

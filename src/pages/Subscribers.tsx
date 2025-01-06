@@ -23,10 +23,10 @@ export default function Subscribers() {
   }, [navigate]);
 
   const getInitialTab = () => {
-    const currentPath = location.pathname;
-    if (currentPath === "/subscribers/basic") return "basic";
-    if (currentPath === "/subscribers/classic") return "classic";
-    if (currentPath === "/subscribers/business") return "business";
+    const path = location.pathname.toLowerCase();
+    if (path.includes('/basic')) return "basic";
+    if (path.includes('/classic')) return "classic";
+    if (path.includes('/business')) return "business";
     return "all";
   };
 
@@ -73,7 +73,7 @@ export default function Subscribers() {
           </Dialog>
         </header>
 
-        <Tabs defaultValue={getInitialTab()} className="w-full" onValueChange={handleTabChange}>
+        <Tabs value={getInitialTab()} className="w-full" onValueChange={handleTabChange}>
           <TabsList className="w-full justify-start bg-barber-gray">
             <TabsTrigger value="all" className="text-barber-light data-[state=active]:bg-barber-gold data-[state=active]:text-barber-black">
               Todos
