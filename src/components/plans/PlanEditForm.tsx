@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
   title: z.string().min(2, "Título deve ter pelo menos 2 caracteres"),
@@ -22,6 +23,7 @@ const formSchema = z.object({
 
 interface PlanEditFormProps {
   initialData: {
+    id?: number;
     title: string;
     price: number;
     features: string[];
@@ -40,13 +42,35 @@ export function PlanEditForm({ initialData, onClose }: PlanEditFormProps) {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log("Updated plan data:", data);
-    toast({
-      title: "Plano atualizado com sucesso!",
-      description: "As alterações foram salvas.",
-    });
-    onClose();
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      const features = data.features.split("\n").filter(feature => feature.trim() !== "");
+      
+      const { error } = await supabase
+        .from('plans')
+        .update({
+          title: data.title,
+          price: data.price,
+          features: features,
+        })
+        .eq('id', initialData.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Plano atualizado com sucesso!",
+        description: "As alterações foram salvas.",
+      });
+      
+      onClose();
+    } catch (error) {
+      console.error('Erro ao atualizar plano:', error);
+      toast({
+        title: "Erro ao atualizar plano",
+        description: "Ocorreu um erro ao salvar as alterações.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -102,7 +126,9 @@ export function PlanEditForm({ initialData, onClose }: PlanEditFormProps) {
           <Button type="button" variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button type="submit">Salvar Alterações</Button>
+          <Button type="submit" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? "Salvando..." : "Salvar Alterações"}
+          </Button>
         </div>
       </form>
     </Form>
