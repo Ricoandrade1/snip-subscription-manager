@@ -13,6 +13,8 @@ export interface Subscriber {
   status: SubscriberStatus;
   bank_name: string | null;
   iban: string | null;
+  due_date?: string | null;
+  last_plan_change?: string | null;
 }
 
 export interface SubscriberStats {
