@@ -3,13 +3,37 @@ import { Button } from "@/components/ui/button";
 import { FileDown } from "lucide-react";
 import { Member, Payment } from "@/contexts/types";
 import { addDays, addMonths, addYears } from "date-fns";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface RevenuePlanForecastProps {
   members: Member[];
   payments: Payment[];
 }
 
+interface Plan {
+  id: number;
+  title: string;
+  price: number;
+}
+
 export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastProps) {
+  const [plans, setPlans] = useState<Plan[]>([]);
+  
+  useEffect(() => {
+    const fetchPlans = async () => {
+      const { data, error } = await supabase
+        .from('plans')
+        .select('id, title, price');
+      
+      if (!error && data) {
+        setPlans(data);
+      }
+    };
+    
+    fetchPlans();
+  }, []);
+
   const generatePDF = () => {
     // TODO: Implement PDF generation
     console.log("Generating PDF...");
@@ -23,6 +47,16 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
 
     const probability = (paidMembers.length / members.length) * 100;
     return probability.toFixed(2);
+  };
+
+  const calculateMonthlyRevenue = () => {
+    return members.reduce((total, member) => {
+      if (member.status === 'pago') {
+        const memberPlan = plans.find(p => p.id === member.plan_id);
+        return total + (memberPlan?.price || 0);
+      }
+      return total;
+    }, 0);
   };
 
   const forecasts = [
@@ -39,11 +73,25 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-barber-gold">Previsão por Plano</h2>
-        <Button onClick={generatePDF} variant="outline">
+        <Button onClick={generatePDF} variant="outline" className="border-barber-gold/20 hover:border-barber-gold text-barber-gold">
           <FileDown className="mr-2 h-4 w-4" />
           Gerar Relatório
         </Button>
       </div>
+
+      <Card className="bg-barber-black border-barber-gray">
+        <CardHeader>
+          <CardTitle className="text-barber-gold">Receita Mensal Atual</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-2xl font-bold text-barber-gold">
+            {new Intl.NumberFormat('pt-BR', {
+              style: 'currency',
+              currency: 'EUR'
+            }).format(calculateMonthlyRevenue())}
+          </p>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {forecasts.map((forecast) => (
@@ -52,7 +100,7 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
               <CardTitle className="text-barber-gold">{forecast.period}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-barber-light">
+              <p className="text-2xl font-bold text-barber-gold">
                 {calculateProbability(forecast.period)}%
               </p>
               <p className="text-sm text-barber-light/60">

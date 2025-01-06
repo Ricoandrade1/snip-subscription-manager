@@ -29,17 +29,36 @@ export function RevenueMonthly({ payments }: RevenueMonthlyProps) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-barber-gold">Receita Mensal</h2>
-        <Button onClick={generatePDF} variant="outline">
+        <Button 
+          onClick={generatePDF} 
+          variant="outline"
+          className="border-barber-gold/20 hover:border-barber-gold text-barber-gold"
+        >
           <FileDown className="mr-2 h-4 w-4" />
           Gerar Relatório
         </Button>
       </div>
 
       <Tabs defaultValue="paid" className="space-y-4">
-        <TabsList className="bg-barber-gray">
-          <TabsTrigger value="paid" className="text-barber-light">Pagos</TabsTrigger>
-          <TabsTrigger value="overdue" className="text-barber-light">Atrasados</TabsTrigger>
-          <TabsTrigger value="pending" className="text-barber-light">Pendentes até 2 dias</TabsTrigger>
+        <TabsList className="bg-barber-gray border-barber-gold/20">
+          <TabsTrigger 
+            value="paid" 
+            className="text-barber-light data-[state=active]:bg-barber-gold data-[state=active]:text-barber-black"
+          >
+            Pagos
+          </TabsTrigger>
+          <TabsTrigger 
+            value="overdue" 
+            className="text-barber-light data-[state=active]:bg-barber-gold data-[state=active]:text-barber-black"
+          >
+            Atrasados
+          </TabsTrigger>
+          <TabsTrigger 
+            value="pending" 
+            className="text-barber-light data-[state=active]:bg-barber-gold data-[state=active]:text-barber-black"
+          >
+            Pendentes até 2 dias
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="paid">
