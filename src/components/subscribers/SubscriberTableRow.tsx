@@ -3,13 +3,15 @@ import { Badge } from "@/components/ui/badge";
 import { Subscriber } from "./types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { getSubscriberCode } from "./utils/getSubscriberCode";
 
 interface SubscriberTableRowProps {
   subscriber: Subscriber;
+  subscribers: Subscriber[];
   onClick: () => void;
 }
 
-export function SubscriberTableRow({ subscriber, onClick }: SubscriberTableRowProps) {
+export function SubscriberTableRow({ subscriber, subscribers, onClick }: SubscriberTableRowProps) {
   const getPlanBadgeColor = (plan: string) => {
     switch (plan) {
       case "Basic":
@@ -54,7 +56,10 @@ export function SubscriberTableRow({ subscriber, onClick }: SubscriberTableRowPr
       className="cursor-pointer hover:bg-barber-gray/50 border-b border-barber-gray transition-colors"
       onClick={onClick}
     >
-      <TableCell className="font-medium text-barber-light">{subscriber.name}</TableCell>
+      <TableCell className="font-medium text-barber-light">
+        {getSubscriberCode(subscriber, subscribers)}
+      </TableCell>
+      <TableCell className="text-barber-light">{subscriber.name}</TableCell>
       <TableCell className="text-barber-light">{subscriber.nickname || '-'}</TableCell>
       <TableCell>
         <Badge className={`${getPlanBadgeColor(subscriber.plan)}`}>

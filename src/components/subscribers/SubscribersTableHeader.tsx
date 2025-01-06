@@ -4,6 +4,7 @@ export function SubscribersTableHeader() {
   return (
     <TableHeader>
       <TableRow>
+        <TableHead className="text-barber-light">Código</TableHead>
         <TableHead className="text-barber-light">Nome</TableHead>
         <TableHead className="text-barber-light">Apelido</TableHead>
         <TableHead className="text-barber-light">Plano</TableHead>

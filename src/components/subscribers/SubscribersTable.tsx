@@ -70,6 +70,7 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
               <SubscriberTableRow
                 key={subscriber.id}
                 subscriber={subscriber}
+                subscribers={subscribers}
                 onClick={() => handleSubscriberClick(subscriber)}
               />
             ))}
