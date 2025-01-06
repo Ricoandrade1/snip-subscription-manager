@@ -8,6 +8,7 @@ import { useMemberContext } from "@/contexts/MemberContext";
 import { PersonalInfoFields } from "./PersonalInfoFields";
 import { PlanFields } from "./PlanFields";
 import { PaymentDateField } from "./PaymentDateField";
+import { BankingFields } from "./BankingFields";
 import { supabase } from "@/lib/supabase/client";
 import { MemberStatus } from "@/contexts/types";
 import { DialogHeader, DialogTitle } from "./ui/dialog";
@@ -17,6 +18,8 @@ const formSchema = z.object({
   nickname: z.string().optional(),
   phone: z.string().optional(),
   nif: z.string().optional(),
+  bankName: z.string().min(1, "Nome do banco é obrigatório"),
+  iban: z.string().min(1, "IBAN é obrigatório"),
   plan: z.enum(["Basic", "Classic", "Business"]).default("Basic"),
   payment_date: z.date().optional(),
 });
@@ -35,6 +38,8 @@ export function SubscriberForm() {
       nickname: "",
       phone: "",
       nif: "",
+      bankName: "",
+      iban: "",
     },
   });
 
@@ -71,6 +76,8 @@ export function SubscriberForm() {
         nickname: data.nickname || "",
         phone: data.phone || "",
         nif: data.nif || "",
+        bank: data.bankName,
+        iban: data.iban,
         plan_id: plansData.id,
         payment_date: data.payment_date ? data.payment_date.toISOString() : null,
         status: (data.payment_date ? "pago" : "pendente") as MemberStatus
@@ -111,6 +118,7 @@ export function SubscriberForm() {
           <div className="space-y-4">
             <PlanFields form={form} />
             <PaymentDateField form={form} />
+            <BankingFields form={form} />
           </div>
 
           <div className="flex justify-end pt-4">
