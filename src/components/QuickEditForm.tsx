@@ -43,7 +43,13 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         payment_date: data.payment_date?.toISOString() || null,
       };
 
+      // Se o status mudou para "pago", atualize a data de pagamento para hoje se não houver uma data definida
+      if (data.status === 'pago' && !data.payment_date) {
+        updateData.payment_date = new Date().toISOString();
+      }
+
       console.log('Status sendo enviado:', updateData.status);
+      console.log('Data de pagamento:', updateData.payment_date);
 
       // Check if plan has changed
       if (data.plan !== member.plan) {

@@ -18,14 +18,18 @@ export function StatusField({ form }: StatusFieldProps) {
           <FormLabel className="text-barber-light">Status</FormLabel>
           <RadioGroup
             onValueChange={(value: MemberStatus) => {
+              console.log('Alterando status para:', value);
               field.onChange(value);
-              console.log('Status alterado para:', value);
               
-              form.setValue('status', value, {
-                shouldValidate: true,
-                shouldDirty: true,
-                shouldTouch: true
-              });
+              // Se o status for alterado para "pago" e não houver data de pagamento,
+              // define a data atual como data de pagamento
+              if (value === 'pago' && !form.getValues('payment_date')) {
+                form.setValue('payment_date', new Date(), {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                  shouldTouch: true
+                });
+              }
             }}
             defaultValue={field.value}
             value={field.value}
