@@ -19,6 +19,8 @@ export interface FilterState {
   nif: string;
   status: string;
   plan: string;
+  sortBy: 'name' | 'payment_date' | 'plan';
+  sortOrder: 'asc' | 'desc';
 }
 
 export interface SubscriberStats {
