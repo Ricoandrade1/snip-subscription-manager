@@ -34,6 +34,7 @@ export function PaymentHistoryTable({
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [adminPassword, setAdminPassword] = useState("");
   const [newStatus, setNewStatus] = useState<"paid" | "pending" | "overdue">("paid");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleStatusChange = async () => {
     if (adminPassword !== "admin123") {
@@ -43,20 +44,24 @@ export function PaymentHistoryTable({
 
     if (!selectedPayment) return;
 
-    const { error } = await supabase
-      .from("payments")
-      .update({ status: newStatus })
-      .eq("id", selectedPayment.id);
+    try {
+      const { error } = await supabase
+        .from("payments")
+        .update({ status: newStatus })
+        .eq("id", selectedPayment.id);
 
-    if (error) {
+      if (error) {
+        throw error;
+      }
+
+      toast.success("Status atualizado com sucesso");
+      onPaymentUpdate(); // Atualiza a lista de pagamentos
+      setAdminPassword("");
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Erro ao atualizar status:", error);
       toast.error("Erro ao atualizar status");
-      return;
     }
-
-    toast.success("Status atualizado com sucesso");
-    onPaymentUpdate();
-    setAdminPassword("");
-    setSelectedPayment(null);
   };
 
   const getStatusColor = (status: string) => {
@@ -69,6 +74,19 @@ export function PaymentHistoryTable({
         return "bg-red-500/10 text-red-500";
       default:
         return "bg-gray-500/10 text-gray-500";
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "paid":
+        return "Pago";
+      case "pending":
+        return "Pendente";
+      case "overdue":
+        return "Atrasado";
+      default:
+        return status;
     }
   };
 
@@ -107,18 +125,20 @@ export function PaymentHistoryTable({
                   }).format(payment.amount)}
                 </td>
                 <td className="p-4 align-middle">
-                  <Dialog>
+                  <Dialog open={isDialogOpen && selectedPayment?.id === payment.id} onOpenChange={(open) => {
+                    setIsDialogOpen(open);
+                    if (!open) {
+                      setSelectedPayment(null);
+                      setAdminPassword("");
+                    }
+                  }}>
                     <DialogTrigger asChild>
                       <Button
                         variant="ghost"
                         className={`${getStatusColor(payment.status)}`}
                         onClick={() => setSelectedPayment(payment)}
                       >
-                        {payment.status === "paid"
-                          ? "Pago"
-                          : payment.status === "pending"
-                          ? "Pendente"
-                          : "Atrasado"}
+                        {getStatusLabel(payment.status)}
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="bg-barber-black border-barber-gray">
