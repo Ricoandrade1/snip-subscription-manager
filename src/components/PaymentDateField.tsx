@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "./member-form/schema";
 import { MemberStatus } from "@/contexts/types";
-import { addDays, isBefore, isAfter } from "date-fns";
 
 interface PaymentDateFieldProps {
   form: UseFormReturn<FormValues>;
@@ -18,27 +17,6 @@ export function PaymentDateField({
   label = "Data de Pagamento",
   disabled = false
 }: PaymentDateFieldProps) {
-  const calculateStatus = (paymentDate: Date | null): MemberStatus => {
-    if (!paymentDate) return 'cancelado';
-    
-    const today = new Date();
-    const thirtyDaysAgo = addDays(today, -30);
-    const paymentDateObj = new Date(paymentDate);
-    
-    // Se a data de pagamento é no futuro ou hoje, status é pago
-    if (isAfter(paymentDateObj, today) || paymentDateObj.toDateString() === today.toDateString()) {
-      return 'pago';
-    }
-    
-    // Se a data de pagamento está dentro dos últimos 30 dias (inclusive), status é pago
-    if (!isBefore(paymentDateObj, thirtyDaysAgo)) {
-      return 'pago';
-    }
-    
-    // Se a data de pagamento é mais antiga que 30 dias, status é pendente
-    return 'pendente';
-  };
-
   return (
     <FormField
       control={form.control}
@@ -63,7 +41,13 @@ export function PaymentDateField({
                 const newStatus = date ? 'pago' : 'cancelado';
                 console.log('Data selecionada:', date);
                 console.log('Status calculado:', newStatus);
-                form.setValue('status', newStatus);
+                
+                // Força a atualização do status para 'pago' quando uma data é selecionada
+                form.setValue('status', newStatus, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                  shouldTouch: true
+                });
               }}
               className={`h-10 ${disabled ? 'bg-gray-100' : ''}`}
             />
