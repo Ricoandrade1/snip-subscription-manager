@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Subscriber, SubscriberStats, SubscriberStatus } from "./types/subscriber";
+import { Subscriber, SubscriberStats, SubscriberStatus } from "./types";
 import { FilterState } from "./types";
 import { toast } from "sonner";
 import { isAfter, isBefore, parseISO } from "date-fns";
@@ -31,14 +31,15 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     fetchSubscribers();
   }, [planFilter, statusFilter]);
 
-  const getSubscriberStatus = (paymentDate: string | null): SubscriberStatus => {
-    if (!paymentDate) return 'cancelado';
+  const getSubscriberStatus = (status: string, paymentDate: string | null): SubscriberStatus => {
+    if (status === 'pendente') return 'pendente';
+    if (status === 'cancelado' || !paymentDate) return 'cancelado';
     
     const today = new Date();
     const nextPaymentDate = parseISO(paymentDate);
     
     if (isBefore(nextPaymentDate, today)) {
-      return 'cancelado';
+      return 'pendente';
     }
     
     return 'pago';
@@ -78,7 +79,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
           nif: member.nif,
           plan: member.plans?.title as "Basic" | "Classic" | "Business",
           plan_id: member.plan_id,
-          status: getSubscriberStatus(member.payment_date),
+          status: getSubscriberStatus(member.status, member.payment_date),
           created_at: member.created_at,
           payment_date: member.payment_date,
         }));

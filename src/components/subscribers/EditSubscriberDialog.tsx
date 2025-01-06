@@ -45,10 +45,14 @@ export function EditSubscriberDialog({
         delete updateData.plan;
       }
 
-      // Se o status for "pago", atualiza a data de pagamento para 30 dias à frente
+      // Atualiza a data de pagamento baseado no status
       if (data.status === 'pago') {
-        const nextPaymentDate = addDays(new Date(), 30);
-        updateData.payment_date = nextPaymentDate.toISOString();
+        updateData.payment_date = addDays(new Date(), 30).toISOString();
+      } else if (data.status === 'pendente') {
+        // Mantém a data de pagamento atual
+        updateData.payment_date = subscriber.payment_date;
+      } else if (data.status === 'cancelado') {
+        updateData.payment_date = null;
       }
 
       console.log('Dados de atualização:', updateData);
