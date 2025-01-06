@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash } from "lucide-react";
+import { Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ProductServiceForm } from "./ProductServiceForm";
 import { toast } from "sonner";
 import { Product } from "./types";
 import { ProductCard } from "./ProductCard";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function ProductServiceGrid() {
   const [items, setItems] = useState<Product[]>([]);
@@ -17,7 +18,6 @@ export function ProductServiceGrid() {
   useEffect(() => {
     fetchItems();
 
-    // Subscribe to ALL changes on the products table
     const channel = supabase
       .channel('products-changes')
       .on(
@@ -29,7 +29,7 @@ export function ProductServiceGrid() {
         },
         (payload) => {
           console.log('Real-time update received:', payload);
-          fetchItems(); // Refresh the list whenever any change occurs
+          fetchItems();
         }
       )
       .subscribe();
@@ -72,44 +72,51 @@ export function ProductServiceGrid() {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Produtos e Serviços</h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => setSelectedItem(null)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Novo Item
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>
-                {selectedItem ? "Editar Item" : "Novo Item"}
-              </DialogTitle>
-            </DialogHeader>
-            <ProductServiceForm
-              initialData={selectedItem}
-              onSuccess={() => {
-                setIsDialogOpen(false);
-                fetchItems();
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
+    <ScrollArea className="h-[calc(100vh-6rem)]">
+      <div className="container mx-auto p-4 space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold">Produtos e Serviços</h2>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => setSelectedItem(null)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Novo Item
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>
+                  {selectedItem ? "Editar Item" : "Novo Item"}
+                </DialogTitle>
+              </DialogHeader>
+              <ScrollArea className="max-h-[80vh]">
+                <div className="p-1">
+                  <ProductServiceForm
+                    initialData={selectedItem}
+                    onSuccess={() => {
+                      setIsDialogOpen(false);
+                      setSelectedItem(null);
+                      fetchItems();
+                    }}
+                  />
+                </div>
+              </ScrollArea>
+            </DialogContent>
+          </Dialog>
+        </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {items.map((item) => (
-          <ProductCard
-            key={item.id}
-            product={item}
-            barbers={[]}
-            onSelect={() => {}}
-            onEdit={handleEdit}
-          />
-        ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {items.map((item) => (
+            <ProductCard
+              key={item.id}
+              product={item}
+              barbers={[]}
+              onSelect={() => {}}
+              onEdit={handleEdit}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </ScrollArea>
   );
 }
