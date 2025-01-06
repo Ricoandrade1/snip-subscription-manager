@@ -37,6 +37,14 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     );
   }
 
+  if (filteredMembers.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">Nenhum membro encontrado</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <MembersFilter filters={filters} onFilterChange={handleFilterChange} />
