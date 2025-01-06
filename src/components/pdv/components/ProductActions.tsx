@@ -12,6 +12,7 @@ import { Product } from "../types";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -25,7 +26,6 @@ interface ProductActionsProps {
 }
 
 export function ProductActions({ product, onEdit }: ProductActionsProps) {
-  const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [saleId, setSaleId] = useState<string | null>(null);
   const [adminPassword, setAdminPassword] = useState('');
@@ -43,7 +43,11 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
         .eq('product_id', product.id)
         .limit(1);
 
-      if (checkError) throw checkError;
+      if (checkError) {
+        console.error('Error checking sale items:', checkError);
+        toast.error('Erro ao verificar vendas associadas');
+        return;
+      }
 
       if (saleItems && saleItems.length > 0) {
         setSaleId(saleItems[0].sale_id);
@@ -61,7 +65,11 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
         .delete()
         .eq('id', product.id);
 
-      if (deleteError) throw deleteError;
+      if (deleteError) {
+        console.error('Error deleting product:', deleteError);
+        toast.error('Erro ao excluir produto');
+        return;
+      }
       
       toast.success('Produto excluído com sucesso');
     } catch (error) {
@@ -78,12 +86,30 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
 
     try {
       setIsDeleting(true);
-      const { error } = await supabase
+
+      // First, delete associated sale_items
+      const { error: saleItemsError } = await supabase
+        .from('sale_items')
+        .delete()
+        .eq('product_id', product.id);
+
+      if (saleItemsError) {
+        console.error('Error deleting sale items:', saleItemsError);
+        toast.error('Erro ao excluir itens de venda');
+        return;
+      }
+
+      // Then delete the product
+      const { error: deleteError } = await supabase
         .from('products')
         .delete()
         .eq('id', product.id);
 
-      if (error) throw error;
+      if (deleteError) {
+        console.error('Error deleting product:', deleteError);
+        toast.error('Erro ao excluir produto');
+        return;
+      }
 
       toast.success('Produto excluído com sucesso');
       setShowDeleteDialog(false);
@@ -133,12 +159,12 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
             <DialogTitle className="text-destructive">
               Confirmação de Exclusão
             </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p>
+            <DialogDescription>
               Este produto possui vendas registradas no sistema. Para excluí-lo, 
               é necessário fornecer a senha de administrador.
-            </p>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
             {saleId && (
               <p className="text-sm text-muted-foreground">
                 ID da venda associada: {saleId}
