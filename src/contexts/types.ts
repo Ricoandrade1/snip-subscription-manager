@@ -10,6 +10,7 @@ export type Member = {
   due_date?: string;
   payment_date?: string | null;
   status: "pago" | "atrasado" | "cancelado";
+  last_plan_change?: string | null;
 };
 
 export interface MemberContextType {
