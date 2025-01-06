@@ -93,16 +93,30 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
   };
 
   const calculateStats = (subscribersList: Subscriber[]) => {
+    console.log('Calculando estatísticas para', subscribersList.length, 'assinantes');
+    
     const stats = subscribersList.reduce((acc, subscriber) => {
-      const monthlyRevenue = subscriber.status === 'pago' ? PLAN_PRICES[subscriber.plan] : 0;
+      console.log('-------------------');
+      console.log('Processando assinante:', subscriber.name);
+      console.log('Status:', subscriber.status);
+      console.log('Plano:', subscriber.plan);
       
-      return {
+      let monthlyRevenue = 0;
+      if (subscriber.status === 'pago') {
+        monthlyRevenue = PLAN_PRICES[subscriber.plan];
+        console.log('Receita do plano:', monthlyRevenue, '€');
+      }
+      
+      const newStats = {
         totalSubscribers: acc.totalSubscribers + 1,
         activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
         overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
         pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
         monthlyRevenue: acc.monthlyRevenue + monthlyRevenue,
       };
+      
+      console.log('Receita mensal acumulada:', newStats.monthlyRevenue, '€');
+      return newStats;
     }, {
       totalSubscribers: 0,
       activeSubscribers: 0,
@@ -111,6 +125,12 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
       monthlyRevenue: 0,
     });
 
+    console.log('-------------------');
+    console.log('Estatísticas finais:');
+    console.log('Total de assinantes:', stats.totalSubscribers);
+    console.log('Assinantes ativos:', stats.activeSubscribers);
+    console.log('Receita mensal total:', stats.monthlyRevenue, '€');
+    
     setStats(stats);
   };
 
