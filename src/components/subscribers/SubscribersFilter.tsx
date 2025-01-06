@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FilterState } from "./types";
-import { Search, Phone, UserRound, FileText } from "lucide-react";
+import { Search, Phone, UserRound, FileText, Bookmark } from "lucide-react";
 
 interface SubscribersFilterProps {
   filters: FilterState;
@@ -11,7 +11,7 @@ interface SubscribersFilterProps {
 
 export function SubscribersFilter({ filters, onFilterChange }: SubscribersFilterProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 bg-barber-gray rounded-lg border border-barber-gold/10">
+    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-6 bg-barber-gray rounded-lg border border-barber-gold/10">
       <div className="space-y-2">
         <Label htmlFor="name-filter" className="text-barber-light flex items-center gap-2">
           <UserRound className="w-4 h-4" /> Nome
@@ -61,7 +61,9 @@ export function SubscribersFilter({ filters, onFilterChange }: SubscribersFilter
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="status-filter" className="text-barber-light">Status</Label>
+        <Label htmlFor="status-filter" className="text-barber-light flex items-center gap-2">
+          <Search className="w-4 h-4" /> Status
+        </Label>
         <Select
           value={filters.status}
           onValueChange={(value) => onFilterChange('status', value)}
@@ -74,6 +76,26 @@ export function SubscribersFilter({ filters, onFilterChange }: SubscribersFilter
             <SelectItem value="active">Pago</SelectItem>
             <SelectItem value="overdue">Atrasado</SelectItem>
             <SelectItem value="cancelled">Cancelado</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="plan-filter" className="text-barber-light flex items-center gap-2">
+          <Bookmark className="w-4 h-4" /> Plano
+        </Label>
+        <Select
+          value={filters.plan}
+          onValueChange={(value) => onFilterChange('plan', value)}
+        >
+          <SelectTrigger className="bg-black/40 border-0 text-barber-light">
+            <SelectValue placeholder="Filtrar por plano" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="Basic">Basic</SelectItem>
+            <SelectItem value="Classic">Classic</SelectItem>
+            <SelectItem value="Business">Business</SelectItem>
           </SelectContent>
         </Select>
       </div>

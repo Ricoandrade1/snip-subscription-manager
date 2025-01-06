@@ -18,4 +18,5 @@ export interface FilterState {
   phone: string;
   nif: string;
   status: SubscriberStatus | 'all';
+  plan: string;
 }

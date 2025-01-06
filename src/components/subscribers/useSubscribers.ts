@@ -29,6 +29,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     phone: "",
     nif: "",
     status: "all",
+    plan: "all",
   });
 
   useEffect(() => {
@@ -108,6 +109,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     const matchName = subscriber.name.toLowerCase().includes(filters.name.toLowerCase());
     const matchPhone = !filters.phone || (subscriber.phone && subscriber.phone.toLowerCase().includes(filters.phone.toLowerCase()));
     const matchNif = !filters.nif || (subscriber.nif && subscriber.nif.toLowerCase().includes(filters.nif.toLowerCase()));
+    const matchPlan = filters.plan === 'all' || subscriber.plan === filters.plan;
     
     let matchStatus = true;
     if (statusFilter !== 'all') {
@@ -129,7 +131,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
       }
     }
 
-    return matchName && matchPhone && matchNif && matchStatus;
+    return matchName && matchPhone && matchNif && matchStatus && matchPlan;
   });
 
   return {
