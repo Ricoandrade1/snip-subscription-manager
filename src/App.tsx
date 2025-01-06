@@ -101,8 +101,11 @@ function App() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-barber-gold" />
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-16 w-16 animate-spin rounded-full border-4 border-barber-gold border-t-transparent" />
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
       </div>
     );
   }
