@@ -9,7 +9,7 @@ import { formSchema, FormValues } from "./member-form/schema";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { StatusField } from "./member-form/StatusField";
-import { isAfter, isBefore, addDays } from "date-fns";
+import { addDays, isBefore } from "date-fns";
 
 interface QuickEditFormProps {
   member: Member;
@@ -34,13 +34,14 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
     if (!paymentDate) return "pendente";
     
     const today = new Date();
-    const nextDueDate = addDays(paymentDate, 30);
+    const paymentDateObj = new Date(paymentDate);
+    const dueDate = addDays(paymentDateObj, 30);
     
-    if (isBefore(nextDueDate, today)) {
-      return "pendente";
+    if (isBefore(today, dueDate)) {
+      return "pago";
     }
     
-    return "pago";
+    return "pendente";
   };
 
   const handleSubmit = async (data: FormValues) => {
