@@ -14,12 +14,12 @@ import { MemberStatus } from "@/contexts/types";
 import { DialogHeader, DialogTitle } from "./ui/dialog";
 
 const formSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
-  nickname: z.string().optional(),
-  phone: z.string().optional(),
-  nif: z.string().optional(),
-  bankName: z.string().min(1, "Nome do banco é obrigatório"),
-  iban: z.string().min(1, "IBAN é obrigatório"),
+  name: z.string(),
+  nickname: z.string(),
+  phone: z.string(),
+  nif: z.string(),
+  bankName: z.string(),
+  iban: z.string(),
   plan: z.enum(["Basic", "Classic", "Business"]).default("Basic"),
   payment_date: z.date().optional(),
 });
