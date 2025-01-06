@@ -1,17 +1,11 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { PaymentStatusBadge } from "./payments/PaymentStatusBadge";
+import { PaymentStatusDialog } from "./payments/PaymentStatusDialog";
 
 interface Payment {
   id: string;
@@ -55,38 +49,12 @@ export function PaymentHistoryTable({
       }
 
       toast.success("Status atualizado com sucesso");
-      onPaymentUpdate(); // Atualiza a lista de pagamentos
+      onPaymentUpdate();
       setAdminPassword("");
       setIsDialogOpen(false);
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
       toast.error("Erro ao atualizar status");
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "paid":
-        return "bg-green-500/10 text-green-500";
-      case "pending":
-        return "bg-yellow-500/10 text-yellow-500";
-      case "overdue":
-        return "bg-red-500/10 text-red-500";
-      default:
-        return "bg-gray-500/10 text-gray-500";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "paid":
-        return "Pago";
-      case "pending":
-        return "Pendente";
-      case "overdue":
-        return "Atrasado";
-      default:
-        return status;
     }
   };
 
@@ -125,63 +93,31 @@ export function PaymentHistoryTable({
                   }).format(payment.amount)}
                 </td>
                 <td className="p-4 align-middle">
-                  <Dialog open={isDialogOpen && selectedPayment?.id === payment.id} onOpenChange={(open) => {
-                    setIsDialogOpen(open);
-                    if (!open) {
-                      setSelectedPayment(null);
-                      setAdminPassword("");
-                    }
-                  }}>
+                  <Dialog 
+                    open={isDialogOpen && selectedPayment?.id === payment.id} 
+                    onOpenChange={(open) => {
+                      setIsDialogOpen(open);
+                      if (!open) {
+                        setSelectedPayment(null);
+                        setAdminPassword("");
+                      }
+                    }}
+                  >
                     <DialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className={`${getStatusColor(payment.status)}`}
+                      <PaymentStatusBadge
+                        status={payment.status}
                         onClick={() => setSelectedPayment(payment)}
-                      >
-                        {getStatusLabel(payment.status)}
-                      </Button>
+                      />
                     </DialogTrigger>
-                    <DialogContent className="bg-barber-black border-barber-gray">
-                      <DialogHeader>
-                        <DialogTitle className="text-barber-light">Alterar Status do Pagamento</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="text-sm font-medium text-barber-light">
-                            Senha do Administrador
-                          </label>
-                          <Input
-                            type="password"
-                            value={adminPassword}
-                            onChange={(e) => setAdminPassword(e.target.value)}
-                            placeholder="Digite a senha"
-                            className="bg-barber-gray border-barber-gray text-barber-light placeholder:text-barber-light/50"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-barber-light">
-                            Novo Status
-                          </label>
-                          <select
-                            className="w-full border rounded-md p-2 bg-barber-gray border-barber-gray text-barber-light"
-                            value={newStatus}
-                            onChange={(e) =>
-                              setNewStatus(e.target.value as "paid" | "pending" | "overdue")
-                            }
-                          >
-                            <option value="paid">Pago</option>
-                            <option value="pending">Pendente</option>
-                            <option value="overdue">Atrasado</option>
-                          </select>
-                        </div>
-                        <Button 
-                          onClick={handleStatusChange}
-                          className="bg-barber-gold hover:bg-barber-gold/90 text-black w-full"
-                        >
-                          Confirmar
-                        </Button>
-                      </div>
-                    </DialogContent>
+                    <PaymentStatusDialog
+                      open={isDialogOpen}
+                      onOpenChange={setIsDialogOpen}
+                      adminPassword={adminPassword}
+                      onAdminPasswordChange={setAdminPassword}
+                      newStatus={newStatus}
+                      onNewStatusChange={setNewStatus}
+                      onConfirm={handleStatusChange}
+                    />
                   </Dialog>
                 </td>
                 <td className="p-4 text-right">
