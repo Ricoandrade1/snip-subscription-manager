@@ -24,6 +24,7 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
   const [statusFilter, setStatusFilter] = useState('all');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { 
     subscribers, 
@@ -50,14 +51,15 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
   };
 
   const handleDeleteConfirm = async () => {
+    if (!selectedSubscriber) return;
+
     if (adminPassword !== '1234') {
       toast.error('Senha de administrador incorreta');
       return;
     }
 
-    if (!selectedSubscriber) return;
-
     try {
+      setIsDeleting(true);
       const { error } = await supabase
         .from('members')
         .delete()
@@ -68,10 +70,12 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
       toast.success('Assinante excluído com sucesso');
       setDeleteDialogOpen(false);
       setAdminPassword('');
-      await refetch(); // Explicitly call refetch after successful deletion
+      await refetch();
     } catch (error) {
       console.error('Erro ao excluir assinante:', error);
       toast.error('Erro ao excluir assinante');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -157,14 +161,16 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
             <Button
               variant="outline"
               onClick={handleDeleteDialogClose}
+              disabled={isDeleting}
             >
               Cancelar
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteConfirm}
+              disabled={isDeleting}
             >
-              Excluir
+              {isDeleting ? 'Excluindo...' : 'Excluir'}
             </Button>
           </DialogFooter>
         </DialogContent>
