@@ -27,11 +27,11 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
-      case "active":
+      case "pago":
         return "bg-green-500/20 text-green-500 hover:bg-green-500/30";
-      case "pending":
+      case "pendente":
         return "bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30";
-      case "inactive":
+      case "cancelado":
         return "bg-red-500/20 text-red-500 hover:bg-red-500/30";
       default:
         return "bg-gray-500/20 text-gray-500 hover:bg-gray-500/30";
@@ -40,11 +40,11 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case "active":
+      case "pago":
         return "Pago";
-      case "pending":
+      case "pendente":
         return "Pendente";
-      case "inactive":
+      case "cancelado":
         return "Cancelado";
       default:
         return status;
