@@ -108,31 +108,21 @@ export function ProductFilter({ filters, onFilterChange }: ProductFilterProps) {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 bg-muted rounded-lg">
+    <div className="p-6 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <FilterInputs
           filters={filters}
           categories={categories}
           brands={brands}
           onFilterChange={handleChange}
         />
-        <div className="flex items-center justify-between space-x-4">
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="inStock"
-              checked={filters.inStock}
-              onCheckedChange={(checked) => handleChange("inStock", checked)}
-            />
-            <Label htmlFor="inStock">Apenas em estoque</Label>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsDialogOpen(true)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Produto
-          </Button>
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="inStock"
+            checked={filters.inStock}
+            onCheckedChange={(checked) => handleChange("inStock", checked)}
+          />
+          <Label htmlFor="inStock">Apenas em estoque</Label>
         </div>
       </div>
 
@@ -141,17 +131,6 @@ export function ProductFilter({ filters, onFilterChange }: ProductFilterProps) {
         onClearFilter={clearFilter}
         onClearAllFilters={clearAllFilters}
       />
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Novo Produto</DialogTitle>
-          </DialogHeader>
-          <ProductServiceForm
-            onSuccess={() => setIsDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

@@ -19,8 +19,8 @@ export default function Products() {
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
     name: "",
-    category: "",
-    brand: "",
+    category: "all",
+    brand: "all",
     minPrice: "",
     maxPrice: "",
     inStock: false,
@@ -56,8 +56,8 @@ export default function Products() {
   };
 
   return (
-    <div className="container py-2">
-      <div className="space-y-4">
+    <div className="container max-w-7xl mx-auto py-6">
+      <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold">Produtos</h1>
@@ -75,19 +75,19 @@ export default function Products() {
             if (!open) setSelectedProduct(null);
           }}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="bg-barber-gold hover:bg-barber-gold/90 text-black">
                 <Plus className="mr-2 h-4 w-4" />
                 Novo Produto
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl">
+            <DialogContent className="max-w-4xl max-h-[90vh]">
               <DialogHeader>
                 <DialogTitle>
                   {selectedProduct ? "Editar Produto" : "Novo Produto"}
                 </DialogTitle>
               </DialogHeader>
-              <ScrollArea className="max-h-[80vh]">
-                <div className="p-1">
+              <ScrollArea className="max-h-[calc(90vh-8rem)]">
+                <div className="p-4">
                   <ProductServiceForm
                     initialData={selectedProduct}
                     onSuccess={() => {
@@ -101,38 +101,41 @@ export default function Products() {
           </Dialog>
         </div>
 
-        <ProductFilter filters={filters} onFilterChange={setFilters} />
+        <div className="bg-white rounded-lg shadow">
+          <ProductFilter filters={filters} onFilterChange={setFilters} />
+        </div>
         
-        <ProductList 
-          filters={filters} 
-          onProductSelect={handleViewDetails} 
-          onEdit={handleEdit}
-          viewMode={viewMode}
-        />
+        <div className="bg-white rounded-lg shadow">
+          <ProductList 
+            filters={filters} 
+            onProductSelect={handleViewDetails} 
+            onEdit={handleEdit}
+            viewMode={viewMode}
+          />
+        </div>
 
-        {/* Product Details Dialog */}
         <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-          <DialogContent>
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Detalhes do Produto</DialogTitle>
             </DialogHeader>
             <ScrollArea className="max-h-[60vh]">
               {selectedProduct && (
-                <div className="space-y-4 p-1">
-                  <div className="grid gap-2">
+                <div className="space-y-4 p-4">
+                  <div className="grid gap-4">
                     <div>
-                      <h3 className="font-medium">Nome</h3>
-                      <p>{selectedProduct.name}</p>
+                      <h3 className="font-medium text-sm text-muted-foreground">Nome</h3>
+                      <p className="text-lg">{selectedProduct.name}</p>
                     </div>
                     {selectedProduct.description && (
                       <div>
-                        <h3 className="font-medium">Descrição</h3>
+                        <h3 className="font-medium text-sm text-muted-foreground">Descrição</h3>
                         <p>{selectedProduct.description}</p>
                       </div>
                     )}
                     <div>
-                      <h3 className="font-medium">Preço</h3>
-                      <p>
+                      <h3 className="font-medium text-sm text-muted-foreground">Preço</h3>
+                      <p className="text-lg font-semibold">
                         {new Intl.NumberFormat("pt-PT", {
                           style: "currency",
                           currency: "EUR",
@@ -141,35 +144,38 @@ export default function Products() {
                     </div>
                     {!selectedProduct.is_service && (
                       <div>
-                        <h3 className="font-medium">Estoque</h3>
+                        <h3 className="font-medium text-sm text-muted-foreground">Estoque</h3>
                         <p>{selectedProduct.stock}</p>
                       </div>
                     )}
                     <div>
-                      <h3 className="font-medium">Tipo</h3>
+                      <h3 className="font-medium text-sm text-muted-foreground">Tipo</h3>
                       <p>{selectedProduct.is_service ? "Serviço" : "Produto"}</p>
                     </div>
                     {selectedProduct.brands && (
                       <div>
-                        <h3 className="font-medium">Marca</h3>
+                        <h3 className="font-medium text-sm text-muted-foreground">Marca</h3>
                         <p>{selectedProduct.brands.name}</p>
                       </div>
                     )}
                     {selectedProduct.categories && (
                       <div>
-                        <h3 className="font-medium">Categoria</h3>
+                        <h3 className="font-medium text-sm text-muted-foreground">Categoria</h3>
                         <p>{selectedProduct.categories.name}</p>
                       </div>
                     )}
                   </div>
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-2 pt-4">
                     <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>
                       Fechar
                     </Button>
-                    <Button onClick={() => {
-                      setIsDetailsOpen(false);
-                      handleEdit(selectedProduct);
-                    }}>
+                    <Button 
+                      className="bg-barber-gold hover:bg-barber-gold/90 text-black"
+                      onClick={() => {
+                        setIsDetailsOpen(false);
+                        handleEdit(selectedProduct);
+                      }}
+                    >
                       Editar
                     </Button>
                   </div>
