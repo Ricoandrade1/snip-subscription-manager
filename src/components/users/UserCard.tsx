@@ -85,6 +85,7 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              handleEditClick();
             }}
           />
           <CardHeader className="pb-2">
