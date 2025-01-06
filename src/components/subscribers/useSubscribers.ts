@@ -70,7 +70,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
           nif: member.nif,
           plan: member.plans?.title as "Basic" | "Classic" | "Business",
           plan_id: member.plan_id,
-          status: member.status as 'active' | 'overdue' | 'cancelled',
+          status: member.status as 'pago' | 'atrasado' | 'cancelado',
           created_at: member.created_at,
           payment_date: member.payment_date,
         }));
@@ -88,9 +88,9 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
   const calculateStats = (subscribersList: Subscriber[]) => {
     const stats = subscribersList.reduce((acc, subscriber) => ({
       totalSubscribers: acc.totalSubscribers + 1,
-      activeSubscribers: acc.activeSubscribers + (subscriber.status === 'active' ? 1 : 0),
-      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'overdue' ? 1 : 0),
-      monthlyRevenue: acc.monthlyRevenue + (subscriber.status === 'active' ? 50 : 0), // Assuming fixed price of 50
+      activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
+      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'atrasado' ? 1 : 0),
+      monthlyRevenue: acc.monthlyRevenue + (subscriber.status === 'pago' ? 50 : 0), // Assuming fixed price of 50
     }), {
       totalSubscribers: 0,
       activeSubscribers: 0,
@@ -115,16 +115,16 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     if (statusFilter !== 'all') {
       switch (statusFilter) {
         case 'active':
-          matchStatus = subscriber.status === 'active';
+          matchStatus = subscriber.status === 'pago';
           break;
         case 'overdue':
-          matchStatus = subscriber.status === 'overdue';
+          matchStatus = subscriber.status === 'atrasado';
           break;
         case 'total':
           matchStatus = true;
           break;
         case 'revenue':
-          matchStatus = subscriber.status === 'active';
+          matchStatus = subscriber.status === 'pago';
           break;
         default:
           matchStatus = true;
