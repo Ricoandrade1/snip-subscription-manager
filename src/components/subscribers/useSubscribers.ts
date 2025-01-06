@@ -37,19 +37,19 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     fetchSubscribers();
   }, [planFilter, statusFilter]);
 
-  const getSubscriberStatus = (paymentDate: string | null): 'active' | 'inactive' => {
-    if (!paymentDate) return 'inactive';
+  const getSubscriberStatus = (paymentDate: string | null): 'pago' | 'cancelado' => {
+    if (!paymentDate) return 'cancelado';
     
     const today = new Date();
     const nextPaymentDate = parseISO(paymentDate);
     
-    // Se a data de pagamento é anterior a hoje, está inativo
+    // Se a data de pagamento é anterior a hoje, está cancelado
     if (isBefore(nextPaymentDate, today)) {
-      return 'inactive';
+      return 'cancelado';
     }
     
-    // Se a data de pagamento é posterior ou igual a hoje, está ativo
-    return 'active';
+    // Se a data de pagamento é posterior ou igual a hoje, está pago
+    return 'pago';
   };
 
   const fetchSubscribers = async () => {
@@ -104,9 +104,9 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
   const calculateStats = (subscribersList: Subscriber[]) => {
     const stats = subscribersList.reduce((acc, subscriber) => ({
       totalSubscribers: acc.totalSubscribers + 1,
-      activeSubscribers: acc.activeSubscribers + (subscriber.status === 'active' ? 1 : 0),
-      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'inactive' ? 1 : 0),
-      monthlyRevenue: acc.monthlyRevenue + (subscriber.status === 'active' ? 50 : 0), // Assuming fixed price of 50
+      activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
+      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
+      monthlyRevenue: acc.monthlyRevenue + (subscriber.status === 'pago' ? 50 : 0), // Assuming fixed price of 50
     }), {
       totalSubscribers: 0,
       activeSubscribers: 0,
@@ -131,16 +131,16 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     if (statusFilter !== 'all') {
       switch (statusFilter) {
         case 'active':
-          matchStatus = subscriber.status === 'active';
+          matchStatus = subscriber.status === 'pago';
           break;
         case 'overdue':
-          matchStatus = subscriber.status === 'inactive';
+          matchStatus = subscriber.status === 'cancelado';
           break;
         case 'total':
           matchStatus = true;
           break;
         case 'revenue':
-          matchStatus = subscriber.status === 'active';
+          matchStatus = subscriber.status === 'pago';
           break;
         default:
           matchStatus = true;
