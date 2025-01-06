@@ -1,11 +1,11 @@
-import { FilterState as BaseFilterState, Subscriber, SubscriberStats } from "./subscriber";
+import { Subscriber, SubscriberStats } from "./subscriber";
 
 export interface UseSubscribersProps {
   planFilter?: "Basic" | "Classic" | "Business";
   statusFilter?: string;
 }
 
-export interface UseSubscribersFiltersProps {
+export interface UseSubscribersFiltersResult {
   filters: FilterState;
   handleFilterChange: (field: keyof FilterState, value: string) => void;
 }
