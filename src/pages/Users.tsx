@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { UserCog } from "lucide-react";
+import { UserCog, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -53,7 +53,7 @@ export default function Users() {
   };
 
   return (
-    <div className="min-h-screen bg-barber-black p-8">
+    <div className="p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         <header className="flex items-center justify-between">
           <div className="space-y-1">
@@ -65,6 +65,20 @@ export default function Users() {
               Gerencie as funções e permissões dos utilizadores
             </p>
           </div>
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2 hover:bg-barber-gold/10 hover:text-barber-gold border-barber-gold/20"
+            onClick={() => {
+              // TODO: Implement user creation dialog
+              toast({
+                title: "Em desenvolvimento",
+                description: "A funcionalidade de adicionar utilizadores será implementada em breve.",
+              });
+            }}
+          >
+            <UserPlus className="h-4 w-4" />
+            Adicionar Utilizador
+          </Button>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -82,7 +96,7 @@ export default function Users() {
                 Nenhum utilizador encontrado
               </h3>
               <p className="text-barber-light/60">
-                Adicione barbeiros para gerenciar suas funções
+                Adicione utilizadores para gerenciar suas funções
               </p>
             </div>
           ) : (
