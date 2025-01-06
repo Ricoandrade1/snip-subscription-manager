@@ -1,15 +1,15 @@
 import { Subscriber, SubscriberStats } from "../types/subscriber";
 
 const PLAN_PRICES = {
-  Basic: 100,
-  Classic: 100,
-  Business: 100
+  Basic: 29.99,
+  Classic: 49.99,
+  Business: 99.99
 };
 
-export function calculateSubscriberStats(subscribersList: Subscriber[]): SubscriberStats {
-  console.log('Calculando estatísticas para', subscribersList.length, 'assinantes');
+export function calculateSubscriberStats(subscribers: Subscriber[]): SubscriberStats {
+  console.log('Calculando estatísticas para', subscribers.length, 'assinantes');
   
-  const stats = subscribersList.reduce((acc, subscriber) => {
+  return subscribers.reduce((acc, subscriber) => {
     console.log('-------------------');
     console.log('Processando assinante:', subscriber.name);
     console.log('Status:', subscriber.status);
@@ -38,12 +38,4 @@ export function calculateSubscriberStats(subscribersList: Subscriber[]): Subscri
     pendingSubscribers: 0,
     monthlyRevenue: 0,
   });
-
-  console.log('-------------------');
-  console.log('Estatísticas finais:');
-  console.log('Total de assinantes:', stats.totalSubscribers);
-  console.log('Assinantes ativos:', stats.activeSubscribers);
-  console.log('Receita mensal total:', stats.monthlyRevenue, '€');
-  
-  return stats;
 }

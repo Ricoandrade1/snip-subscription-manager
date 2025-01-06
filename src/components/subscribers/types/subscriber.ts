@@ -8,9 +8,13 @@ export interface Subscriber {
   nif: string | null;
   plan: "Basic" | "Classic" | "Business";
   plan_id: number | null;
+  created_at: string;
+  payment_date: string | null;
   status: SubscriberStatus;
-  created_at?: string;
-  payment_date?: string | null;
+  bank_name: string | null;
+  iban: string | null;
+  due_date: string | null;
+  last_plan_change: string | null;
 }
 
 export interface SubscriberStats {
@@ -25,8 +29,8 @@ export interface FilterState {
   name: string;
   phone: string;
   nif: string;
-  status: string;
   plan: string;
-  sortBy: "name" | "payment_date" | "plan";
-  sortOrder: "asc" | "desc";
+  status: string;
+  sortBy: 'name' | 'payment_date' | 'plan';
+  sortOrder: 'asc' | 'desc';
 }
