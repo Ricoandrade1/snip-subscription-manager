@@ -75,7 +75,7 @@ export function SubscriberForm() {
         nif: data.nif || "",
         plan_id: planId,
         payment_date: data.payment_date ? data.payment_date.toISOString() : null,
-        status: data.payment_date ? "pago" as const : "atrasado" as const
+        status: data.payment_date ? "active" as const : "inactive" as const
       };
 
       await addMember(memberData);

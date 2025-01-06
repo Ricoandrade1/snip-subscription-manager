@@ -37,19 +37,19 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     fetchSubscribers();
   }, [planFilter, statusFilter]);
 
-  const getSubscriberStatus = (paymentDate: string | null): 'pago' | 'atrasado' | 'cancelado' => {
-    if (!paymentDate) return 'atrasado';
+  const getSubscriberStatus = (paymentDate: string | null): 'active' | 'inactive' => {
+    if (!paymentDate) return 'inactive';
     
     const today = new Date();
     const nextPaymentDate = parseISO(paymentDate);
     
-    // Se a data de pagamento é anterior a hoje, está atrasado
+    // Se a data de pagamento é anterior a hoje, está inativo
     if (isBefore(nextPaymentDate, today)) {
-      return 'atrasado';
+      return 'inactive';
     }
     
-    // Se a data de pagamento é posterior ou igual a hoje, está pago
-    return 'pago';
+    // Se a data de pagamento é posterior ou igual a hoje, está ativo
+    return 'active';
   };
 
   const fetchSubscribers = async () => {
@@ -104,9 +104,9 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
   const calculateStats = (subscribersList: Subscriber[]) => {
     const stats = subscribersList.reduce((acc, subscriber) => ({
       totalSubscribers: acc.totalSubscribers + 1,
-      activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
-      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'atrasado' ? 1 : 0),
-      monthlyRevenue: acc.monthlyRevenue + (subscriber.status === 'pago' ? 50 : 0), // Assuming fixed price of 50
+      activeSubscribers: acc.activeSubscribers + (subscriber.status === 'active' ? 1 : 0),
+      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'inactive' ? 1 : 0),
+      monthlyRevenue: acc.monthlyRevenue + (subscriber.status === 'active' ? 50 : 0), // Assuming fixed price of 50
     }), {
       totalSubscribers: 0,
       activeSubscribers: 0,
@@ -131,16 +131,16 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     if (statusFilter !== 'all') {
       switch (statusFilter) {
         case 'active':
-          matchStatus = subscriber.status === 'pago';
+          matchStatus = subscriber.status === 'active';
           break;
         case 'overdue':
-          matchStatus = subscriber.status === 'atrasado';
+          matchStatus = subscriber.status === 'inactive';
           break;
         case 'total':
           matchStatus = true;
           break;
         case 'revenue':
-          matchStatus = subscriber.status === 'pago';
+          matchStatus = subscriber.status === 'active';
           break;
         default:
           matchStatus = true;

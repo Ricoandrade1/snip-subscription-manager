@@ -1,4 +1,4 @@
-export type SubscriberStatus = 'pago' | 'atrasado' | 'cancelado';
+export type SubscriberStatus = 'active' | 'inactive';
 
 export interface Subscriber {
   id: string;
