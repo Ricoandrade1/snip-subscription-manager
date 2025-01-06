@@ -13,7 +13,7 @@ interface SaleData {
   paymentMethod: string;
   selectedSellers: Seller[];
   sellerCommissions: Record<string, number>;
-  discountPercentage: number;  // Added this field
+  discountPercentage: number;
 }
 
 export async function finalizeSale({
@@ -34,7 +34,7 @@ export async function finalizeSale({
         name: seller.name,
         commission_rate: sellerCommissions[seller.id]
       })),
-      discount_percentage: discountPercentage  // Store the discount percentage
+      discount_percentage: discountPercentage
     })
     .select()
     .single();

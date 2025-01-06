@@ -394,6 +394,7 @@ export type Database = {
       sales: {
         Row: {
           created_at: string
+          discount_percentage: number | null
           id: string
           is_plan_change: boolean | null
           payment_method: string
@@ -404,6 +405,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          discount_percentage?: number | null
           id?: string
           is_plan_change?: boolean | null
           payment_method: string
@@ -414,6 +416,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          discount_percentage?: number | null
           id?: string
           is_plan_change?: boolean | null
           payment_method?: string
