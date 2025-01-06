@@ -1,45 +1,46 @@
 import { Card } from "@/components/ui/card";
-import { Eye, EyeOff, Users } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface StatCardProps {
-  label: string;
-  value: number;
-  show: boolean;
-  onToggleVisibility: () => void;
+  title: string;
+  value: string | number;
+  icon: React.ReactNode;
+  description: string;
   onClick: () => void;
-  isSelected: boolean;
-  colorScheme: {
-    background: string;
-    border: string;
-    text: string;
-  };
+  selected: boolean;
 }
 
 export function StatCard({
-  label,
+  title,
   value,
-  show,
-  onToggleVisibility,
+  icon,
+  description,
   onClick,
-  isSelected,
-  colorScheme,
+  selected,
 }: StatCardProps) {
+  const [show, setShow] = useState(true);
+
+  const colorScheme = {
+    background: selected ? 'bg-barber-gold/10' : '',
+    border: selected ? 'border-barber-gold' : '',
+    text: selected ? 'text-barber-gold' : 'text-barber-light'
+  };
+
   return (
     <Card 
-      className={`p-4 cursor-pointer transition-colors ${
-        isSelected ? `${colorScheme.background} ${colorScheme.border}` : ''
-      }`}
+      className={`p-4 cursor-pointer transition-colors ${colorScheme.background} ${colorScheme.border}`}
       onClick={onClick}
     >
       <div className="flex items-center justify-between space-y-0">
-        <p className="text-sm font-medium text-barber-light">{label}</p>
+        <p className="text-sm font-medium text-barber-light">{title}</p>
         <Button
           variant="ghost"
           size="icon"
           onClick={(e) => {
             e.stopPropagation();
-            onToggleVisibility();
+            setShow(!show);
           }}
         >
           {show ? (
@@ -50,7 +51,7 @@ export function StatCard({
         </Button>
       </div>
       <div className="flex items-center gap-2">
-        <Users className={`h-8 w-8 ${colorScheme.text}`} />
+        {icon}
         <div className="flex items-baseline">
           {show ? (
             <h3 className={`text-2xl font-semibold ${colorScheme.text}`}>
@@ -61,6 +62,7 @@ export function StatCard({
           )}
         </div>
       </div>
+      <p className="text-sm text-barber-light/60 mt-2">{description}</p>
     </Card>
   );
 }

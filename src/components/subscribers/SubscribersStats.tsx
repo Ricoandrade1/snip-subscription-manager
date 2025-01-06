@@ -14,7 +14,7 @@ export function SubscribersStats({ stats, onFilterChange, selectedStatus }: Subs
       <StatCard
         title="Total de Assinantes"
         value={stats.totalSubscribers}
-        icon={<Users className="h-4 w-4" />}
+        icon={<Users className="h-8 w-8 text-barber-light" />}
         description="Todos os assinantes"
         onClick={() => onFilterChange('total')}
         selected={selectedStatus === 'total'}
@@ -22,7 +22,7 @@ export function SubscribersStats({ stats, onFilterChange, selectedStatus }: Subs
       <StatCard
         title="Assinantes Ativos"
         value={stats.activeSubscribers}
-        icon={<UserCheck className="h-4 w-4" />}
+        icon={<UserCheck className="h-8 w-8 text-barber-light" />}
         description="Pagamento em dia"
         onClick={() => onFilterChange('active')}
         selected={selectedStatus === 'active'}
@@ -30,7 +30,7 @@ export function SubscribersStats({ stats, onFilterChange, selectedStatus }: Subs
       <StatCard
         title="Assinantes Pendentes"
         value={stats.pendingSubscribers}
-        icon={<Clock className="h-4 w-4" />}
+        icon={<Clock className="h-8 w-8 text-barber-light" />}
         description="Aguardando pagamento"
         onClick={() => onFilterChange('pending')}
         selected={selectedStatus === 'pending'}
@@ -38,7 +38,7 @@ export function SubscribersStats({ stats, onFilterChange, selectedStatus }: Subs
       <StatCard
         title="Assinantes Cancelados"
         value={stats.overdueSubscribers}
-        icon={<UserMinus className="h-4 w-4" />}
+        icon={<UserMinus className="h-8 w-8 text-barber-light" />}
         description="Pagamento atrasado"
         onClick={() => onFilterChange('overdue')}
         selected={selectedStatus === 'overdue'}
@@ -46,7 +46,7 @@ export function SubscribersStats({ stats, onFilterChange, selectedStatus }: Subs
       <StatCard
         title="Receita Mensal"
         value={`${stats.monthlyRevenue.toFixed(2)}€`}
-        icon={<DollarSign className="h-4 w-4" />}
+        icon={<DollarSign className="h-8 w-8 text-barber-light" />}
         description="Valor total mensal"
         onClick={() => onFilterChange('revenue')}
         selected={selectedStatus === 'revenue'}
