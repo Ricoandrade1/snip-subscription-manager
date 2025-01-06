@@ -28,9 +28,12 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
         .select('id, title, price');
       
       if (!error && data) {
+        // Log the fetched plans to verify prices
         console.log('Planos disponíveis:', data);
         setPlans(data);
         calculateMonthlyRevenue(data);
+      } else {
+        console.error('Erro ao buscar planos:', error);
       }
     };
     
@@ -67,11 +70,13 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
       // Find the plan price from the database
       const memberPlan = availablePlans.find(plan => plan.title === member.plan);
       if (memberPlan) {
-        totalRevenue += memberPlan.price;
+        // Log the actual price being used
+        console.log(`Preço encontrado no banco para o plano ${member.plan}:`, memberPlan.price);
+        totalRevenue += Number(memberPlan.price);
         console.log(`Preço do plano ${member.plan}: ${memberPlan.price}€`);
         console.log(`Subtotal após adicionar ${member.name}: ${totalRevenue}€`);
       } else {
-        console.log(`Erro: Plano não encontrado para ${member.name}`);
+        console.error(`Erro: Plano não encontrado para ${member.name}`);
       }
     });
     
