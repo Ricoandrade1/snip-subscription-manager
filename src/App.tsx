@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { Session } from "@supabase/supabase-js";
-import { supabase } from "./lib/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "sonner";
 import { toast } from "sonner";
 
@@ -32,26 +32,25 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          setSession(session);
-          setIsAdmin(session.user.user_metadata.role === 'admin');
-        }
-      } catch (error) {
-        console.error('Error checking session:', error);
-      } finally {
-        setLoading(false);
+    // Initialize session from local storage if available
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) {
+        setIsAdmin(session.user.user_metadata.role === 'admin');
       }
-    };
+      setLoading(false);
+    });
 
-    checkSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session);
+      
       if (session) {
         setSession(session);
         setIsAdmin(session.user.user_metadata.role === 'admin');
+        
         if (event === 'SIGNED_IN') {
           toast.success('Login realizado com sucesso!');
           navigate('/');
@@ -59,6 +58,7 @@ function App() {
       } else {
         setSession(null);
         setIsAdmin(false);
+        
         if (event === 'SIGNED_OUT') {
           toast.success('Logout realizado com sucesso!');
           navigate('/login');
@@ -66,7 +66,9 @@ function App() {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   if (loading) {
