@@ -8,11 +8,12 @@ import { useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { SubscriberForm } from "@/components/SubscriberForm";
 import { useSubscribers } from "@/components/subscribers/useSubscribers";
+import { SubscribersPDFButton } from "@/components/subscribers/SubscribersPDFButton";
 
 export default function Subscribers() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { subscribers } = useSubscribers({});
+  const { filteredSubscribers } = useSubscribers({});
 
   useEffect(() => {
     const checkSession = async () => {
@@ -64,6 +65,7 @@ export default function Subscribers() {
             </p>
           </div>
           <div className="flex gap-2">
+            <SubscribersPDFButton subscribers={filteredSubscribers} />
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="bg-barber-gold hover:bg-barber-gold/90 text-barber-black">
