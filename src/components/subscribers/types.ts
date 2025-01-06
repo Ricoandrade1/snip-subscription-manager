@@ -17,6 +17,13 @@ export interface FilterState {
   name: string;
   phone: string;
   nif: string;
-  status: SubscriberStatus | 'all';
+  status: string;
   plan: string;
+}
+
+export interface SubscriberStats {
+  totalSubscribers: number;
+  activeSubscribers: number;
+  overdueSubscribers: number;
+  monthlyRevenue: number;
 }

@@ -1,19 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Subscriber, FilterState } from "./types";
+import { Subscriber, FilterState, SubscriberStats } from "./types";
 import { toast } from "sonner";
 import { isAfter, isBefore, parseISO } from "date-fns";
 
 interface UseSubscribersProps {
   planFilter?: "Basic" | "Classic" | "Business";
   statusFilter?: string;
-}
-
-interface SubscriberStats {
-  totalSubscribers: number;
-  activeSubscribers: number;
-  overdueSubscribers: number;
-  monthlyRevenue: number;
 }
 
 export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscribersProps) {
@@ -37,18 +30,16 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     fetchSubscribers();
   }, [planFilter, statusFilter]);
 
-  const getSubscriberStatus = (paymentDate: string | null): 'pago' | 'cancelado' => {
+  const getSubscriberStatus = (paymentDate: string | null): SubscriberStatus => {
     if (!paymentDate) return 'cancelado';
     
     const today = new Date();
     const nextPaymentDate = parseISO(paymentDate);
     
-    // Se a data de pagamento é anterior a hoje, está cancelado
     if (isBefore(nextPaymentDate, today)) {
       return 'cancelado';
     }
     
-    // Se a data de pagamento é posterior ou igual a hoje, está pago
     return 'pago';
   };
 
@@ -106,7 +97,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
       totalSubscribers: acc.totalSubscribers + 1,
       activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
       overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
-      monthlyRevenue: acc.monthlyRevenue + (subscriber.status === 'pago' ? 50 : 0), // Assuming fixed price of 50
+      monthlyRevenue: acc.monthlyRevenue + (subscriber.status === 'pago' ? 50 : 0),
     }), {
       totalSubscribers: 0,
       activeSubscribers: 0,
