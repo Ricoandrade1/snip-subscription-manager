@@ -10,6 +10,7 @@ import { getMemberCode } from "./members/MemberCode";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface MembersTableProps {
   planFilter?: "Basic" | "Classic" | "Business";
@@ -28,12 +29,43 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     }
   }, [session, navigate]);
 
+  useEffect(() => {
+    const fetchMemberPlan = async (member: Member) => {
+      if (member.plan_id) {
+        const { data: planData } = await supabase
+          .from('plans')
+          .select('title')
+          .eq('id', member.plan_id)
+          .single();
+        
+        if (planData) {
+          member.plan = planData.title as Member["plan"];
+        }
+      }
+    };
+
+    if (selectedMember && !selectedMember.plan) {
+      fetchMemberPlan(selectedMember);
+    }
+  }, [selectedMember]);
+
   const { filters, handleFilterChange, filteredMembers } = useMembers({
     members,
     planFilter,
   });
 
-  const handleRowClick = (member: Member) => {
+  const handleRowClick = async (member: Member) => {
+    if (member.plan_id && !member.plan) {
+      const { data: planData } = await supabase
+        .from('plans')
+        .select('title')
+        .eq('id', member.plan_id)
+        .single();
+      
+      if (planData) {
+        member.plan = planData.title as Member["plan"];
+      }
+    }
     setSelectedMember(member);
     setDialogOpen(true);
   };

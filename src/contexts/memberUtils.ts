@@ -9,7 +9,7 @@ export const fetchMembersFromDB = async () => {
     .from('members')
     .select(`
       *,
-      plans (
+      plans!inner (
         id,
         title,
         price
