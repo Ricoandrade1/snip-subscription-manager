@@ -52,7 +52,7 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
         nif: member.nif,
         plan: member.plans.title as "Basic" | "Classic" | "Business",
         plan_id: member.plan_id,
-        status: member.status as SubscriberStatus,
+        status: member.status as 'active' | 'overdue' | 'cancelled',
         created_at: member.created_at,
         payment_date: member.payment_date,
       }));
