@@ -1,24 +1,26 @@
-import { useNavigate } from "react-router-dom";
-
 interface SubmenuItemProps {
   title: string;
   url: string;
   isActive: boolean;
   subscriberCount?: number;
+  onClick: () => void;
 }
 
-export function SubmenuItem({ title, url, isActive, subscriberCount }: SubmenuItemProps) {
-  const navigate = useNavigate();
-
+export function SubmenuItem({
+  title,
+  isActive,
+  subscriberCount,
+  onClick,
+}: SubmenuItemProps) {
   return (
     <button
-      onClick={() => navigate(url)}
+      onClick={onClick}
       className={`w-full flex items-center justify-between p-2 rounded-md hover:bg-muted ${
         isActive ? "bg-muted" : ""
       }`}
     >
       <span>{title}</span>
-      {subscriberCount !== undefined && (
+      {typeof subscriberCount === "number" && (
         <span className="ml-auto text-xs opacity-60">{subscriberCount}</span>
       )}
     </button>

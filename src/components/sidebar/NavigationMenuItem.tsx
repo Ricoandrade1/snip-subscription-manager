@@ -54,6 +54,10 @@ export function NavigationMenuItem({
     }
   }, [hasActiveSubmenuItem]);
 
+  const handleNavigate = (url: string) => {
+    navigate(url);
+  };
+
   if (item.submenu) {
     return (
       <SidebarMenuItem>
@@ -86,6 +90,7 @@ export function NavigationMenuItem({
                         ? getSubscriberCount?.(subItem.title as "Basic" | "Classic" | "Business")
                         : undefined
                     }
+                    onClick={() => handleNavigate(subItem.url)}
                   />
                 </SidebarMenuSubItem>
               ))}
@@ -99,7 +104,7 @@ export function NavigationMenuItem({
   return (
     <SidebarMenuItem>
       <button
-        onClick={() => navigate(item.url)}
+        onClick={() => handleNavigate(item.url)}
         className={`flex items-center gap-2 p-2 w-full rounded-md hover:bg-muted ${
           isActiveRoute(item.url) ? "bg-muted" : ""
         }`}
