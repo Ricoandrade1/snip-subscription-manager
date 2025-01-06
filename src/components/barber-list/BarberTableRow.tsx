@@ -3,6 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Database } from "@/integrations/supabase/types";
 import { BarberActions } from "./BarberActions";
 import { BarberRoleBadges } from "./BarberRoleBadges";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { UserCircle2 } from "lucide-react";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -15,6 +17,7 @@ interface Barber {
   commission_rate: number;
   status: string;
   roles: UserAuthority[];
+  image_url?: string | null;
 }
 
 interface BarberTableRowProps {
@@ -25,7 +28,17 @@ interface BarberTableRowProps {
 export function BarberTableRow({ barber, onEditSuccess }: BarberTableRowProps) {
   return (
     <TableRow>
-      <TableCell className="font-medium">{barber.name}</TableCell>
+      <TableCell>
+        <div className="flex items-center gap-3">
+          <Avatar>
+            <AvatarImage src={barber.image_url || undefined} alt={barber.name} />
+            <AvatarFallback>
+              <UserCircle2 className="h-5 w-5" />
+            </AvatarFallback>
+          </Avatar>
+          <span className="font-medium">{barber.name}</span>
+        </div>
+      </TableCell>
       <TableCell>{barber.phone}</TableCell>
       <TableCell>{barber.email || '-'}</TableCell>
       <TableCell>

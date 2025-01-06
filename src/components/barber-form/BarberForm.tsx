@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Form } from "@/components/ui/form";
@@ -9,6 +9,7 @@ import { PersonalInfoFields } from "./PersonalInfoFields";
 import { BankingFields } from "./BankingFields";
 import { SpecialtiesFields } from "./SpecialtiesFields";
 import { supabase } from "@/integrations/supabase/client";
+import { ImageUpload } from "./ImageUpload";
 
 const formSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -19,9 +20,10 @@ const formSchema = z.object({
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
   startDate: z.string().min(1, "Data de início é obrigatória"),
   specialties: z.array(z.string()).min(1, "Selecione pelo menos uma especialidade"),
-  commissionRate: z.number().min(0).max(100), // Updated to allow 0
+  commissionRate: z.number().min(0).max(100),
   bankName: z.string().min(2, "Nome do banco é obrigatório"),
   iban: z.string().min(15, "IBAN inválido"),
+  imageUrl: z.string().optional(),
 });
 
 type BarberFormData = z.infer<typeof formSchema>;
@@ -34,6 +36,7 @@ interface BarberFormProps {
 export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
   const { toast } = useToast();
   const today = new Date().toISOString().split('T')[0];
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const form = useForm<BarberFormData>({
     resolver: zodResolver(formSchema),
@@ -49,6 +52,7 @@ export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
       commissionRate: 50,
       bankName: "",
       iban: "",
+      imageUrl: "",
     },
   });
 
@@ -69,7 +73,6 @@ export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
       if (error) throw error;
 
       if (data) {
-        // Ensure dates are in YYYY-MM-DD format
         const birthDate = data.birth_date ? new Date(data.birth_date).toISOString().split('T')[0] : today;
         const startDate = data.start_date ? new Date(data.start_date).toISOString().split('T')[0] : today;
 
@@ -85,7 +88,9 @@ export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
           commissionRate: data.commission_rate,
           bankName: data.bank_name,
           iban: data.iban,
+          imageUrl: data.image_url || "",
         });
+        setImageUrl(data.image_url);
       }
     } catch (error) {
       console.error('Error loading barber data:', error);
@@ -111,6 +116,7 @@ export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
         commission_rate: data.commissionRate,
         bank_name: data.bankName,
         iban: data.iban,
+        image_url: imageUrl,
       };
 
       let error;
@@ -134,6 +140,7 @@ export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
       
       if (!barberId) {
         form.reset();
+        setImageUrl(null);
       }
       
       if (onSuccess) {
@@ -149,9 +156,19 @@ export function BarberForm({ barberId, onSuccess }: BarberFormProps) {
     }
   };
 
+  const handleImageUpload = (url: string) => {
+    setImageUrl(url);
+    form.setValue('imageUrl', url);
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <ImageUpload 
+          currentImage={imageUrl} 
+          onUpload={handleImageUpload} 
+        />
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <PersonalInfoFields form={form} />
           <BankingFields form={form} />
