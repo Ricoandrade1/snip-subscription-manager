@@ -5,6 +5,12 @@ import { RoleManager } from "@/components/barber-list/RoleManager";
 import { Database } from "@/integrations/supabase/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuTrigger,
+  ContextMenuItem,
+} from "@/components/ui/context-menu";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -66,77 +72,96 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
     return "text-gray-400";
   };
 
+  const handleEditClick = () => {
+    onSelectUser(user.id);
+  };
+
   return (
-    <Card className={cn("transition-colors group relative", getCardStyle())}>
-      <Pencil className="absolute top-2 right-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity text-barber-light/60" />
-      <CardHeader className="pb-2">
-        <div className="flex items-center space-x-2">
-          <UserCog className={cn("h-5 w-5", getIconStyle())} />
-          <h3 className={cn("text-lg font-semibold truncate", getTitleStyle())}>
-            {user.email || "Usuário sem email"}
-          </h3>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-2">
-            {user.roles?.length > 0 ? (
-              user.roles.map((role) => (
-                <span
-                  key={role}
-                  className={cn(
-                    "px-2 py-1 rounded-full text-xs border",
-                    getRoleStyle(role)
-                  )}
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <Card className={cn("transition-colors group relative", getCardStyle())}>
+          <Pencil 
+            className="absolute top-2 right-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity text-barber-light/60 cursor-pointer" 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          />
+          <CardHeader className="pb-2">
+            <div className="flex items-center space-x-2">
+              <UserCog className={cn("h-5 w-5", getIconStyle())} />
+              <h3 className={cn("text-lg font-semibold truncate", getTitleStyle())}>
+                {user.email || "Usuário sem email"}
+              </h3>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {user.roles?.length > 0 ? (
+                  user.roles.map((role) => (
+                    <span
+                      key={role}
+                      className={cn(
+                        "px-2 py-1 rounded-full text-xs border",
+                        getRoleStyle(role)
+                      )}
+                    >
+                      {role}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-barber-light text-sm">Sem funções atribuídas</span>
+                )}
+              </div>
+              
+              <div className="flex justify-end pt-2">
+                <Dialog 
+                  open={selectedUserId === user.id} 
+                  onOpenChange={(open) => !open && onSelectUser(null)}
                 >
-                  {role}
-                </span>
-              ))
-            ) : (
-              <span className="text-barber-light text-sm">Sem funções atribuídas</span>
-            )}
-          </div>
-          
-          <div className="flex justify-end pt-2">
-            <Dialog 
-              open={selectedUserId === user.id} 
-              onOpenChange={(open) => !open && onSelectUser(null)}
-            >
-              <DialogTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => onSelectUser(user.id)}
-                  className={cn(
-                    "bg-barber-gray border-barber-gold text-barber-gold hover:bg-barber-gold hover:text-barber-black",
-                    {
-                      "bg-barber-gray border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-barber-black": isSeller,
-                      "bg-barber-gray border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-barber-black": isBarber
-                    }
-                  )}
-                >
-                  Gerir Funções
-                </Button>
-              </DialogTrigger>
-              <DialogContent className={cn("border-barber-gold/20", getCardStyle())}>
-                <div className="space-y-4">
-                  <h2 className={cn("text-xl font-semibold", getTitleStyle())}>
-                    Gerir Funções - {user.email || "Usuário sem email"}
-                  </h2>
-                  <RoleManager
-                    barber={{
-                      id: user.id,
-                      name: user.email || 'Usuário sem email',
-                      roles: user.roles || []
-                    }}
-                    onSuccess={onRoleUpdateSuccess}
-                  />
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => onSelectUser(user.id)}
+                      className={cn(
+                        "bg-barber-gray border-barber-gold text-barber-gold hover:bg-barber-gold hover:text-barber-black",
+                        {
+                          "bg-barber-gray border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-barber-black": isSeller,
+                          "bg-barber-gray border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-barber-black": isBarber
+                        }
+                      )}
+                    >
+                      Gerir Funções
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className={cn("border-barber-gold/20", getCardStyle())}>
+                    <div className="space-y-4">
+                      <h2 className={cn("text-xl font-semibold", getTitleStyle())}>
+                        Gerir Funções - {user.email || "Usuário sem email"}
+                      </h2>
+                      <RoleManager
+                        barber={{
+                          id: user.id,
+                          name: user.email || 'Usuário sem email',
+                          roles: user.roles || []
+                        }}
+                        onSuccess={onRoleUpdateSuccess}
+                      />
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-48">
+        <ContextMenuItem onClick={handleEditClick}>
+          Editar Funções
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }
