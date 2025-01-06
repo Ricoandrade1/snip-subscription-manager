@@ -34,7 +34,7 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
       return "bg-blue-950/50 border-blue-500/20 hover:border-blue-500/40";
     }
     if (isBarber) {
-      return "bg-purple-950/50 border-purple-500/20 hover:border-purple-500/40";
+      return "bg-barber-gray border-gray-500/20 hover:border-gray-500/40";
     }
     return "bg-barber-gray border-gray-500/20 hover:border-gray-500/40";
   };
@@ -46,7 +46,7 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
       case "seller":
         return "bg-blue-500/10 text-blue-400 border-blue-500/20";
       case "barber":
-        return "bg-purple-500/10 text-purple-400 border-purple-500/20";
+        return "bg-gray-500/10 text-gray-400 border-gray-500/20";
       default:
         return "bg-gray-500/10 text-gray-400 border-gray-500/20";
     }
@@ -55,14 +55,14 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
   const getTitleStyle = () => {
     if (isAdmin) return "text-barber-gold";
     if (isSeller) return "text-blue-400";
-    if (isBarber) return "text-purple-400";
+    if (isBarber) return "text-gray-400";
     return "text-gray-400";
   };
 
   const getIconStyle = () => {
     if (isAdmin) return "text-barber-gold";
     if (isSeller) return "text-blue-400";
-    if (isBarber) return "text-purple-400";
+    if (isBarber) return "text-gray-400";
     return "text-gray-400";
   };
 
@@ -106,7 +106,7 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
                     "bg-barber-gray border-barber-gold text-barber-gold hover:bg-barber-gold hover:text-barber-black",
                     {
                       "bg-barber-gray border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-barber-black": isSeller,
-                      "bg-barber-gray border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-barber-black": isBarber
+                      "bg-barber-gray border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-barber-black": isBarber
                     }
                   )}
                 >
