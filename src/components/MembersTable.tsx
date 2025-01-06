@@ -29,28 +29,8 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     }
   }, [session, navigate]);
 
-  useEffect(() => {
-    const fetchMemberPlan = async (member: Member) => {
-      if (member.plan_id) {
-        const { data: planData } = await supabase
-          .from('plans')
-          .select('title')
-          .eq('id', member.plan_id)
-          .single();
-        
-        if (planData) {
-          member.plan = planData.title as Member["plan"];
-        }
-      }
-    };
-
-    if (selectedMember && !selectedMember.plan) {
-      fetchMemberPlan(selectedMember);
-    }
-  }, [selectedMember]);
-
   const { filters, handleFilterChange, filteredMembers } = useMembers({
-    members,
+    members: members || [], // Garante que members seja um array
     planFilter,
   });
 
@@ -82,6 +62,11 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     );
   }
 
+  // Remove duplicatas baseado no ID do membro
+  const uniqueMembers = filteredMembers.filter((member, index, self) =>
+    index === self.findIndex((m) => m.id === member.id)
+  );
+
   return (
     <div className="space-y-4">
       <MembersFilter
@@ -93,7 +78,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
         <Table>
           <MembersTableHeader />
           <TableBody>
-            {filteredMembers.map((member) => (
+            {uniqueMembers.map((member) => (
               <MemberTableRow
                 key={member.id}
                 member={member}
