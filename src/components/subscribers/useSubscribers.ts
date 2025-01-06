@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Subscriber, SubscriberStats } from "./types";
 import { FilterState } from "./types";
 import { toast } from "sonner";
-import { isAfter, isBefore, parseISO } from "date-fns";
 
 interface UseSubscribersProps {
   planFilter?: "Basic" | "Classic" | "Business";
@@ -24,6 +23,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     phone: "",
     nif: "",
     plan: "all",
+    status: "all",
     sortBy: "name",
     sortOrder: "asc",
   });
@@ -68,6 +68,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
           plan_id: member.plan_id,
           created_at: member.created_at,
           payment_date: member.payment_date,
+          status: member.status || 'pendente'
         }));
 
       setSubscribers(formattedSubscribers);
@@ -83,9 +84,9 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
   const calculateStats = (subscribersList: Subscriber[]) => {
     const stats = subscribersList.reduce((acc, subscriber) => ({
       totalSubscribers: acc.totalSubscribers + 1,
-      activeSubscribers: acc.activeSubscribers + (subscriber.payment_date ? 1 : 0),
-      overdueSubscribers: acc.overdueSubscribers + (!subscriber.payment_date ? 1 : 0),
-      monthlyRevenue: acc.monthlyRevenue + (subscriber.payment_date ? 50 : 0),
+      activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
+      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
+      monthlyRevenue: acc.monthlyRevenue + (subscriber.status === 'pago' ? 50 : 0),
     }), {
       totalSubscribers: 0,
       activeSubscribers: 0,
@@ -126,28 +127,29 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
       const matchPhone = !filters.phone || (subscriber.phone && subscriber.phone.toLowerCase().includes(filters.phone.toLowerCase()));
       const matchNif = !filters.nif || (subscriber.nif && subscriber.nif.toLowerCase().includes(filters.nif.toLowerCase()));
       const matchPlan = filters.plan === 'all' || subscriber.plan === filters.plan;
+      const matchStatus = filters.status === 'all' || subscriber.status === filters.status;
 
       let matchStatusFilter = true;
       if (statusFilter !== 'all') {
         switch (statusFilter) {
           case 'active':
-            matchStatusFilter = !!subscriber.payment_date;
+            matchStatusFilter = subscriber.status === 'pago';
             break;
           case 'overdue':
-            matchStatusFilter = !subscriber.payment_date;
+            matchStatusFilter = subscriber.status === 'pendente';
             break;
           case 'total':
             matchStatusFilter = true;
             break;
           case 'revenue':
-            matchStatusFilter = !!subscriber.payment_date;
+            matchStatusFilter = subscriber.status === 'pago';
             break;
           default:
             matchStatusFilter = true;
         }
       }
 
-      return matchName && matchPhone && matchNif && matchPlan && matchStatusFilter;
+      return matchName && matchPhone && matchNif && matchPlan && matchStatus && matchStatusFilter;
     })
   );
 
