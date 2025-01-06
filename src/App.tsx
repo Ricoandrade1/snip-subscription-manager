@@ -26,31 +26,43 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user) {
-        setIsAdmin(session.user.user_metadata.role === 'admin');
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        handleSession(session);
+      } catch (error) {
+        console.error('Error checking session:', error);
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    };
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session?.user) {
-        setIsAdmin(session.user.user_metadata.role === 'admin');
-      }
-      if (_event === 'SIGNED_IN') {
-        toast.success('Login realizado com sucesso!');
-      } else if (_event === 'SIGNED_OUT') {
-        toast.success('Logout realizado com sucesso!');
-        setIsAdmin(false);
-      }
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      handleSession(session);
+      handleAuthEvent(_event);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const handleSession = (session: Session | null) => {
+    setSession(session);
+    if (session?.user) {
+      setIsAdmin(session.user.user_metadata.role === 'admin');
+    } else {
+      setIsAdmin(false);
+    }
+    setLoading(false);
+  };
+
+  const handleAuthEvent = (event: string) => {
+    if (event === 'SIGNED_IN') {
+      toast.success('Login realizado com sucesso!');
+    } else if (event === 'SIGNED_OUT') {
+      toast.success('Logout realizado com sucesso!');
+    }
+  };
 
   if (loading) {
     return (
@@ -60,22 +72,19 @@ function App() {
     );
   }
 
-  // Páginas públicas que não precisam de autenticação
   const publicPages = ["/login", "/reset-password"];
   const isPublicPage = publicPages.includes(location.pathname);
 
-  // Se não estiver autenticado e tentar acessar uma página protegida
   if (!session && !isPublicPage) {
     return <Navigate to="/login" replace />;
   }
 
-  // Se estiver autenticado e tentar acessar páginas de login/reset
   if (session && isPublicPage) {
     return <Navigate to="/" replace />;
   }
 
-  // Se não for admin, redirecionar para página de acesso negado ou home
   if (session && !isAdmin && !isPublicPage) {
+    toast.error('Acesso restrito a administradores');
     return <Navigate to="/login" replace />;
   }
 
