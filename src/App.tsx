@@ -26,43 +26,34 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        handleSession(session);
-      } catch (error) {
-        console.error('Error checking session:', error);
-        setLoading(false);
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setSession(session);
+        setIsAdmin(session.user.user_metadata.role === 'admin');
       }
-    };
+      setLoading(false);
+    });
 
-    initializeAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      handleSession(session);
-      handleAuthEvent(_event);
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        setSession(session);
+        setIsAdmin(session.user.user_metadata.role === 'admin');
+        if (event === 'SIGNED_IN') {
+          toast.success('Login realizado com sucesso!');
+        }
+      } else {
+        setSession(null);
+        setIsAdmin(false);
+        if (event === 'SIGNED_OUT') {
+          toast.success('Logout realizado com sucesso!');
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const handleSession = (session: Session | null) => {
-    setSession(session);
-    if (session?.user) {
-      setIsAdmin(session.user.user_metadata.role === 'admin');
-    } else {
-      setIsAdmin(false);
-    }
-    setLoading(false);
-  };
-
-  const handleAuthEvent = (event: string) => {
-    if (event === 'SIGNED_IN') {
-      toast.success('Login realizado com sucesso!');
-    } else if (event === 'SIGNED_OUT') {
-      toast.success('Logout realizado com sucesso!');
-    }
-  };
 
   if (loading) {
     return (
