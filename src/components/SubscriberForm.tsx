@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { DialogHeader, DialogTitle } from "./ui/dialog";
+import { ScrollArea } from "./ui/scroll-area";
 
 const formSchema = z.object({
   name: z.string(),
@@ -96,26 +97,28 @@ export function SubscriberForm() {
   return (
     <div className="p-4 bg-barber-black text-barber-light">
       <DialogHeader>
-        <DialogTitle className="text-2xl font-bold text-barber-gold">
+        <DialogTitle className="text-2xl font-bold text-barber-gold mb-4">
           Cadastrar Novo Assinante
         </DialogTitle>
       </DialogHeader>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-4">
-          <PersonalInfoFields form={form} />
-          <BankingFields form={form} />
-          <PlanFields form={form} />
-          <PaymentDateField form={form} />
-          
-          <Button 
-            type="submit" 
-            className="w-full bg-barber-gold hover:bg-barber-gold/90 text-barber-black"
-          >
-            Cadastrar Assinante
-          </Button>
-        </form>
-      </Form>
+      <ScrollArea className="h-[500px] pr-4">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <PersonalInfoFields form={form} />
+            <BankingFields form={form} />
+            <PlanFields form={form} />
+            <PaymentDateField form={form} />
+            
+            <Button 
+              type="submit" 
+              className="w-full bg-barber-gold hover:bg-barber-gold/90 text-barber-black"
+            >
+              Cadastrar Assinante
+            </Button>
+          </form>
+        </Form>
+      </ScrollArea>
     </div>
   );
 }
