@@ -50,7 +50,6 @@ export default function CashFlow() {
 
   const handleClearCart = () => {
     setCartItems([]);
-    toast.success("Carrinho limpo com sucesso!");
   };
 
   const handleFinishSale = async () => {
