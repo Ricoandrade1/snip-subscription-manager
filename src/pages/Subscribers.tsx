@@ -7,7 +7,12 @@ import { UserPlus, Users } from "lucide-react";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { SubscriberForm } from "@/components/SubscriberForm";
-import { SubscribersPDFButton } from "@/components/subscribers/SubscribersPDFButton";
+</lov-replace>
+
+<lov-search>
+            <SubscribersPDFButton subscribers={subscribers} />
+</lov-search>
+<lov-replace>
 import { useSubscribers } from "@/components/subscribers/useSubscribers";
 
 export default function Subscribers() {
