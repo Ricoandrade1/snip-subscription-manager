@@ -10,6 +10,7 @@ export interface Subscriber {
   plan_id: number | null;
   created_at?: string;
   payment_date?: string | null;
+  status: SubscriberStatus;
 }
 
 export interface SubscriberStats {
@@ -24,6 +25,7 @@ export interface FilterState {
   phone: string;
   nif: string;
   plan: string;
+  status: string;
   sortBy: 'name' | 'payment_date' | 'plan';
   sortOrder: 'asc' | 'desc';
 }

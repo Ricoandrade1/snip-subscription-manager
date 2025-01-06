@@ -23,6 +23,7 @@ export function EditSubscriberDialog({
   const memberData: Member = {
     ...subscriber,
     plan: subscriber.plan,
+    status: subscriber.status,
     due_date: undefined,
   };
 

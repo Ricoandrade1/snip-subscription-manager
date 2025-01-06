@@ -3,12 +3,47 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "./schema";
 import { MemberStatus } from "@/contexts/types";
+import { toast } from "sonner";
 
 interface StatusFieldProps {
   form: UseFormReturn<FormValues>;
 }
 
 export function StatusField({ form }: StatusFieldProps) {
+  const handleStatusChange = (newStatus: MemberStatus) => {
+    const currentStatus = form.getValues('status');
+    
+    // Define valid transitions
+    const validTransitions: Record<MemberStatus, MemberStatus[]> = {
+      'pago': ['pendente', 'cancelado'],
+      'pendente': ['pago', 'cancelado'],
+      'cancelado': ['pago', 'pendente']
+    };
+
+    // Check if transition is valid
+    if (!validTransitions[currentStatus]?.includes(newStatus)) {
+      toast.error(`Não é possível mudar diretamente de ${currentStatus} para ${newStatus}`);
+      return;
+    }
+
+    // If status changes to 'pago' and there's no payment date, set it to today
+    if (newStatus === 'pago' && !form.getValues('payment_date')) {
+      const today = new Date();
+      form.setValue('payment_date', today, {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true
+      });
+    }
+
+    // Update the status
+    form.setValue('status', newStatus, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
+    });
+  };
+
   return (
     <FormField
       control={form.control}
@@ -17,21 +52,7 @@ export function StatusField({ form }: StatusFieldProps) {
         <FormItem className="space-y-3">
           <FormLabel className="text-barber-light">Status</FormLabel>
           <RadioGroup
-            onValueChange={(value: MemberStatus) => {
-              console.log('Alterando status para:', value);
-              field.onChange(value);
-              
-              // Se o status for alterado para "pago" e não houver data de pagamento,
-              // define a data atual como data de pagamento
-              if (value === 'pago' && !form.getValues('payment_date')) {
-                const today = new Date();
-                form.setValue('payment_date', today, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                  shouldTouch: true
-                });
-              }
-            }}
+            onValueChange={(value: MemberStatus) => handleStatusChange(value)}
             defaultValue={field.value}
             value={field.value}
             className="flex flex-col space-y-1"
