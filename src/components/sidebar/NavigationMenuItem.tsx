@@ -53,12 +53,23 @@ export function NavigationMenuItem({
     }
   }, [hasActiveSubmenuItem]);
 
+  const handleMainMenuClick = () => {
+    if (item.submenu) {
+      setIsOpen(!isOpen);
+      if (item.title === "Membros") {
+        navigate("/members");
+      }
+    } else {
+      navigate(item.url);
+    }
+  };
+
   if (item.submenu) {
     return (
       <SidebarMenuItem>
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger asChild>
-            <SidebarMenuButton>
+            <SidebarMenuButton onClick={handleMainMenuClick}>
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-2">
                   <item.icon className="h-4 w-4" />
