@@ -82,11 +82,11 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
   return (
     <Button 
       onClick={generatePDF}
-      variant="outline" 
-      className="bg-barber-black text-barber-light hover:bg-barber-gold hover:text-black"
+      size="lg"
+      className="bg-barber-gold hover:bg-barber-gold/90 text-black font-semibold shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105"
     >
-      <FileDown className="mr-2 h-4 w-4" />
-      Exportar PDF ({subscribers.length})
+      <FileDown className="mr-2 h-5 w-5" />
+      Exportar Resultados ({subscribers.length})
     </Button>
   );
 }
