@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { SubscriberForm } from "@/components/SubscriberForm";
 import { UserPlus, Menu } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
+import { UserMenu } from "@/components/auth/UserMenu";
 
 interface DashboardActionsProps {
   isDialogOpen: boolean;
@@ -34,6 +35,8 @@ const DashboardActions = ({ isDialogOpen, setIsDialogOpen }: DashboardActionsPro
           <SubscriberForm />
         </DialogContent>
       </Dialog>
+
+      <UserMenu />
     </div>
   );
 };
