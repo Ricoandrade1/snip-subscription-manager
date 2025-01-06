@@ -52,9 +52,10 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
       const tableData = subscribers.map(subscriber => {
         let nextPaymentDate = '-';
         if (subscriber.payment_date) {
-          const date = new Date(subscriber.payment_date);
-          date.setMonth(date.getMonth() + 1);
-          nextPaymentDate = format(date, 'dd/MM/yyyy', { locale: ptBR });
+          const paymentDate = new Date(subscriber.payment_date);
+          const nextDate = new Date(paymentDate);
+          nextDate.setMonth(nextDate.getMonth() + 1);
+          nextPaymentDate = format(nextDate, 'dd/MM/yyyy', { locale: ptBR });
         }
 
         return [
