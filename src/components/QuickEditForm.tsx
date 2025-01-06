@@ -1,9 +1,8 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Member } from "@/contexts/MemberContext";
+import { Form } from "@/components/ui/form";
 import { PersonalInfoFields } from "./member-form/PersonalInfoFields";
 import { PlanFields } from "./member-form/PlanFields";
 import { PaymentDateField } from "./PaymentDateField";
@@ -18,12 +17,13 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: member.name,
+      name: member.name || "",
       nickname: member.nickname || "",
       phone: member.phone || "",
       nif: member.nif || "",
-      plan: member.plan,
-      payment_date: member.payment_date ? new Date(member.payment_date) : new Date(),
+      plan: member.plan || undefined,
+      payment_date: member.payment_date ? new Date(member.payment_date) : undefined,
+      status: member.status || "active",
     },
   });
 
@@ -39,21 +39,17 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <PersonalInfoFields form={form} />
-          <div className="space-y-6">
-            <PlanFields form={form} />
-            <PaymentDateField form={form} />
-          </div>
-        </div>
-
-        <div className="flex justify-end space-x-2">
-          <Button 
+        <PersonalInfoFields />
+        <PlanFields />
+        <PaymentDateField />
+        
+        <div className="flex justify-end">
+          <button
             type="submit"
-            className="bg-barber-gold hover:bg-barber-gold/90 text-barber-black font-semibold"
+            className="bg-barber-gold hover:bg-barber-gold/90 text-white px-4 py-2 rounded-md"
           >
             Salvar Alterações
-          </Button>
+          </button>
         </div>
       </form>
     </Form>

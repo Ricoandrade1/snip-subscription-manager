@@ -1,10 +1,8 @@
-import { Table, TableBody } from "@/components/ui/table";
-import { useMemberContext } from "@/contexts/MemberContext";
 import { useState } from "react";
-import type { Member } from "@/contexts/MemberContext";
+import { Table, TableBody } from "@/components/ui/table";
+import { Member, useMemberContext } from "@/contexts/MemberContext";
 import { EditMemberDialog } from "./EditMemberDialog";
-import { Skeleton } from "@/components/ui/skeleton";
-import { MembersFilter } from "./MembersFilter";
+import { MembersFilter } from "./members/MembersFilter";
 import { MemberTableRow } from "./members/MemberTableRow";
 import { MembersTableHeader } from "./members/MembersTableHeader";
 import { useMembers } from "./members/useMembers";
@@ -35,7 +33,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     planFilter,
   });
 
-  const handleMemberClick = (member: Member) => {
+  const handleRowClick = (member: Member) => {
     setSelectedMember(member);
     setDialogOpen(true);
   };
@@ -46,41 +44,29 @@ export function MembersTable({ planFilter }: MembersTableProps) {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-10 w-[300px]" />
-        <div className="space-y-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full" />
-          ))}
-        </div>
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-barber-gold"></div>
       </div>
     );
   }
-
-  if (!members || members.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-barber-light/60">Nenhum membro encontrado</p>
-      </div>
-    );
-  }
-
-  const displayMembers = filteredMembers.length > 0 ? filteredMembers : members;
 
   return (
-    <div className="space-y-6">
-      <MembersFilter filters={filters} onFilterChange={handleFilterChange} />
-
-      <div className="rounded-lg overflow-hidden border border-barber-gray">
+    <div className="space-y-4">
+      <MembersFilter
+        filters={filters}
+        onFilterChange={handleFilterChange}
+      />
+      
+      <div className="rounded-lg border border-barber-gray bg-barber-black">
         <Table>
           <MembersTableHeader />
           <TableBody>
-            {displayMembers.map((member) => (
+            {filteredMembers.map((member) => (
               <MemberTableRow
                 key={member.id}
                 member={member}
                 memberCode={getMemberCode({ member, members })}
-                onClick={() => handleMemberClick(member)}
+                onClick={() => handleRowClick(member)}
               />
             ))}
           </TableBody>
