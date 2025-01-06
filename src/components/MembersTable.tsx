@@ -48,13 +48,14 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     }
 
     // Normalize status if needed
-    if (member.status === 'active') {
-      member.status = 'pago';
-    } else if (member.status === 'inactive') {
-      member.status = 'cancelado';
-    }
+    const normalizedMember = {
+      ...member,
+      status: member.status === 'active' ? 'pago' as const :
+              member.status === 'inactive' ? 'cancelado' as const :
+              member.status
+    };
 
-    setSelectedMember(member);
+    setSelectedMember(normalizedMember);
     setDialogOpen(true);
   };
 
@@ -73,8 +74,8 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   // Normalize status for all members
   const normalizedMembers = filteredMembers.map(member => ({
     ...member,
-    status: member.status === 'active' ? 'pago' : 
-            member.status === 'inactive' ? 'cancelado' : 
+    status: member.status === 'active' ? 'pago' as const :
+            member.status === 'inactive' ? 'cancelado' as const :
             member.status
   }));
 
