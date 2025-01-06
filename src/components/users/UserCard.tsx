@@ -34,15 +34,15 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
 
   const getCardStyle = () => {
     if (isAdmin) {
-      return "bg-barber-gray border-barber-gold/20 hover:border-barber-gold/40";
+      return "bg-barber-gray border-barber-gold/20";
     }
     if (isSeller) {
-      return "bg-blue-950/50 border-blue-500/20 hover:border-blue-500/40";
+      return "bg-barber-gray border-blue-500/20";
     }
     if (isBarber) {
-      return "bg-barber-gray border-gray-500/20 hover:border-gray-500/40";
+      return "bg-barber-gray border-gray-500/20";
     }
-    return "bg-barber-gray border-gray-500/20 hover:border-gray-500/40";
+    return "bg-barber-gray border-gray-500/20";
   };
 
   const getRoleStyle = (role: string) => {
@@ -79,7 +79,7 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <Card className={cn("transition-colors group relative", getCardStyle())}>
+        <Card className={cn("transition-none group relative", getCardStyle())}>
           <Pencil 
             className="absolute top-2 right-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity text-barber-light/60 cursor-pointer" 
             onClick={(e) => {
@@ -127,10 +127,10 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
                       size="sm"
                       onClick={() => onSelectUser(user.id)}
                       className={cn(
-                        "bg-barber-gray border-barber-gold text-barber-gold hover:bg-barber-gold hover:text-barber-black",
+                        "bg-barber-gray border-barber-gold text-barber-gold hover:bg-barber-gold/10",
                         {
-                          "bg-barber-gray border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-barber-black": isSeller,
-                          "bg-barber-gray border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-barber-black": isBarber
+                          "bg-barber-gray border-blue-400 text-blue-400 hover:bg-blue-400/10": isSeller,
+                          "bg-barber-gray border-gray-400 text-gray-400 hover:bg-gray-400/10": isBarber
                         }
                       )}
                     >
