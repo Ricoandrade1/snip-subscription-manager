@@ -103,10 +103,10 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
                   size="sm"
                   onClick={() => onSelectUser(user.id)}
                   className={cn(
-                    "hover:bg-barber-gold/10 hover:text-barber-gold border-barber-gold/20",
+                    "bg-barber-gray border-barber-gold text-barber-gold hover:bg-barber-gold hover:text-barber-black",
                     {
-                      "hover:bg-blue-500/10 hover:text-blue-400 border-blue-500/20": isSeller,
-                      "hover:bg-purple-500/10 hover:text-purple-400 border-purple-500/20": isBarber
+                      "bg-barber-gray border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-barber-black": isSeller,
+                      "bg-barber-gray border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-barber-black": isBarber
                     }
                   )}
                 >
