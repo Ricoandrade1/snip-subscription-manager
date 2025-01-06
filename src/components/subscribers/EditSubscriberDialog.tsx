@@ -18,7 +18,7 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
   const memberData: Member = {
     ...subscriber,
     plan: subscriber.plan,
-    status: subscriber.status === "active" ? "active" : "inactive",
+    status: subscriber.status === "pago" ? "pago" : "cancelado",
     due_date: undefined,
   };
 
@@ -39,8 +39,8 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
         delete updateData.plan;
       }
 
-      // Se o status for "active", atualiza a data de pagamento para 30 dias à frente
-      if (data.status === 'active') {
+      // Se o status for "pago", atualiza a data de pagamento para 30 dias à frente
+      if (data.status === 'pago') {
         const nextPaymentDate = addDays(new Date(), 30);
         updateData.payment_date = nextPaymentDate.toISOString();
       }
