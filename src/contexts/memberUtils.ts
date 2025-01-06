@@ -38,7 +38,9 @@ export const fetchMembersFromDB = async () => {
     plan: member.plans?.title as Member["plan"],
     created_at: member.created_at,
     payment_date: member.payment_date,
-    status: (member.status === 'active' ? 'active' : 'inactive') as Member["status"]
+    status: member.status as Member["status"],
+    bank_name: member.bank_name,
+    iban: member.iban
   }));
 
   console.log('Membros formatados:', formattedMembers);
@@ -85,7 +87,9 @@ export const setupRealtimeSubscription = (setMembers: React.Dispatch<React.SetSt
               plan: newMember.plans?.title as Member["plan"],
               created_at: newMember.created_at,
               payment_date: newMember.payment_date,
-              status: (newMember.status === 'active' ? 'active' : 'inactive') as Member["status"]
+              status: newMember.status as Member["status"],
+              bank_name: newMember.bank_name,
+              iban: newMember.iban
             };
             
             setMembers(current => [...current, formattedMember]);
@@ -118,7 +122,9 @@ export const setupRealtimeSubscription = (setMembers: React.Dispatch<React.SetSt
               plan: updatedMember.plans?.title as Member["plan"],
               created_at: updatedMember.created_at,
               payment_date: updatedMember.payment_date,
-              status: (updatedMember.status === 'active' ? 'active' : 'inactive') as Member["status"]
+              status: updatedMember.status as Member["status"],
+              bank_name: updatedMember.bank_name,
+              iban: updatedMember.iban
             };
             
             setMembers(current => 

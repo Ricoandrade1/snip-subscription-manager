@@ -13,6 +13,8 @@ export type Member = {
   payment_date?: string | null;
   status: MemberStatus;
   last_plan_change?: string | null;
+  bank_name?: string | null;
+  iban?: string | null;
 };
 
 export interface MemberContextType {
