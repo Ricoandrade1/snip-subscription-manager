@@ -15,12 +15,7 @@ interface SubscribersPDFButtonProps {
   subscribers: Subscriber[];
 }
 
-interface FieldOption {
-  id: keyof Subscriber | 'payment_date' | 'bank_name' | 'iban';
-  label: string;
-}
-
-const FIELD_OPTIONS: FieldOption[] = [
+const FIELD_OPTIONS = [
   { id: 'name', label: 'Nome' },
   { id: 'nickname', label: 'Apelido' },
   { id: 'phone', label: 'Telefone' },
@@ -142,7 +137,7 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
           className="bg-barber-black text-barber-light hover:bg-barber-gold hover:text-black"
         >
           <FileDown className="mr-2 h-4 w-4" />
-          Exportar PDF {subscribers.length > 0 && `(${subscribers.length})`}
+          Exportar PDF ({subscribers.length})
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
@@ -170,7 +165,7 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
             onClick={generatePDF}
             className="w-full bg-barber-black text-barber-light hover:bg-barber-gold hover:text-black"
           >
-            Gerar PDF
+            Gerar PDF com {subscribers.length} registros
           </Button>
         </div>
       </PopoverContent>
