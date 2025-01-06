@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, BarChart3, CreditCard } from "lucide-react";
+import { Users, CreditCard } from "lucide-react";
 import StatCard from './StatCard';
 
 interface DashboardStatsProps {
