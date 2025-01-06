@@ -18,6 +18,7 @@ export type Database = {
           email: string | null
           iban: string
           id: string
+          image_url: string | null
           name: string
           nickname: string | null
           nif: string
@@ -37,6 +38,7 @@ export type Database = {
           email?: string | null
           iban: string
           id?: string
+          image_url?: string | null
           name: string
           nickname?: string | null
           nif: string
@@ -56,6 +58,7 @@ export type Database = {
           email?: string | null
           iban?: string
           id?: string
+          image_url?: string | null
           name?: string
           nickname?: string | null
           nif?: string
