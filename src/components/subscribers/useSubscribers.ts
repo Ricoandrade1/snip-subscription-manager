@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Subscriber, SubscriberStats } from "./types/subscriber";
+import { Subscriber, SubscriberStats, SubscriberStatus } from "./types/subscriber";
 import { FilterState } from "./types";
 import { toast } from "sonner";
 import { isAfter, isBefore, parseISO } from "date-fns";
