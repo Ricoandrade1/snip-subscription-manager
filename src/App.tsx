@@ -26,7 +26,6 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    // Verificar sessão inicial
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
@@ -35,11 +34,9 @@ function App() {
       setLoading(false);
     });
 
-    // Escutar mudanças na autenticação
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("Auth state changed:", _event, session);
       setSession(session);
       if (session?.user) {
         setIsAdmin(session.user.user_metadata.role === 'admin');
@@ -69,19 +66,16 @@ function App() {
 
   // Se não estiver autenticado e tentar acessar uma página protegida
   if (!session && !isPublicPage) {
-    console.log("Redirecting to login - no session");
     return <Navigate to="/login" replace />;
   }
 
   // Se estiver autenticado e tentar acessar páginas de login/reset
   if (session && isPublicPage) {
-    console.log("Redirecting to home - has session");
     return <Navigate to="/" replace />;
   }
 
   // Se não for admin, redirecionar para página de acesso negado ou home
   if (session && !isAdmin && !isPublicPage) {
-    toast.error('Acesso restrito a administradores');
     return <Navigate to="/login" replace />;
   }
 
