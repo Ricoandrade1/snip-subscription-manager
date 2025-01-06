@@ -1,68 +1,66 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, UserCheck, UserX, Wallet } from "lucide-react";
-
-interface StatsData {
-  totalSubscribers: number;
-  activeSubscribers: number;
-  overdueSubscribers: number;
-  monthlyRevenue: number;
-}
+import { Card } from "@/components/ui/card";
+import { Users, TrendingUp, AlertCircle, DollarSign } from "lucide-react";
 
 interface SubscribersStatsProps {
-  stats: StatsData;
+  stats: {
+    totalSubscribers: number;
+    activeSubscribers: number;
+    overdueSubscribers: number;
+    monthlyRevenue: number;
+  };
 }
 
 export function SubscribersStats({ stats }: SubscribersStatsProps) {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card className="bg-barber-gray border-barber-gold/20">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-barber-light">
-            Total de Assinantes
-          </CardTitle>
-          <Users className="h-4 w-4 text-barber-gold" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-barber-gold">{stats.totalSubscribers}</div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-barber-gray border-barber-gold/20">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-barber-light">
-            Assinantes Ativos
-          </CardTitle>
-          <UserCheck className="h-4 w-4 text-green-500" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-green-500">{stats.activeSubscribers}</div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-barber-gray border-barber-gold/20">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-barber-light">
-            Pagamentos Atrasados
-          </CardTitle>
-          <UserX className="h-4 w-4 text-red-500" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-red-500">{stats.overdueSubscribers}</div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-barber-gray border-barber-gold/20">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-barber-light">
-            Receita Mensal
-          </CardTitle>
-          <Wallet className="h-4 w-4 text-barber-gold" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-barber-gold">
-            R$ {stats.monthlyRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <Card className="p-6 bg-barber-gray border-barber-gold/20 hover:border-barber-gold/40 transition-colors">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-barber-gold/10 rounded-lg">
+            <Users className="w-6 h-6 text-barber-gold" />
           </div>
-        </CardContent>
+          <div>
+            <p className="text-sm font-medium text-barber-light/60">Total de Assinantes</p>
+            <h3 className="text-2xl font-bold text-barber-light">{stats.totalSubscribers}</h3>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-6 bg-barber-gray border-green-500/20 hover:border-green-500/40 transition-colors">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-green-500/10 rounded-lg">
+            <TrendingUp className="w-6 h-6 text-green-500" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-barber-light/60">Assinantes Ativos</p>
+            <h3 className="text-2xl font-bold text-barber-light">{stats.activeSubscribers}</h3>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-6 bg-barber-gray border-red-500/20 hover:border-red-500/40 transition-colors">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-red-500/10 rounded-lg">
+            <AlertCircle className="w-6 h-6 text-red-500" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-barber-light/60">Assinantes Atrasados</p>
+            <h3 className="text-2xl font-bold text-barber-light">{stats.overdueSubscribers}</h3>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-6 bg-barber-gray border-barber-gold/20 hover:border-barber-gold/40 transition-colors">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-barber-gold/10 rounded-lg">
+            <DollarSign className="w-6 h-6 text-barber-gold" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-barber-light/60">Receita Mensal</p>
+            <h3 className="text-2xl font-bold text-barber-light">
+              R$ {stats.monthlyRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            </h3>
+          </div>
+        </div>
       </Card>
     </div>
   );

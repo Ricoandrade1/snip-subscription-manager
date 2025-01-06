@@ -13,26 +13,26 @@ export function SubscriberTableRow({ subscriber, onClick }: SubscriberTableRowPr
   const getPlanBadgeColor = (plan: string) => {
     switch (plan) {
       case "Basic":
-        return "bg-blue-500 hover:bg-blue-600";
+        return "bg-blue-500/20 text-blue-500 hover:bg-blue-500/30";
       case "Classic":
-        return "bg-purple-500 hover:bg-purple-600";
+        return "bg-purple-500/20 text-purple-500 hover:bg-purple-500/30";
       case "Business":
-        return "bg-barber-gold hover:bg-barber-gold/90";
+        return "bg-barber-gold/20 text-barber-gold hover:bg-barber-gold/30";
       default:
-        return "bg-gray-500 hover:bg-gray-600";
+        return "bg-gray-500/20 text-gray-500 hover:bg-gray-500/30";
     }
   };
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-green-500 hover:bg-green-600";
+        return "bg-green-500/20 text-green-500 hover:bg-green-500/30";
       case "overdue":
-        return "bg-red-500 hover:bg-red-600";
+        return "bg-red-500/20 text-red-500 hover:bg-red-500/30";
       case "cancelled":
-        return "bg-gray-500 hover:bg-gray-600";
+        return "bg-gray-500/20 text-gray-500 hover:bg-gray-500/30";
       default:
-        return "bg-gray-500 hover:bg-gray-600";
+        return "bg-gray-500/20 text-gray-500 hover:bg-gray-500/30";
     }
   };
 
