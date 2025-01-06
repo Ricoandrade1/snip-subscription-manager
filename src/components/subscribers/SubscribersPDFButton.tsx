@@ -81,7 +81,7 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
       className="bg-barber-black text-barber-light hover:bg-barber-gold hover:text-black"
     >
       <FileDown className="mr-2 h-4 w-4" />
-      Exportar PDF
+      Exportar PDF {subscribers.length > 0 && `(${subscribers.length})`}
     </Button>
   );
 }

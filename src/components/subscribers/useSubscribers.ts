@@ -69,7 +69,9 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
           plan_id: member.plan_id,
           created_at: member.created_at,
           payment_date: member.payment_date,
-          status: member.status as SubscriberStatus
+          status: member.status as SubscriberStatus,
+          bank_name: member.bank_name,
+          iban: member.iban
         }));
 
       setSubscribers(formattedSubscribers);
