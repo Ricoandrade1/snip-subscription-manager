@@ -35,7 +35,7 @@ export const menuItems = [
     url: "/barbers",
   },
   {
-    title: "Movimentos de Caixa",
+    title: "Caixa",
     icon: DollarSign,
     url: "/cash-flow",
   },
