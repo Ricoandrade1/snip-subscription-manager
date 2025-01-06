@@ -8,6 +8,7 @@ import { useSubscribers } from "./useSubscribers";
 import { EditSubscriberDialog } from "./EditSubscriberDialog";
 import { SubscribersStats } from "./SubscribersStats";
 import { DeleteSubscriberDialog } from "./DeleteSubscriberDialog";
+import { SubscribersPDFButton } from "./SubscribersPDFButton";
 import type { Subscriber } from "./types";
 
 interface SubscribersTableProps {
@@ -59,11 +60,14 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
 
   return (
     <div className="space-y-6">
-      <SubscribersStats 
-        stats={stats}
-        onFilterChange={handleStatusFilterChange}
-        selectedStatus={statusFilter}
-      />
+      <div className="flex items-center justify-between">
+        <SubscribersStats 
+          stats={stats}
+          onFilterChange={handleStatusFilterChange}
+          selectedStatus={statusFilter}
+        />
+        <SubscribersPDFButton subscribers={filteredSubscribers} />
+      </div>
       
       <SubscribersFilter 
         filters={filters} 
