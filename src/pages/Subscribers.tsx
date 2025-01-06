@@ -7,10 +7,13 @@ import { UserPlus, Users } from "lucide-react";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { SubscriberForm } from "@/components/SubscriberForm";
+import { SubscribersPDFButton } from "@/components/subscribers/SubscribersPDFButton";
+import { useSubscribers } from "@/components/subscribers/useSubscribers";
 
 export default function Subscribers() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { subscribers } = useSubscribers({});
 
   useEffect(() => {
     const checkSession = async () => {
@@ -61,17 +64,20 @@ export default function Subscribers() {
               Gerencie todos os assinantes da sua barbearia
             </p>
           </div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="bg-barber-gold hover:bg-barber-gold/90 text-barber-black">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Cadastrar Assinante
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-3xl bg-barber-gray border-barber-gold/20">
-              <SubscriberForm />
-            </DialogContent>
-          </Dialog>
+          <div className="flex gap-2">
+            <SubscribersPDFButton subscribers={subscribers} />
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="bg-barber-gold hover:bg-barber-gold/90 text-barber-black">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Cadastrar Assinante
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl bg-barber-gray border-barber-gold/20">
+                <SubscriberForm />
+              </DialogContent>
+            </Dialog>
+          </div>
         </header>
 
         <Tabs value={getInitialTab()} className="w-full" onValueChange={handleTabChange}>
