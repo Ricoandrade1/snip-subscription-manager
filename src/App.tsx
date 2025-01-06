@@ -101,10 +101,10 @@ function App() {
             <Route path="/login" element={<LoginForm />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={<Index />} />
+            <Route path="/subscribers/*" element={<Subscribers />} />
             <Route path="/products" element={<Products />} />
             <Route path="/brands" element={<Brands />} />
             <Route path="/categories" element={<Categories />} />
-            <Route path="/subscribers/*" element={<Subscribers />} />
             <Route path="/revenue" element={<Revenue />} />
             <Route path="/barbers" element={<Barbers />} />
             <Route path="/cash-flow" element={<CashFlow />} />

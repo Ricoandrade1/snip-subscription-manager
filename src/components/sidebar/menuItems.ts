@@ -46,11 +46,6 @@ export const menuItems = [
     url: "/products",
   },
   {
-    title: "Fornecedores",
-    icon: Building,
-    url: "/suppliers",
-  },
-  {
     title: "Marcas",
     icon: Tags,
     url: "/brands",
