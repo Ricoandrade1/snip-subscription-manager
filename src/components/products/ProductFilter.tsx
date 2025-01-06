@@ -129,8 +129,9 @@ export function ProductFilter({ filters, onFilterChange }: ProductFilterProps) {
             variant="outline"
             size="sm"
             onClick={() => setIsDialogOpen(true)}
+            className="h-8 px-3"
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-4 w-4 mr-1" />
             Novo Produto
           </Button>
         </div>
@@ -143,7 +144,7 @@ export function ProductFilter({ filters, onFilterChange }: ProductFilterProps) {
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Novo Produto</DialogTitle>
           </DialogHeader>
