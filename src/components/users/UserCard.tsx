@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { RoleManager } from "@/components/barber-list/RoleManager";
 import { Database } from "@/integrations/supabase/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -21,12 +22,56 @@ interface UserCardProps {
 }
 
 export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUser }: UserCardProps) {
+  const isAdmin = user.roles?.includes("admin");
+  const isSeller = user.roles?.includes("seller");
+  const isBarber = user.roles?.includes("barber");
+
+  const getCardStyle = () => {
+    if (isAdmin) {
+      return "bg-barber-gray border-barber-gold/20 hover:border-barber-gold/40";
+    }
+    if (isSeller) {
+      return "bg-blue-950/50 border-blue-500/20 hover:border-blue-500/40";
+    }
+    if (isBarber) {
+      return "bg-purple-950/50 border-purple-500/20 hover:border-purple-500/40";
+    }
+    return "bg-barber-gray border-gray-500/20 hover:border-gray-500/40";
+  };
+
+  const getRoleStyle = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "bg-barber-gold/10 text-barber-gold border-barber-gold/20";
+      case "seller":
+        return "bg-blue-500/10 text-blue-400 border-blue-500/20";
+      case "barber":
+        return "bg-purple-500/10 text-purple-400 border-purple-500/20";
+      default:
+        return "bg-gray-500/10 text-gray-400 border-gray-500/20";
+    }
+  };
+
+  const getTitleStyle = () => {
+    if (isAdmin) return "text-barber-gold";
+    if (isSeller) return "text-blue-400";
+    if (isBarber) return "text-purple-400";
+    return "text-gray-400";
+  };
+
+  const getIconStyle = () => {
+    if (isAdmin) return "text-barber-gold";
+    if (isSeller) return "text-blue-400";
+    if (isBarber) return "text-purple-400";
+    return "text-gray-400";
+  };
+
   return (
-    <Card className="bg-barber-gray border-barber-gold/20 hover:border-barber-gold/40 transition-colors">
+    <Card className={cn("transition-colors", getCardStyle())}>
       <CardHeader className="pb-2">
         <div className="flex items-center space-x-2">
-          <UserCog className="h-5 w-5 text-barber-gold" />
-          <h3 className="text-lg font-semibold text-barber-gold truncate">
+          <UserCog className={cn("h-5 w-5", getIconStyle())} />
+          <h3 className={cn("text-lg font-semibold truncate", getTitleStyle())}>
             {user.email}
           </h3>
         </div>
@@ -37,7 +82,10 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
             {user.roles?.map((role) => (
               <span
                 key={role}
-                className="px-2 py-1 rounded-full text-xs bg-barber-gold/10 text-barber-gold border border-barber-gold/20"
+                className={cn(
+                  "px-2 py-1 rounded-full text-xs border",
+                  getRoleStyle(role)
+                )}
               >
                 {role}
               </span>
@@ -54,14 +102,20 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
                   variant="outline" 
                   size="sm"
                   onClick={() => onSelectUser(user.id)}
-                  className="hover:bg-barber-gold/10 hover:text-barber-gold border-barber-gold/20"
+                  className={cn(
+                    "hover:bg-barber-gold/10 hover:text-barber-gold border-barber-gold/20",
+                    {
+                      "hover:bg-blue-500/10 hover:text-blue-400 border-blue-500/20": isSeller,
+                      "hover:bg-purple-500/10 hover:text-purple-400 border-purple-500/20": isBarber
+                    }
+                  )}
                 >
                   Gerir Funções
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-barber-gray border-barber-gold/20">
+              <DialogContent className={cn("border-barber-gold/20", getCardStyle())}>
                 <div className="space-y-4">
-                  <h2 className="text-xl font-semibold text-barber-gold">
+                  <h2 className={cn("text-xl font-semibold", getTitleStyle())}>
                     Gerir Funções - {user.email}
                   </h2>
                   <RoleManager
