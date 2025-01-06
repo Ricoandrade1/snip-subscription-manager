@@ -9,7 +9,6 @@ import { formSchema, FormValues } from "./member-form/schema";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { StatusField } from "./member-form/StatusField";
-import { addDays, isBefore } from "date-fns";
 
 interface QuickEditFormProps {
   member: Member;
@@ -30,20 +29,6 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
     },
   });
 
-  const calculateStatus = (paymentDate: Date | null): Member["status"] => {
-    if (!paymentDate) return "pendente";
-    
-    const today = new Date();
-    const paymentDateObj = new Date(paymentDate);
-    const dueDate = addDays(paymentDateObj, 30);
-    
-    if (isBefore(today, dueDate)) {
-      return "pago";
-    }
-    
-    return "pendente";
-  };
-
   const handleSubmit = async (data: FormValues) => {
     try {
       console.log('Dados do formulário:', data);
@@ -54,13 +39,16 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         nickname: data.nickname,
         phone: data.phone,
         nif: data.nif,
+        status: data.status,
         payment_date: data.payment_date?.toISOString() || null,
       };
 
-      // Calculate status based on payment date
-      updateData.status = calculateStatus(data.payment_date || null);
-      
-      console.log('Status calculado:', updateData.status);
+      // Se o status mudou para "pago", atualize a data de pagamento para hoje se não houver uma data definida
+      if (data.status === 'pago' && !data.payment_date) {
+        updateData.payment_date = new Date().toISOString();
+      }
+
+      console.log('Status sendo enviado:', updateData.status);
       console.log('Data de pagamento:', updateData.payment_date);
 
       // Check if plan has changed
@@ -106,7 +94,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         <PersonalInfoFields form={form} />
         <PlanFields form={form} />
         <PaymentDateField form={form} />
-        <StatusField form={form} disabled={true} />
+        <StatusField form={form} />
         
         <div className="flex justify-end">
           <button
