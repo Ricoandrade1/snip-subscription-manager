@@ -6,6 +6,7 @@ import { SubscriberTableRow } from "./SubscriberTableRow";
 import { SubscribersTableHeader } from "./SubscribersTableHeader";
 import { useSubscribers } from "./useSubscribers";
 import { EditSubscriberDialog } from "./EditSubscriberDialog";
+import { SubscribersStats } from "./SubscribersStats";
 import type { Subscriber } from "./types";
 
 interface SubscribersTableProps {
@@ -21,7 +22,8 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
     isLoading, 
     filters, 
     handleFilterChange, 
-    filteredSubscribers 
+    filteredSubscribers,
+    stats 
   } = useSubscribers({ planFilter });
 
   const handleSubscriberClick = (subscriber: Subscriber) => {
@@ -42,17 +44,14 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
     );
   }
 
-  if (!subscribers || subscribers.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-barber-light/60">Nenhum assinante encontrado</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
-      <SubscribersFilter filters={filters} onFilterChange={handleFilterChange} />
+      <SubscribersStats stats={stats} />
+      
+      <SubscribersFilter 
+        filters={filters} 
+        onFilterChange={handleFilterChange} 
+      />
 
       <div className="rounded-lg overflow-hidden border border-barber-gray">
         <Table>

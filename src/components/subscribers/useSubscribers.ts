@@ -7,9 +7,22 @@ interface UseSubscribersProps {
   planFilter?: "Basic" | "Classic" | "Business";
 }
 
+interface SubscriberStats {
+  totalSubscribers: number;
+  activeSubscribers: number;
+  overdueSubscribers: number;
+  monthlyRevenue: number;
+}
+
 export function useSubscribers({ planFilter }: UseSubscribersProps) {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState<SubscriberStats>({
+    totalSubscribers: 0,
+    activeSubscribers: 0,
+    overdueSubscribers: 0,
+    monthlyRevenue: 0,
+  });
   const [filters, setFilters] = useState<FilterState>({
     name: "",
     phone: "",
@@ -19,6 +32,7 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
 
   useEffect(() => {
     fetchSubscribers();
+    calculateStats();
   }, [planFilter]);
 
   const fetchSubscribers = async () => {
@@ -30,7 +44,8 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
           *,
           plans (
             id,
-            title
+            title,
+            price
           )
         `);
 
@@ -66,6 +81,37 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
     }
   };
 
+  const calculateStats = async () => {
+    try {
+      const { data: members, error } = await supabase
+        .from('members')
+        .select(`
+          *,
+          plans (
+            price
+          )
+        `);
+
+      if (error) throw error;
+
+      const stats = members.reduce((acc, member) => ({
+        totalSubscribers: acc.totalSubscribers + 1,
+        activeSubscribers: acc.activeSubscribers + (member.status === 'active' ? 1 : 0),
+        overdueSubscribers: acc.overdueSubscribers + (member.status === 'overdue' ? 1 : 0),
+        monthlyRevenue: acc.monthlyRevenue + (member.status === 'active' ? member.plans.price : 0),
+      }), {
+        totalSubscribers: 0,
+        activeSubscribers: 0,
+        overdueSubscribers: 0,
+        monthlyRevenue: 0,
+      });
+
+      setStats(stats);
+    } catch (error) {
+      console.error('Error calculating stats:', error);
+    }
+  };
+
   const handleFilterChange = (field: keyof FilterState, value: string) => {
     setFilters(prev => ({ ...prev, [field]: value }));
   };
@@ -85,6 +131,7 @@ export function useSubscribers({ planFilter }: UseSubscribersProps) {
     filters,
     handleFilterChange,
     filteredSubscribers,
+    stats,
     refetch: fetchSubscribers,
   };
 }
