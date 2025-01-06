@@ -7,6 +7,7 @@ interface SubscriberStats {
   totalSubscribers: number;
   activeSubscribers: number;
   overdueSubscribers: number;
+  pendingSubscribers: number;
   monthlyRevenue: number;
 }
 
@@ -20,6 +21,7 @@ export function SubscribersStats({ stats, onFilterChange, selectedStatus }: Subs
   const [showTotal, setShowTotal] = useState(true);
   const [showActive, setShowActive] = useState(true);
   const [showOverdue, setShowOverdue] = useState(true);
+  const [showPending, setShowPending] = useState(true);
   const [showRevenue, setShowRevenue] = useState(true);
 
   const handleCardClick = (status: string) => {
@@ -31,7 +33,7 @@ export function SubscribersStats({ stats, onFilterChange, selectedStatus }: Subs
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
       <Card 
         className={`p-4 cursor-pointer transition-colors ${
           selectedStatus === 'total' ? 'bg-barber-gold/20 border-barber-gold' : ''
@@ -108,12 +110,49 @@ export function SubscribersStats({ stats, onFilterChange, selectedStatus }: Subs
 
       <Card 
         className={`p-4 cursor-pointer transition-colors ${
+          selectedStatus === 'pending' ? 'bg-yellow-500/20 border-yellow-500' : ''
+        }`}
+        onClick={() => handleCardClick('pending')}
+      >
+        <div className="flex items-center justify-between space-y-0">
+          <p className="text-sm font-medium text-barber-light">Assinantes Pendentes</p>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowPending(!showPending);
+            }}
+          >
+            {showPending ? (
+              <Eye className="h-4 w-4 text-barber-light" />
+            ) : (
+              <EyeOff className="h-4 w-4 text-barber-light" />
+            )}
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <Users className="h-8 w-8 text-yellow-500" />
+          <div className="flex items-baseline">
+            {showPending ? (
+              <h3 className="text-2xl font-semibold text-yellow-500">
+                {stats.pendingSubscribers}
+              </h3>
+            ) : (
+              <h3 className="text-2xl font-semibold text-yellow-500">****</h3>
+            )}
+          </div>
+        </div>
+      </Card>
+
+      <Card 
+        className={`p-4 cursor-pointer transition-colors ${
           selectedStatus === 'overdue' ? 'bg-red-500/20 border-red-500' : ''
         }`}
         onClick={() => handleCardClick('overdue')}
       >
         <div className="flex items-center justify-between space-y-0">
-          <p className="text-sm font-medium text-barber-light">Assinantes Atrasados</p>
+          <p className="text-sm font-medium text-barber-light">Assinantes Cancelados</p>
           <Button
             variant="ghost"
             size="icon"

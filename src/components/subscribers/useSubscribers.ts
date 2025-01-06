@@ -16,6 +16,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     totalSubscribers: 0,
     activeSubscribers: 0,
     overdueSubscribers: 0,
+    pendingSubscribers: 0,
     monthlyRevenue: 0,
   });
   const [filters, setFilters] = useState<FilterState>({
@@ -85,12 +86,14 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     const stats = subscribersList.reduce((acc, subscriber) => ({
       totalSubscribers: acc.totalSubscribers + 1,
       activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
-      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0), // Changed from 'pendente' to 'cancelado'
+      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
+      pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
       monthlyRevenue: acc.monthlyRevenue + (subscriber.status === 'pago' ? 50 : 0),
     }), {
       totalSubscribers: 0,
       activeSubscribers: 0,
       overdueSubscribers: 0,
+      pendingSubscribers: 0,
       monthlyRevenue: 0,
     });
 
@@ -135,8 +138,11 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
           case 'active':
             matchStatusFilter = subscriber.status === 'pago';
             break;
+          case 'pending':
+            matchStatusFilter = subscriber.status === 'pendente';
+            break;
           case 'overdue':
-            matchStatusFilter = subscriber.status === 'cancelado'; // Changed from 'pendente' to 'cancelado'
+            matchStatusFilter = subscriber.status === 'cancelado';
             break;
           case 'total':
             matchStatusFilter = true;
