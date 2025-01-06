@@ -35,6 +35,21 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     planFilter,
   });
 
+  const normalizeStatus = (status: string): MemberStatus => {
+    switch (status.toLowerCase()) {
+      case 'active':
+      case 'pago':
+        return 'pago';
+      case 'inactive':
+      case 'cancelado':
+        return 'cancelado';
+      case 'pendente':
+        return 'pendente';
+      default:
+        return 'pendente';
+    }
+  };
+
   const handleRowClick = async (member: Member) => {
     if (member.plan_id && !member.plan) {
       const { data: planData } = await supabase
@@ -48,15 +63,9 @@ export function MembersTable({ planFilter }: MembersTableProps) {
       }
     }
 
-    // Normalize status if needed
     const normalizedMember: Member = {
       ...member,
-      status: (member.status === 'active' ? 'pago' :
-              member.status === 'inactive' ? 'cancelado' :
-              member.status === 'pago' ? 'pago' :
-              member.status === 'cancelado' ? 'cancelado' :
-              member.status === 'pendente' ? 'pendente' :
-              'pendente') as MemberStatus
+      status: normalizeStatus(member.status)
     };
 
     setSelectedMember(normalizedMember);
@@ -78,12 +87,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
   // Normalize status for all members
   const normalizedMembers: Member[] = filteredMembers.map(member => ({
     ...member,
-    status: (member.status === 'active' ? 'pago' :
-            member.status === 'inactive' ? 'cancelado' :
-            member.status === 'pago' ? 'pago' :
-            member.status === 'cancelado' ? 'cancelado' :
-            member.status === 'pendente' ? 'pendente' :
-            'pendente') as MemberStatus
+    status: normalizeStatus(member.status)
   }));
 
   // Remove duplicatas baseado no ID do membro
