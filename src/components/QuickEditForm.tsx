@@ -33,10 +33,10 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
     try {
       // Check if plan has changed
       if (data.plan !== member.plan) {
-        // Get plan price
+        // Get plan details
         const { data: planData, error: planError } = await supabase
           .from('plans')
-          .select('price')
+          .select('id, price')
           .eq('title', data.plan)
           .single();
 
@@ -55,9 +55,10 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
 
         if (salesError) throw salesError;
 
-        // Update member with new plan and last_plan_change timestamp
+        // Update member with new plan_id and last_plan_change timestamp
         const formattedData = {
           ...data,
+          plan_id: planData.id,
           payment_date: data.payment_date?.toISOString() || null,
           last_plan_change: new Date().toISOString()
         };
