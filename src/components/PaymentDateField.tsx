@@ -14,7 +14,7 @@ export function PaymentDateField({ form }: PaymentDateFieldProps) {
       name="payment_date"
       render={({ field }) => (
         <FormItem className="flex flex-col">
-          <FormLabel>Data de Pagamento</FormLabel>
+          <FormLabel className="text-barber-light">Data de Pagamento</FormLabel>
           <FormControl>
             <Input
               type="date"
@@ -24,7 +24,7 @@ export function PaymentDateField({ form }: PaymentDateFieldProps) {
                 const date = e.target.value ? new Date(e.target.value) : null;
                 field.onChange(date);
               }}
-              className="h-10"
+              className="bg-barber-gray border-barber-gold/20 focus:border-barber-gold h-10"
             />
           </FormControl>
         </FormItem>

@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { UserPlus, Users } from "lucide-react";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
+import { SubscriberForm } from "@/components/SubscriberForm";
 
 export default function Subscribers() {
   const navigate = useNavigate();
@@ -68,7 +69,7 @@ export default function Subscribers() {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-3xl bg-barber-gray border-barber-gold/20">
-              {/* Formulário de cadastro será implementado aqui */}
+              <SubscriberForm />
             </DialogContent>
           </Dialog>
         </header>

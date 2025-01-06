@@ -10,6 +10,7 @@ import { PlanFields } from "./PlanFields";
 import { PaymentDateField } from "./PaymentDateField";
 import { supabase } from "@/lib/supabase/client";
 import { MemberStatus } from "@/contexts/types";
+import { DialogHeader, DialogTitle } from "./ui/dialog";
 
 const formSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -94,26 +95,34 @@ export function SubscriberForm() {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <PersonalInfoFields form={form} />
-        </div>
+    <>
+      <DialogHeader>
+        <DialogTitle className="text-2xl font-bold text-barber-gold">
+          Cadastrar Novo Assinante
+        </DialogTitle>
+      </DialogHeader>
 
-        <div className="max-w-md mx-auto">
-          <PlanFields form={form} />
-        </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <PersonalInfoFields form={form} />
+          </div>
 
-        <div className="max-w-md mx-auto">
-          <PaymentDateField form={form} />
-        </div>
+          <div className="space-y-4">
+            <PlanFields form={form} />
+            <PaymentDateField form={form} />
+          </div>
 
-        <div className="flex justify-center">
-          <Button type="submit" className="w-48">
-            Cadastrar Assinante
-          </Button>
-        </div>
-      </form>
-    </Form>
+          <div className="flex justify-end pt-4">
+            <Button 
+              type="submit" 
+              className="bg-barber-gold hover:bg-barber-gold/90 text-barber-black w-full md:w-auto"
+            >
+              Cadastrar Assinante
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </>
   );
 }
