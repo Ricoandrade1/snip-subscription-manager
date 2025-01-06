@@ -75,7 +75,7 @@ export default function Products() {
             if (!open) setSelectedProduct(null);
           }}>
             <DialogTrigger asChild>
-              <Button className="bg-barber-gold hover:bg-barber-gold/90 text-black">
+              <Button size="sm" variant="outline" className="bg-barber-gold hover:bg-barber-gold/90 text-black h-9 px-4 py-2">
                 <Plus className="mr-2 h-4 w-4" />
                 Novo Produto
               </Button>
