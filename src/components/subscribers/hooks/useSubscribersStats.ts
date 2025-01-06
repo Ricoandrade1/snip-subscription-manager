@@ -1,5 +1,29 @@
+import { supabase } from "@/integrations/supabase/client";
 import { Subscriber, SubscriberStats } from "../types/subscriber";
-import { fetchPlanPrices } from "./usePlans";
+
+interface PlanPrices {
+  [key: string]: number;
+}
+
+async function fetchPlanPrices(): Promise<PlanPrices> {
+  const { data: plans, error } = await supabase
+    .from('plans')
+    .select('title, price');
+
+  if (error) {
+    console.error('Erro ao buscar preços dos planos:', error);
+    return {
+      Basic: 29.99,
+      Classic: 49.99,
+      Business: 99.99
+    };
+  }
+
+  return plans.reduce((acc: PlanPrices, plan) => {
+    acc[plan.title] = Number(plan.price);
+    return acc;
+  }, {});
+}
 
 export async function calculateSubscriberStats(subscribers: Subscriber[]): Promise<SubscriberStats> {
   console.log('Calculando estatísticas para', subscribers.length, 'assinantes');

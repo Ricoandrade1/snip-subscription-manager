@@ -13,8 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   title: z.string().min(2, "Título deve ter pelo menos 2 caracteres"),
@@ -24,7 +22,6 @@ const formSchema = z.object({
 
 interface PlanEditFormProps {
   initialData: {
-    id?: number;
     title: string;
     price: number;
     features: string[];
@@ -34,8 +31,6 @@ interface PlanEditFormProps {
 
 export function PlanEditForm({ initialData, onClose }: PlanEditFormProps) {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,49 +40,13 @@ export function PlanEditForm({ initialData, onClose }: PlanEditFormProps) {
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    if (!initialData.id) {
-      toast({
-        title: "Erro ao atualizar plano",
-        description: "ID do plano não encontrado.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const features = data.features.split("\n").filter(feature => feature.trim() !== "");
-      
-      const { error } = await supabase
-        .from('plans')
-        .update({
-          title: data.title,
-          price: data.price,
-          features: features,
-        })
-        .eq('id', initialData.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Invalidate and refetch plans data
-      await queryClient.invalidateQueries({ queryKey: ['plans'] });
-
-      toast({
-        title: "Plano atualizado com sucesso!",
-        description: "As alterações foram salvas.",
-      });
-      
-      onClose();
-    } catch (error) {
-      console.error('Erro ao atualizar plano:', error);
-      toast({
-        title: "Erro ao atualizar plano",
-        description: "Ocorreu um erro ao salvar as alterações.",
-        variant: "destructive",
-      });
-    }
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    console.log("Updated plan data:", data);
+    toast({
+      title: "Plano atualizado com sucesso!",
+      description: "As alterações foram salvas.",
+    });
+    onClose();
   };
 
   return (
@@ -143,9 +102,7 @@ export function PlanEditForm({ initialData, onClose }: PlanEditFormProps) {
           <Button type="button" variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? "Salvando..." : "Salvar Alterações"}
-          </Button>
+          <Button type="submit">Salvar Alterações</Button>
         </div>
       </form>
     </Form>

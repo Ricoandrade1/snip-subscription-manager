@@ -60,6 +60,15 @@ const Index = () => {
     setPlans(plansWithSubscribers);
   };
 
+  const basicCount = getMembersByPlan("Basic");
+  const classicCount = getMembersByPlan("Classic");
+  const businessCount = getMembersByPlan("Business");
+
+  const totalSubscribers = basicCount + classicCount + businessCount;
+  const monthlyRevenue = plans.reduce((acc, plan) => {
+    return acc + plan.price * plan.totalSubscribers;
+  }, 0);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-barber-black to-barber-gray">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
@@ -84,6 +93,8 @@ const Index = () => {
         </div>
 
         <DashboardStats
+          totalSubscribers={totalSubscribers}
+          monthlyRevenue={monthlyRevenue}
           showSubscribers={showSubscribers}
           showRevenue={showRevenue}
           onToggleSubscribers={() => setShowSubscribers(!showSubscribers)}

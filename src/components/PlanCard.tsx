@@ -12,7 +12,6 @@ import { PlanEditForm } from "./plans/PlanEditForm";
 import { useState } from "react";
 
 interface PlanCardProps {
-  id: number;
   title: string;
   price: number;
   features: string[];
@@ -21,7 +20,6 @@ interface PlanCardProps {
 }
 
 export const PlanCard = ({
-  id,
   title,
   price,
   features,
@@ -48,7 +46,7 @@ export const PlanCard = ({
               <DialogTitle>Editar Plano {title}</DialogTitle>
             </DialogHeader>
             <PlanEditForm
-              initialData={{ id, title, price, features }}
+              initialData={{ title, price, features }}
               onClose={() => setIsDialogOpen(false)}
             />
           </DialogContent>
