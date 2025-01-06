@@ -60,7 +60,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
           plan_id: member.plan_id,
           created_at: member.created_at,
           payment_date: member.payment_date,
-          status: member.status,
+          status: member.status as "pago" | "cancelado" | "pendente",
           bank_name: member.bank_name,
           iban: member.iban,
           due_date: member.due_date,

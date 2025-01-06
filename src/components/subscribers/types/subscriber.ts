@@ -17,6 +17,7 @@ export interface SubscriberStats {
   totalSubscribers: number;
   activeSubscribers: number;
   overdueSubscribers: number;
+  pendingSubscribers: number;
   monthlyRevenue: number;
 }
 
