@@ -15,7 +15,8 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
       
       let monthlyRevenue = 0;
       if (subscriber.status === 'pago') {
-        monthlyRevenue = getPlanPrice(subscriber.plan);
+        // Round to 2 decimal places to avoid floating point precision issues
+        monthlyRevenue = Math.round(getPlanPrice(subscriber.plan) * 100) / 100;
         console.log('Receita do plano:', monthlyRevenue, '€');
       }
       
@@ -24,7 +25,8 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
         activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
         overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
         pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
-        monthlyRevenue: acc.monthlyRevenue + monthlyRevenue,
+        // Round the accumulated sum to 2 decimal places
+        monthlyRevenue: Math.round((acc.monthlyRevenue + monthlyRevenue) * 100) / 100,
       };
       
       console.log('Receita mensal acumulada:', newStats.monthlyRevenue, '€');
