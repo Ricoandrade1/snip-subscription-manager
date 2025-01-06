@@ -2,8 +2,8 @@ import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/for
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "./member-form/schema";
-import { isAfter, isBefore, parseISO, addDays } from "date-fns";
 import { MemberStatus } from "@/contexts/types";
+import { addDays, isBefore, isAfter } from "date-fns";
 
 interface PaymentDateFieldProps {
   form: UseFormReturn<FormValues>;
@@ -16,6 +16,26 @@ export function PaymentDateField({
   name = "payment_date",
   label = "Data de Pagamento" 
 }: PaymentDateFieldProps) {
+  const calculateStatus = (paymentDate: Date | null): MemberStatus => {
+    if (!paymentDate) return 'inactive';
+    
+    const today = new Date();
+    const thirtyDaysAgo = addDays(today, -30);
+    
+    // Se a data de pagamento é no futuro
+    if (isAfter(paymentDate, today)) {
+      return 'active';
+    }
+    
+    // Se a data de pagamento está dentro dos últimos 30 dias
+    if (isAfter(paymentDate, thirtyDaysAgo)) {
+      return 'active';
+    }
+    
+    // Se a data de pagamento é mais antiga que 30 dias
+    return 'inactive';
+  };
+
   return (
     <FormField
       control={form.control}
@@ -29,25 +49,13 @@ export function PaymentDateField({
               {...field}
               value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
               onChange={(e) => {
-                const date = new Date(e.target.value);
-                console.log('Data selecionada:', date);
+                const date = e.target.value ? new Date(e.target.value) : null;
                 field.onChange(date);
                 
                 // Atualiza o status automaticamente com base na data
-                const today = new Date();
-                const nextPaymentDate = addDays(date, 30); // Assume 30 days payment cycle
-                
-                let status: MemberStatus;
-                
-                if (isAfter(date, today)) {
-                  status = 'active'; // Payment is in the future
-                } else if (isBefore(today, nextPaymentDate)) {
-                  status = 'pending'; // Within grace period
-                } else {
-                  status = 'inactive'; // Payment overdue
-                }
-                
-                console.log('Status atualizado:', status);
+                const status = calculateStatus(date);
+                console.log('Data selecionada:', date);
+                console.log('Status calculado:', status);
                 form.setValue('status', status);
               }}
               className="h-10"
