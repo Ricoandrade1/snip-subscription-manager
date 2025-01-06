@@ -27,6 +27,7 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
         .select('id, title, price');
       
       if (!error && data) {
+        console.log('Fetched plans:', data);
         setPlans(data);
       }
     };
@@ -51,16 +52,20 @@ export function RevenuePlanForecast({ members, payments }: RevenuePlanForecastPr
 
   const calculateMonthlyRevenue = () => {
     const activeMembers = members.filter(member => member.status === 'pago');
+    console.log('Active members:', activeMembers.length);
+    
     const totalRevenue = activeMembers.reduce((total, member) => {
       const memberPlan = plans.find(p => p.id === member.plan_id);
       if (memberPlan) {
-        console.log(`Member ${member.name} with plan ${memberPlan.title} contributes ${memberPlan.price}`);
-        return total + memberPlan.price;
+        console.log(`Member ${member.name} - Plan ID: ${member.plan_id} - Plan: ${memberPlan.title} - Price: ${memberPlan.price}`);
+        return total + Number(memberPlan.price);
       }
+      console.log(`No plan found for member ${member.name} with plan ID ${member.plan_id}`);
       return total;
     }, 0);
     
-    console.log('Total monthly revenue:', totalRevenue);
+    console.log('Plans available:', plans);
+    console.log('Final total monthly revenue:', totalRevenue);
     return totalRevenue;
   };
 
