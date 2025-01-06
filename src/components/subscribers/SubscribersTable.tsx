@@ -8,7 +8,6 @@ import { useSubscribers } from "./useSubscribers";
 import { EditSubscriberDialog } from "./EditSubscriberDialog";
 import { SubscribersStats } from "./SubscribersStats";
 import { DeleteSubscriberDialog } from "./DeleteSubscriberDialog";
-import { SubscribersPDFButton } from "./SubscribersPDFButton";
 import type { Subscriber } from "./types";
 
 interface SubscribersTableProps {
@@ -88,12 +87,6 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
             ))}
           </TableBody>
         </Table>
-      </div>
-
-      <div className="flex justify-end mt-4">
-        <SubscribersPDFButton 
-          subscribers={filteredSubscribers} 
-        />
       </div>
 
       <EditSubscriberDialog
