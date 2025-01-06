@@ -4,13 +4,13 @@ export function SubscribersTableHeader() {
   return (
     <TableHeader>
       <TableRow>
-        <TableHead className="text-barber-light">Código</TableHead>
+        <TableHead className="text-barber-light w-28">Código</TableHead>
         <TableHead className="text-barber-light">Nome</TableHead>
-        <TableHead className="text-barber-light">Apelido</TableHead>
-        <TableHead className="text-barber-light">Plano</TableHead>
-        <TableHead className="text-barber-light">Status</TableHead>
-        <TableHead className="text-barber-light">Telefone</TableHead>
-        <TableHead className="text-barber-light">Data de Pagamento</TableHead>
+        <TableHead className="text-barber-light w-32">Apelido</TableHead>
+        <TableHead className="text-barber-light w-28">Plano</TableHead>
+        <TableHead className="text-barber-light w-28">Status</TableHead>
+        <TableHead className="text-barber-light w-36">Telefone</TableHead>
+        <TableHead className="text-barber-light w-40">Data de Pagamento</TableHead>
       </TableRow>
     </TableHeader>
   );

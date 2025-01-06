@@ -56,23 +56,23 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
       className="cursor-pointer hover:bg-barber-gray/50 border-b border-barber-gray transition-colors"
       onClick={onClick}
     >
-      <TableCell className="font-medium text-barber-light">
+      <TableCell className="font-medium text-barber-light whitespace-nowrap px-4">
         {getSubscriberCode(subscriber, subscribers)}
       </TableCell>
       <TableCell className="text-barber-light">{subscriber.name}</TableCell>
       <TableCell className="text-barber-light">{subscriber.nickname || '-'}</TableCell>
       <TableCell>
-        <Badge className={`${getPlanBadgeColor(subscriber.plan)}`}>
+        <Badge className={`${getPlanBadgeColor(subscriber.plan)} whitespace-nowrap`}>
           {subscriber.plan}
         </Badge>
       </TableCell>
       <TableCell>
-        <Badge className={`${getStatusBadgeColor(subscriber.status)}`}>
+        <Badge className={`${getStatusBadgeColor(subscriber.status)} whitespace-nowrap`}>
           {getStatusLabel(subscriber.status)}
         </Badge>
       </TableCell>
-      <TableCell className="text-barber-light">{subscriber.phone || '-'}</TableCell>
-      <TableCell className="text-barber-light">
+      <TableCell className="text-barber-light whitespace-nowrap">{subscriber.phone || '-'}</TableCell>
+      <TableCell className="text-barber-light whitespace-nowrap">
         {subscriber.payment_date 
           ? format(new Date(subscriber.payment_date), "dd/MM/yyyy", { locale: ptBR })
           : '-'}
