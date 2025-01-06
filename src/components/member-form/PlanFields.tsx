@@ -1,11 +1,10 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
-import * as z from "zod";
-import { formSchema } from "./schema";
+import { FormValues } from "./schema";
 
 interface PlanFieldsProps {
-  form: UseFormReturn<z.infer<typeof formSchema>>;
+  form: UseFormReturn<FormValues>;
 }
 
 export function PlanFields({ form }: PlanFieldsProps) {

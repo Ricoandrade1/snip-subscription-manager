@@ -9,6 +9,7 @@ export type Member = {
   created_at?: string;
   due_date?: string;
   payment_date?: string | null;
+  status: "active" | "inactive";
 };
 
 export interface MemberContextType {
@@ -31,5 +32,5 @@ export type Payment = {
   status: "paid" | "pending" | "overdue";
   receipt_url?: string;
   created_at?: string;
-  payment_date: string; // Changed from optional to required
+  payment_date: string;
 };

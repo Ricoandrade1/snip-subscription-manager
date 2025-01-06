@@ -1,11 +1,10 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
-import * as z from "zod";
-import { formSchema } from "./schema";
+import { FormValues } from "./schema";
 
 interface PersonalInfoFieldsProps {
-  form: UseFormReturn<z.infer<typeof formSchema>>;
+  form: UseFormReturn<FormValues>;
 }
 
 export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {

@@ -1,9 +1,10 @@
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
+import { FormValues } from "./member-form/schema";
 
 interface PaymentDateFieldProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FormValues>;
   name?: string;
   label?: string;
 }
