@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemberContext } from "@/contexts/MemberContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSession } from '@supabase/auth-helpers-react';
-import { Plus } from "lucide-react";
+import { UserPlus, Users } from "lucide-react";
 import { useEffect } from "react";
 
 interface MembersProps {
@@ -62,20 +62,23 @@ export default function Members({ planType }: MembersProps) {
     <div className="p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         <header className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-barber-gold">Membros</h1>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Users className="h-8 w-8 text-barber-gold" />
+              <h1 className="text-4xl font-bold text-barber-gold">Membros</h1>
+            </div>
             <p className="text-barber-light/60">
               Gerencie todos os membros da sua barbearia
             </p>
           </div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
+              <Button className="bg-barber-gold hover:bg-barber-gold/90 text-barber-black">
+                <UserPlus className="mr-2 h-4 w-4" />
                 Cadastrar Assinante
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-3xl">
+            <DialogContent className="max-w-3xl bg-barber-gray border-barber-gold/20">
               <SubscriberForm />
             </DialogContent>
           </Dialog>
@@ -83,16 +86,16 @@ export default function Members({ planType }: MembersProps) {
 
         <Tabs value={getInitialTab()} className="w-full" onValueChange={handleTabChange}>
           <TabsList className="w-full justify-start bg-barber-gray">
-            <TabsTrigger value="all" className="text-barber-light">
+            <TabsTrigger value="all" className="text-barber-light data-[state=active]:bg-barber-gold data-[state=active]:text-barber-black">
               Todos ({members.length})
             </TabsTrigger>
-            <TabsTrigger value="basic" className="text-barber-light">
+            <TabsTrigger value="basic" className="text-barber-light data-[state=active]:bg-barber-gold data-[state=active]:text-barber-black">
               Basic ({basicCount})
             </TabsTrigger>
-            <TabsTrigger value="classic" className="text-barber-light">
+            <TabsTrigger value="classic" className="text-barber-light data-[state=active]:bg-barber-gold data-[state=active]:text-barber-black">
               Classic ({classicCount})
             </TabsTrigger>
-            <TabsTrigger value="business" className="text-barber-light">
+            <TabsTrigger value="business" className="text-barber-light data-[state=active]:bg-barber-gold data-[state=active]:text-barber-black">
               Business ({businessCount})
             </TabsTrigger>
           </TabsList>
