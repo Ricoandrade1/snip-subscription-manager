@@ -9,7 +9,7 @@ export type Member = {
   created_at?: string;
   due_date?: string;
   payment_date?: string | null;
-  status: "active" | "inactive";
+  status: "pago" | "atrasado" | "cancelado";
 };
 
 export interface MemberContextType {
