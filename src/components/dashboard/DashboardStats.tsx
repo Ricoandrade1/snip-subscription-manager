@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, BarChart3 } from "lucide-react";
+import { Users, BarChart3, CreditCard } from "lucide-react";
 import StatCard from './StatCard';
 
 interface DashboardStatsProps {
@@ -29,8 +29,8 @@ const DashboardStats = ({
         onToggleVisibility={onToggleSubscribers}
       />
       <StatCard
-        icon={<BarChart3 className="h-6 w-6 text-barber-gold" />}
-        label="Receita Mensal"
+        icon={<CreditCard className="h-6 w-6 text-barber-gold" />}
+        label="Receita Mensal de Assinaturas"
         value={monthlyRevenue}
         isVisible={showRevenue}
         onToggleVisibility={onToggleRevenue}

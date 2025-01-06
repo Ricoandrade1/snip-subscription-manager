@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -20,8 +21,8 @@ const StatCard = ({
   suffix = ''
 }: StatCardProps) => {
   return (
-    <div className="bg-barber-gray rounded-lg p-6">
-      <div className="flex justify-between items-center mb-4">
+    <Card className="bg-barber-gray p-6">
+      <div className="flex justify-between items-center">
         <div className="flex items-center space-x-4">
           <div className="p-4 bg-barber-gold/10 rounded-full">
             {icon}
@@ -46,7 +47,7 @@ const StatCard = ({
           {isVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </Button>
       </div>
-    </div>
+    </Card>
   );
 };
 
