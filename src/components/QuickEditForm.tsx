@@ -9,7 +9,6 @@ import { formSchema, FormValues } from "./member-form/schema";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { StatusField } from "./member-form/StatusField";
-import { isAfter } from "date-fns";
 
 interface QuickEditFormProps {
   member: Member;
@@ -26,7 +25,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       nif: member.nif || "",
       plan: member.plan || "Basic",
       payment_date: member.payment_date ? new Date(member.payment_date) : undefined,
-      status: member.status as "pago" | "atrasado" | "cancelado",
+      status: member.status === "active" ? "active" : "inactive",
     },
   });
 
@@ -62,7 +61,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
           plan_id: planData.id,
           payment_date: data.payment_date?.toISOString() || null,
           last_plan_change: new Date().toISOString(),
-          status: data.status || 'atrasado'
+          status: data.status || 'inactive'
         };
         
         await onSubmit(formattedData);
@@ -72,7 +71,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         const formattedData: Partial<Member> = {
           ...data,
           payment_date: data.payment_date?.toISOString() || null,
-          status: data.status || 'atrasado'
+          status: data.status || 'inactive'
         };
         
         await onSubmit(formattedData);
