@@ -35,12 +35,12 @@ export function NavigationMenuItem({
   const [isOpen, setIsOpen] = useState(false);
 
   const isSubmenuActive = (submenuItem: { url: string; title: string }) => {
-    if (item.title === "Membros") {
+    if (item.title === "Assinantes") {
       if (submenuItem.title === "Todos") {
-        return location.pathname === "/members";
+        return location.pathname === "/subscribers";
       }
       const planType = submenuItem.title.toLowerCase();
-      return location.pathname === `/members/${planType}`;
+      return location.pathname === `/subscribers/${planType}`;
     }
     return location.pathname === submenuItem.url;
   };
@@ -56,8 +56,8 @@ export function NavigationMenuItem({
   const handleMainMenuClick = () => {
     if (item.submenu) {
       setIsOpen(!isOpen);
-      if (item.title === "Membros") {
-        navigate("/members");
+      if (item.title === "Assinantes") {
+        navigate("/subscribers");
       }
     } else {
       navigate(item.url);
@@ -94,7 +94,7 @@ export function NavigationMenuItem({
                     }`}
                   >
                     <span>{subItem.title}</span>
-                    {item.title === "Membros" && subItem.title !== "Todos" && (
+                    {item.title === "Assinantes" && subItem.title !== "Todos" && (
                       <span className="ml-auto text-xs opacity-60">
                         {getSubscriberCount?.(subItem.title as "Basic" | "Classic" | "Business")}
                       </span>
