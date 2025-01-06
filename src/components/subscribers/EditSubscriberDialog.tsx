@@ -43,7 +43,7 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
       // Se o status for "pago", atualiza a data de pagamento para 30 dias à frente
       if (updateData.status === 'pago') {
         const nextPaymentDate = addDays(new Date(), 30);
-        updateData.payment_date = nextPaymentDate.toISOString().split('T')[0];
+        updateData.payment_date = nextPaymentDate.toISOString();
       }
 
       // Garante que o status seja um dos valores permitidos
@@ -58,7 +58,10 @@ export function EditSubscriberDialog({ subscriber, open, onOpenChange }: EditSub
         .update(updateData)
         .eq('id', subscriber.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating subscriber:', error);
+        throw error;
+      }
 
       toast.success('Assinante atualizado com sucesso!');
       onOpenChange(false);
