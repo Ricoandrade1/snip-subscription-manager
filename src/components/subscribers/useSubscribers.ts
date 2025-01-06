@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Subscriber, SubscriberStats } from "./types";
+import { Subscriber, SubscriberStats, SubscriberStatus } from "./types";
 import { FilterState } from "./types";
 import { toast } from "sonner";
 
@@ -68,7 +68,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
           plan_id: member.plan_id,
           created_at: member.created_at,
           payment_date: member.payment_date,
-          status: member.status || 'pendente'
+          status: (member.status || 'pendente') as SubscriberStatus
         }));
 
       setSubscribers(formattedSubscribers);
