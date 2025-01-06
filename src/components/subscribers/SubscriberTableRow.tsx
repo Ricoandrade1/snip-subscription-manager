@@ -28,24 +28,24 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
       case "pago":
+      case "active":
         return "bg-green-500/20 text-green-500 hover:bg-green-500/30";
       case "pendente":
         return "bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30";
       case "cancelado":
+      case "inactive":
         return "bg-red-500/20 text-red-500 hover:bg-red-500/30";
       default:
         return "bg-gray-500/20 text-gray-500 hover:bg-gray-500/30";
     }
   };
 
-  const getStatusLabel = (status: string) => {
+  const normalizeStatus = (status: string) => {
     switch (status) {
-      case "pago":
-        return "Pago";
-      case "pendente":
-        return "Pendente";
-      case "cancelado":
-        return "Cancelado";
+      case "active":
+        return "pago";
+      case "inactive":
+        return "cancelado";
       default:
         return status;
     }
@@ -57,10 +57,12 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
   };
 
   const getNextPaymentDate = (paymentDate: string | null, status: string) => {
-    if (!paymentDate || status === 'cancelado') return '-';
+    if (!paymentDate || status === 'cancelado' || status === 'inactive') return '-';
     const nextPayment = addDays(new Date(paymentDate), 30);
     return format(nextPayment, "dd/MM/yyyy", { locale: ptBR });
   };
+
+  const normalizedStatus = normalizeStatus(subscriber.status);
 
   return (
     <TableRow 
@@ -79,7 +81,7 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
       </TableCell>
       <TableCell>
         <Badge className={`${getStatusBadgeColor(subscriber.status)} whitespace-nowrap`}>
-          {getStatusLabel(subscriber.status)}
+          {normalizedStatus}
         </Badge>
       </TableCell>
       <TableCell className="text-barber-light whitespace-nowrap">{subscriber.phone || '-'}</TableCell>
@@ -87,7 +89,7 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
         {formatDate(subscriber.payment_date)}
       </TableCell>
       <TableCell className="text-barber-light whitespace-nowrap">
-        {getNextPaymentDate(subscriber.payment_date, subscriber.status)}
+        {getNextPaymentDate(subscriber.payment_date, normalizedStatus)}
       </TableCell>
     </TableRow>
   );
