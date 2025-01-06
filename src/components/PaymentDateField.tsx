@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "./member-form/schema";
 import { isAfter, isBefore, parseISO, addDays } from "date-fns";
+import { MemberStatus } from "@/contexts/types";
 
 interface PaymentDateFieldProps {
   form: UseFormReturn<FormValues>;
@@ -36,7 +37,7 @@ export function PaymentDateField({
                 const today = new Date();
                 const nextPaymentDate = addDays(date, 30); // Assume 30 days payment cycle
                 
-                let status: 'active' | 'inactive' | 'pending';
+                let status: MemberStatus;
                 
                 if (isAfter(date, today)) {
                   status = 'active'; // Payment is in the future
