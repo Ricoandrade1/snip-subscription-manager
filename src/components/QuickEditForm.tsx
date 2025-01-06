@@ -19,8 +19,14 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         return "pago" as const;
       case "inactive":
         return "cancelado" as const;
+      case "pago":
+        return "pago" as const;
+      case "cancelado":
+        return "cancelado" as const;
+      case "pendente":
+        return "pendente" as const;
       default:
-        return status as "pago" | "cancelado" | "pendente";
+        return "pendente" as const;
     }
   };
 
