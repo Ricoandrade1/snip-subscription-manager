@@ -20,6 +20,13 @@ export function StatusField({ form }: StatusFieldProps) {
             onValueChange={(value: MemberStatus) => {
               field.onChange(value);
               console.log('Status alterado para:', value);
+              
+              // Força a atualização do status no formulário
+              form.setValue('status', value, {
+                shouldValidate: true,
+                shouldDirty: true,
+                shouldTouch: true
+              });
             }}
             value={field.value}
             className="flex flex-col space-y-1"

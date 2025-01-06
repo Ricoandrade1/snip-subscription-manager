@@ -40,8 +40,10 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         phone: data.phone,
         nif: data.nif,
         payment_date: data.payment_date?.toISOString() || null,
-        status: data.status,
+        status: data.status, // Garantindo que o status seja incluído na atualização
       };
+
+      console.log('Status sendo enviado:', data.status);
 
       // Check if plan has changed
       if (data.plan !== member.plan) {
@@ -74,7 +76,6 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
 
       console.log('Dados de atualização:', updateData);
       await onSubmit(updateData);
-      toast.success("Membro atualizado com sucesso!");
     } catch (error) {
       console.error('Error updating member:', error);
       toast.error("Erro ao atualizar membro");
