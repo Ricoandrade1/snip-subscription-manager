@@ -1,7 +1,6 @@
 import {
   LayoutDashboard,
   DollarSign,
-  Users,
   Package,
   Building,
   Tags,
@@ -33,17 +32,6 @@ export const menuItems = [
     title: "Produtos",
     icon: Package,
     url: "/products",
-  },
-  {
-    title: "Membros",
-    icon: Users,
-    url: "/members",
-    submenu: [
-      { title: "Todos", url: "/members" },
-      { title: "Basic", url: "/members/basic" },
-      { title: "Classic", url: "/members/classic" },
-      { title: "Business", url: "/members/business" },
-    ],
   },
   {
     title: "Fornecedores",
