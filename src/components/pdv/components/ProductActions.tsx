@@ -14,7 +14,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
 interface ProductActionsProps {
@@ -24,16 +26,15 @@ interface ProductActionsProps {
 
 export function ProductActions({ product, onEdit }: ProductActionsProps) {
   const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [saleId, setSaleId] = useState<string | null>(null);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDelete = async (e: React.MouseEvent) => {
+  const handleDeleteClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    if (!confirm('Tem certeza que deseja excluir este produto?')) {
-      return;
-    }
-
     try {
       // First check if there are any sales associated with this product
       const { data: saleItems, error: checkError } = await supabase
@@ -46,11 +47,15 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
 
       if (saleItems && saleItems.length > 0) {
         setSaleId(saleItems[0].sale_id);
-        setShowErrorDialog(true);
+        setShowDeleteDialog(true);
         return;
       }
 
-      // If no sales are found, proceed with deletion
+      // If no sales are found, proceed with normal deletion confirmation
+      if (!confirm('Tem certeza que deseja excluir este produto?')) {
+        return;
+      }
+
       const { error: deleteError } = await supabase
         .from('products')
         .delete()
@@ -62,6 +67,32 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
     } catch (error) {
       console.error('Erro ao excluir produto:', error);
       toast.error('Erro ao excluir produto');
+    }
+  };
+
+  const handleDeleteWithPassword = async () => {
+    if (adminPassword !== '1234') {
+      toast.error('Senha de administrador incorreta');
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', product.id);
+
+      if (error) throw error;
+
+      toast.success('Produto excluído com sucesso');
+      setShowDeleteDialog(false);
+      setAdminPassword('');
+    } catch (error) {
+      console.error('Erro ao excluir produto:', error);
+      toast.error('Erro ao excluir produto');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -90,36 +121,61 @@ export function ProductActions({ product, onEdit }: ProductActionsProps) {
           variant="ghost"
           size="icon"
           className="opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
-          onClick={handleDelete}
+          onClick={handleDeleteClick}
         >
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
 
-      <Dialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="text-destructive">
-              Não é possível excluir este produto
+              Confirmação de Exclusão
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <p>
-              Este produto não pode ser excluído pois já possui vendas registradas no sistema.
+              Este produto possui vendas registradas no sistema. Para excluí-lo, 
+              é necessário fornecer a senha de administrador.
             </p>
             {saleId && (
               <p className="text-sm text-muted-foreground">
                 ID da venda associada: {saleId}
               </p>
             )}
-            <Button 
-              variant="outline" 
-              onClick={() => setShowErrorDialog(false)}
-              className="w-full"
-            >
-              Fechar
-            </Button>
+            <div className="space-y-2">
+              <label htmlFor="adminPassword" className="text-sm font-medium">
+                Senha de Administrador
+              </label>
+              <Input
+                id="adminPassword"
+                type="password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                placeholder="Digite a senha de administrador"
+              />
+            </div>
           </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDeleteDialog(false);
+                setAdminPassword('');
+              }}
+              disabled={isDeleting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteWithPassword}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Excluindo...' : 'Excluir'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
