@@ -5,6 +5,8 @@ interface FilterState {
   name: string;
   phone: string;
   nif: string;
+  status: string;
+  plan: string;
   sortBy: 'name' | 'payment_date' | 'plan';
   sortOrder: 'asc' | 'desc';
 }
@@ -19,6 +21,8 @@ export function useMembers({ members, planFilter }: UseMembersProps) {
     name: "",
     phone: "",
     nif: "",
+    status: "all",
+    plan: "all",
     sortBy: "name",
     sortOrder: "asc"
   });
@@ -55,9 +59,11 @@ export function useMembers({ members, planFilter }: UseMembersProps) {
       const matchName = member.name.toLowerCase().includes(filters.name.toLowerCase());
       const matchPhone = !filters.phone || (member.phone && member.phone.toLowerCase().includes(filters.phone.toLowerCase()));
       const matchNif = !filters.nif || (member.nif && member.nif.toLowerCase().includes(filters.nif.toLowerCase()));
-      const matchPlan = !planFilter || member.plan === planFilter;
+      const matchStatus = filters.status === 'all' || member.status === filters.status;
+      const matchPlan = filters.plan === 'all' || member.plan === filters.plan;
+      const matchPlanFilter = !planFilter || member.plan === planFilter;
 
-      return matchName && matchPhone && matchNif && matchPlan;
+      return matchName && matchPhone && matchNif && matchStatus && matchPlan && matchPlanFilter;
     })
   );
 

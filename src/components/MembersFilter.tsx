@@ -6,6 +6,8 @@ interface FilterState {
   name: string;
   phone: string;
   nif: string;
+  status: string;
+  plan: string;
   sortBy: 'name' | 'payment_date' | 'plan';
   sortOrder: 'asc' | 'desc';
 }
@@ -17,7 +19,7 @@ interface MembersFilterProps {
 
 export function MembersFilter({ filters, onFilterChange }: MembersFilterProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-barber-gray rounded-lg">
+    <div className="grid grid-cols-1 md:grid-cols-7 gap-4 p-4 bg-barber-gray rounded-lg">
       <div className="space-y-2">
         <Label htmlFor="name-filter" className="text-barber-light">Nome</Label>
         <Input
@@ -47,6 +49,40 @@ export function MembersFilter({ filters, onFilterChange }: MembersFilterProps) {
           onChange={(e) => onFilterChange('nif', e.target.value)}
           className="bg-black/40 border-0 text-barber-light placeholder:text-barber-light/50"
         />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="status" className="text-barber-light">Status</Label>
+        <Select
+          value={filters.status}
+          onValueChange={(value) => onFilterChange('status', value)}
+        >
+          <SelectTrigger className="bg-black/40 border-0 text-barber-light">
+            <SelectValue placeholder="Selecione..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="pago">Pago</SelectItem>
+            <SelectItem value="pendente">Pendente</SelectItem>
+            <SelectItem value="cancelado">Cancelado</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="plan" className="text-barber-light">Plano</Label>
+        <Select
+          value={filters.plan}
+          onValueChange={(value) => onFilterChange('plan', value)}
+        >
+          <SelectTrigger className="bg-black/40 border-0 text-barber-light">
+            <SelectValue placeholder="Selecione..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="Basic">Basic</SelectItem>
+            <SelectItem value="Classic">Classic</SelectItem>
+            <SelectItem value="Business">Business</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div className="space-y-2">
         <Label htmlFor="sort-by" className="text-barber-light">Ordenar por</Label>
