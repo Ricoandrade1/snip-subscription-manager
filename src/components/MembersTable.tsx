@@ -24,6 +24,11 @@ export function MembersTable({ planFilter }: MembersTableProps) {
     planFilter,
   });
 
+  const handleMemberClick = (member: Member) => {
+    setSelectedMember(member);
+    setDialogOpen(true);
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -58,10 +63,7 @@ export function MembersTable({ planFilter }: MembersTableProps) {
                 key={member.id}
                 member={member}
                 memberCode={getMemberCode({ member, members })}
-                onClick={() => {
-                  setSelectedMember(member);
-                  setDialogOpen(true);
-                }}
+                onClick={() => handleMemberClick(member)}
               />
             ))}
           </TableBody>

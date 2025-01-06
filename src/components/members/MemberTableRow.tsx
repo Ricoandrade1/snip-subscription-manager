@@ -26,7 +26,7 @@ export function MemberTableRow({ member, memberCode, onClick }: MemberTableRowPr
 
   return (
     <TableRow 
-      className="cursor-pointer hover:bg-barber-gray/50 border-b border-barber-gray"
+      className="cursor-pointer hover:bg-barber-gray/50 border-b border-barber-gray transition-colors"
       onClick={onClick}
     >
       <TableCell className="font-medium text-barber-light">{memberCode}</TableCell>
