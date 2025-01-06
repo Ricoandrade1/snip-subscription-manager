@@ -91,6 +91,12 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
         </Table>
       </div>
 
+      <div className="flex justify-end mt-4">
+        <SubscribersPDFButton 
+          subscribers={filteredSubscribers} 
+        />
+      </div>
+
       <EditSubscriberDialog
         subscriber={selectedSubscriber}
         open={editDialogOpen}
