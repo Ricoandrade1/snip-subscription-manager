@@ -7,11 +7,7 @@ import { SubscribersTableHeader } from "./SubscribersTableHeader";
 import { useSubscribers } from "./useSubscribers";
 import { EditSubscriberDialog } from "./EditSubscriberDialog";
 import { SubscribersStats } from "./SubscribersStats";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { DeleteSubscriberDialog } from "./DeleteSubscriberDialog";
 import type { Subscriber } from "./types";
 
 interface SubscribersTableProps {
@@ -20,11 +16,9 @@ interface SubscribersTableProps {
 
 export function SubscribersTable({ planFilter }: SubscribersTableProps) {
   const [selectedSubscriber, setSelectedSubscriber] = useState<Subscriber | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [adminPassword, setAdminPassword] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const { 
     subscribers, 
@@ -38,7 +32,7 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
 
   const handleSubscriberClick = (subscriber: Subscriber) => {
     setSelectedSubscriber(subscriber);
-    setDialogOpen(true);
+    setEditDialogOpen(true);
   };
 
   const handleStatusFilterChange = (status: string) => {
@@ -48,40 +42,6 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
   const handleDeleteClick = (subscriber: Subscriber) => {
     setSelectedSubscriber(subscriber);
     setDeleteDialogOpen(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!selectedSubscriber) return;
-
-    if (adminPassword !== '1234') {
-      toast.error('Senha de administrador incorreta');
-      return;
-    }
-
-    try {
-      setIsDeleting(true);
-      const { error } = await supabase
-        .from('members')
-        .delete()
-        .eq('id', selectedSubscriber.id);
-
-      if (error) throw error;
-
-      toast.success('Assinante excluído com sucesso');
-      setDeleteDialogOpen(false);
-      setAdminPassword('');
-      await refetch();
-    } catch (error) {
-      console.error('Erro ao excluir assinante:', error);
-      toast.error('Erro ao excluir assinante');
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  const handleDeleteDialogClose = () => {
-    setDeleteDialogOpen(false);
-    setAdminPassword('');
   };
 
   if (isLoading) {
@@ -129,52 +89,17 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
 
       <EditSubscriberDialog
         subscriber={selectedSubscriber}
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
         onSuccess={refetch}
       />
 
-      <Dialog open={deleteDialogOpen} onOpenChange={handleDeleteDialogClose}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirmar Exclusão</DialogTitle>
-            <DialogDescription>
-              Tem certeza que deseja excluir o assinante {selectedSubscriber?.name}? 
-              Esta ação não pode ser desfeita.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="adminPassword" className="text-sm font-medium text-gray-700">
-                Senha de Administrador
-              </label>
-              <Input
-                id="adminPassword"
-                type="password"
-                value={adminPassword}
-                onChange={(e) => setAdminPassword(e.target.value)}
-                placeholder="Digite a senha de administrador"
-              />
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
-              onClick={handleDeleteDialogClose}
-              disabled={isDeleting}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteConfirm}
-              disabled={isDeleting}
-            >
-              {isDeleting ? 'Excluindo...' : 'Excluir'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteSubscriberDialog
+        subscriber={selectedSubscriber}
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onSuccess={refetch}
+      />
     </div>
   );
 }
