@@ -32,12 +32,16 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    // Initialize session
     const initSession = async () => {
       try {
         const { data: { session: currentSession }, error } = await supabase.auth.getSession();
         if (error) {
           console.error('Error getting session:', error);
+          // If there's a session error, clear the session and redirect to login
+          await supabase.auth.signOut();
+          setSession(null);
+          setIsAdmin(false);
+          navigate('/login');
           return;
         }
         
@@ -48,6 +52,11 @@ function App() {
         }
       } catch (error) {
         console.error('Error in session initialization:', error);
+        // On any error, clear the session and redirect to login
+        await supabase.auth.signOut();
+        setSession(null);
+        setIsAdmin(false);
+        navigate('/login');
       } finally {
         setLoading(false);
       }
@@ -55,7 +64,6 @@ function App() {
 
     initSession();
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -84,7 +92,7 @@ function App() {
         setSession(null);
         setIsAdmin(false);
         
-        if (event === 'SIGNED_OUT') {
+        if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
           toast.success('Logout realizado com sucesso!');
           navigate('/login');
         }

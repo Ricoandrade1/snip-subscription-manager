@@ -83,7 +83,7 @@ export function BarberActions({ barber, onSuccess }: BarberActionsProps) {
           <DialogHeader>
             <DialogTitle>Editar Barbeiro</DialogTitle>
           </DialogHeader>
-          <BarberForm barber={barber} onSuccess={onSuccess} />
+          <BarberForm barberId={barber.id} onSuccess={onSuccess} />
         </DialogContent>
       </Dialog>
 
