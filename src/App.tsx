@@ -17,6 +17,7 @@ import Feed from "./pages/Feed";
 import Story from "./pages/Story";
 import Schedule from "./pages/Schedule";
 import ResetPassword from "./pages/ResetPassword";
+import Users from "./pages/Users";
 
 // Components
 import { LoginForm } from "./components/auth/LoginForm";
@@ -105,6 +106,7 @@ function App() {
             <Route path="/feed" element={<Feed />} />
             <Route path="/story" element={<Story />} />
             <Route path="/schedule" element={<Schedule />} />
+            <Route path="/users" element={<Users />} />
           </Routes>
         </main>
       </div>
