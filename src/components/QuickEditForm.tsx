@@ -12,6 +12,18 @@ interface QuickEditFormProps {
 }
 
 export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
+  // Normalize the status before setting it as default value
+  const normalizeStatus = (status: string) => {
+    switch (status) {
+      case "active":
+        return "pago" as const;
+      case "inactive":
+        return "cancelado" as const;
+      default:
+        return status as "pago" | "cancelado" | "pendente";
+    }
+  };
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -21,7 +33,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       nif: member.nif || "",
       plan: member.plan || "Basic",
       payment_date: member.payment_date ? new Date(member.payment_date) : undefined,
-      status: member.status || "pendente",
+      status: normalizeStatus(member.status),
     },
   });
 
