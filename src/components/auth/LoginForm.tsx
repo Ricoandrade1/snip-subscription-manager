@@ -72,6 +72,7 @@ export const LoginForm = () => {
             data: { role: 'admin' }
           }).catch(error => {
             console.error('Error updating user role:', error);
+            toast.error('Erro ao atualizar papel do usuário');
           });
         }
         navigate('/');
@@ -135,10 +136,6 @@ export const LoginForm = () => {
               },
             }}
             providers={[]}
-            onError={(error) => {
-              console.error('Auth error:', error);
-              toast.error('Erro ao fazer login. Verifique suas credenciais.');
-            }}
           />
         </div>
       </div>
