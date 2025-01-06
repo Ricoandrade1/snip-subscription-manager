@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Subscriber } from "./types";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getSubscriberCode } from "./utils/getSubscriberCode";
 
@@ -51,6 +51,17 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
     }
   };
 
+  const formatDate = (date: string | null) => {
+    if (!date) return '-';
+    return format(new Date(date), "dd/MM/yyyy", { locale: ptBR });
+  };
+
+  const getNextPaymentDate = (paymentDate: string | null, status: string) => {
+    if (!paymentDate || status === 'cancelado') return '-';
+    const nextPayment = addDays(new Date(paymentDate), 30);
+    return format(nextPayment, "dd/MM/yyyy", { locale: ptBR });
+  };
+
   return (
     <TableRow 
       className="cursor-pointer hover:bg-barber-gray/50 border-b border-barber-gray transition-colors"
@@ -73,9 +84,10 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick }: Subscri
       </TableCell>
       <TableCell className="text-barber-light whitespace-nowrap">{subscriber.phone || '-'}</TableCell>
       <TableCell className="text-barber-light whitespace-nowrap">
-        {subscriber.payment_date 
-          ? format(new Date(subscriber.payment_date), "dd/MM/yyyy", { locale: ptBR })
-          : '-'}
+        {formatDate(subscriber.payment_date)}
+      </TableCell>
+      <TableCell className="text-barber-light whitespace-nowrap">
+        {getNextPaymentDate(subscriber.payment_date, subscriber.status)}
       </TableCell>
     </TableRow>
   );
