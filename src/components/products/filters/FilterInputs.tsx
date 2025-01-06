@@ -2,6 +2,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+interface Brand {
+  id: string;
+  name: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+}
+
 interface FilterInputsProps {
   filters: {
     name: string;
@@ -19,13 +29,12 @@ export function FilterInputs({ filters, categories, brands, onFilterChange }: Fi
   return (
     <>
       <div className="space-y-2">
-        <Label htmlFor="name">Nome do produto</Label>
+        <Label htmlFor="name">Nome</Label>
         <Input
           id="name"
-          placeholder="Buscar produto..."
+          placeholder="Buscar por nome..."
           value={filters.name}
           onChange={(e) => onFilterChange("name", e.target.value)}
-          className="w-full"
         />
       </div>
 
@@ -35,8 +44,8 @@ export function FilterInputs({ filters, categories, brands, onFilterChange }: Fi
           value={filters.category}
           onValueChange={(value) => onFilterChange("category", value)}
         >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Todas as categorias" />
+          <SelectTrigger>
+            <SelectValue placeholder="Selecionar categoria" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todas</SelectItem>
@@ -55,8 +64,8 @@ export function FilterInputs({ filters, categories, brands, onFilterChange }: Fi
           value={filters.brand}
           onValueChange={(value) => onFilterChange("brand", value)}
         >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Todas as marcas" />
+          <SelectTrigger>
+            <SelectValue placeholder="Selecionar marca" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todas</SelectItem>
@@ -70,23 +79,25 @@ export function FilterInputs({ filters, categories, brands, onFilterChange }: Fi
       </div>
 
       <div className="space-y-2">
-        <Label>Faixa de preço</Label>
-        <div className="grid grid-cols-2 gap-2">
-          <Input
-            type="number"
-            placeholder="Min €"
-            value={filters.minPrice}
-            onChange={(e) => onFilterChange("minPrice", e.target.value)}
-            className="w-full"
-          />
-          <Input
-            type="number"
-            placeholder="Max €"
-            value={filters.maxPrice}
-            onChange={(e) => onFilterChange("maxPrice", e.target.value)}
-            className="w-full"
-          />
-        </div>
+        <Label htmlFor="minPrice">Preço Mínimo</Label>
+        <Input
+          id="minPrice"
+          type="number"
+          placeholder="€"
+          value={filters.minPrice}
+          onChange={(e) => onFilterChange("minPrice", e.target.value)}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="maxPrice">Preço Máximo</Label>
+        <Input
+          id="maxPrice"
+          type="number"
+          placeholder="€"
+          value={filters.maxPrice}
+          onChange={(e) => onFilterChange("maxPrice", e.target.value)}
+        />
       </div>
     </>
   );
