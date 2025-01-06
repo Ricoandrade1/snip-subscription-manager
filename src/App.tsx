@@ -70,6 +70,9 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/" element={<Index />} />
           <Route path="/members" element={<Members />} />
+          <Route path="/members/basic" element={<Members planType="Basic" />} />
+          <Route path="/members/classic" element={<Members planType="Classic" />} />
+          <Route path="/members/business" element={<Members planType="Business" />} />
           <Route path="/products" element={<Products />} />
           <Route path="/barbers" element={<Barbers />} />
           <Route path="/revenue" element={<Revenue />} />
