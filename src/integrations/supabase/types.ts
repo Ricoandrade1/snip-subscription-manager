@@ -152,6 +152,7 @@ export type Database = {
           payment_date: string | null
           phone: string | null
           plan_id: number | null
+          status: string
         }
         Insert: {
           created_at?: string | null
@@ -163,6 +164,7 @@ export type Database = {
           payment_date?: string | null
           phone?: string | null
           plan_id?: number | null
+          status?: string
         }
         Update: {
           created_at?: string | null
@@ -174,6 +176,7 @@ export type Database = {
           payment_date?: string | null
           phone?: string | null
           plan_id?: number | null
+          status?: string
         }
         Relationships: [
           {

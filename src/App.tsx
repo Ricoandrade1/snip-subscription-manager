@@ -3,7 +3,7 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { AppSidebar } from "@/components/AppSidebar";
 import { UserMenu } from "@/components/auth/UserMenu";
 import Index from "@/pages/Index";
-import Members from "@/pages/Members";
+import Subscribers from "@/pages/Subscribers";
 import Products from "@/pages/Products";
 import Barbers from "@/pages/Barbers";
 import Revenue from "@/pages/Revenue";
@@ -84,10 +84,10 @@ function App() {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/" element={<Index />} />
-          <Route path="/members" element={<Members />} />
-          <Route path="/members/basic" element={<Members planType="Basic" />} />
-          <Route path="/members/classic" element={<Members planType="Classic" />} />
-          <Route path="/members/business" element={<Members planType="Business" />} />
+          <Route path="/subscribers" element={<Subscribers />} />
+          <Route path="/subscribers/basic" element={<Subscribers planFilter="Basic" />} />
+          <Route path="/subscribers/classic" element={<Subscribers planFilter="Classic" />} />
+          <Route path="/subscribers/business" element={<Subscribers planFilter="Business" />} />
           <Route path="/products" element={<Products />} />
           <Route path="/barbers" element={<Barbers />} />
           <Route path="/revenue" element={<Revenue />} />

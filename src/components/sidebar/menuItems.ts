@@ -10,6 +10,7 @@ import {
   Calendar,
   Scissors,
   Wallet,
+  Users,
 } from "lucide-react";
 
 export const menuItems = [
@@ -17,6 +18,17 @@ export const menuItems = [
     title: "Dashboard",
     icon: LayoutDashboard,
     url: "/",
+  },
+  {
+    title: "Assinantes",
+    icon: Users,
+    url: "/subscribers",
+    submenu: [
+      { title: "Todos", url: "/subscribers" },
+      { title: "Basic", url: "/subscribers/basic" },
+      { title: "Classic", url: "/subscribers/classic" },
+      { title: "Business", url: "/subscribers/business" },
+    ],
   },
   {
     title: "Barbeiros",
