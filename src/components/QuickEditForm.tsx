@@ -25,7 +25,7 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
       nif: member.nif || "",
       plan: member.plan || "Basic",
       payment_date: member.payment_date ? new Date(member.payment_date) : undefined,
-      status: member.status || "cancelado",
+      status: member.status || "pendente",
     },
   });
 
@@ -39,11 +39,11 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
         nickname: data.nickname,
         phone: data.phone,
         nif: data.nif,
+        status: data.status,
         payment_date: data.payment_date?.toISOString() || null,
-        status: data.status, // Garantindo que o status seja incluído na atualização
       };
 
-      console.log('Status sendo enviado:', data.status);
+      console.log('Status sendo enviado:', updateData.status);
 
       // Check if plan has changed
       if (data.plan !== member.plan) {
