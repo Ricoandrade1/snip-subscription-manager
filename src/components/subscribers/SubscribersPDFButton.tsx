@@ -6,26 +6,14 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from "sonner";
 import { Subscriber } from "./types";
+import { formatSubscriberData } from "./pdf/formatters";
+import { tableHeaders, tableConfig } from "./pdf/pdfConfig";
 
 interface SubscribersPDFButtonProps {
   subscribers: Subscriber[];
 }
 
 export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps) {
-  const formatStatus = (status: string) => {
-    const statusMap: Record<string, string> = {
-      pago: "Pago",
-      pendente: "Pendente",
-      cancelado: "Cancelado"
-    };
-    return statusMap[status] || status;
-  };
-
-  const formatDate = (date: string | null | undefined) => {
-    if (!date) return '-';
-    return format(new Date(date), 'dd/MM/yyyy', { locale: ptBR });
-  };
-
   const generatePDF = () => {
     try {
       const doc = new jsPDF();
@@ -38,65 +26,14 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
       doc.text(`Data de emissão: ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR })}`, 14, 32);
       doc.text(`Total de assinantes: ${subscribers.length}`, 14, 42);
 
-      // Define headers and data
-      const headers = [
-        'Nome', 
-        'Telefone', 
-        'NIF', 
-        'Plano', 
-        'Data Pagamento',
-        'Próximo Pagamento',
-        'Status'
-      ];
+      // Transform data and generate table
+      const tableData = subscribers.map(formatSubscriberData);
 
-      const tableData = subscribers.map(subscriber => {
-        let nextPaymentDate = '-';
-        if (subscriber.payment_date) {
-          const paymentDate = new Date(subscriber.payment_date);
-          const nextDate = new Date(paymentDate);
-          nextDate.setMonth(nextDate.getMonth() + 1);
-          nextPaymentDate = format(nextDate, 'dd/MM/yyyy', { locale: ptBR });
-        }
-
-        return [
-          subscriber.name || '-',
-          subscriber.phone || '-',
-          subscriber.nif || '-',
-          subscriber.plan || '-',
-          formatDate(subscriber.payment_date),
-          nextPaymentDate,
-          formatStatus(subscriber.status)
-        ];
-      });
-
-      // Add table with improved styling
+      // Add table with styling
       autoTable(doc, {
-        head: [headers],
+        head: [tableHeaders],
         body: tableData,
-        startY: 50,
-        theme: 'grid',
-        styles: {
-          fontSize: 8,
-          cellPadding: 2,
-          lineColor: [200, 200, 200],
-          lineWidth: 0.1,
-        },
-        headStyles: {
-          fillColor: [51, 51, 51],
-          textColor: [255, 255, 255],
-          fontStyle: 'bold',
-          halign: 'center',
-        },
-        columnStyles: {
-          0: { cellWidth: 40 }, // Nome
-          1: { cellWidth: 25 }, // Telefone
-          2: { cellWidth: 20 }, // NIF
-          3: { cellWidth: 20 }, // Plano
-          4: { cellWidth: 25 }, // Data Pagamento
-          5: { cellWidth: 25 }, // Próximo Pagamento
-          6: { cellWidth: 20 }, // Status
-        },
-        margin: { top: 10 },
+        ...tableConfig
       });
 
       // Save PDF with formatted name
