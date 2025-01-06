@@ -10,6 +10,7 @@ export function MembersTableHeader() {
         <TableHead className="text-barber-light">Plano</TableHead>
         <TableHead className="text-barber-light">Telefone</TableHead>
         <TableHead className="text-barber-light">Data de Pagamento</TableHead>
+        <TableHead className="text-barber-light w-[50px]"></TableHead>
       </TableRow>
     </TableHeader>
   );
