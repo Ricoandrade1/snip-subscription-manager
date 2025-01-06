@@ -47,20 +47,14 @@ export function Cart({
       <CartHeader itemCount={items.length} />
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {items.length === 0 ? (
-          <div className="h-full flex items-center justify-center text-muted-foreground">
-            Carrinho vazio
-          </div>
-        ) : (
-          items.map((item) => (
-            <CartItem
-              key={item.id}
-              item={item}
-              onUpdateQuantity={onUpdateQuantity}
-              onRemoveItem={onRemoveItem}
-            />
-          ))
-        )}
+        {items.map((item) => (
+          <CartItem
+            key={item.id}
+            item={item}
+            onUpdateQuantity={onUpdateQuantity}
+            onRemoveItem={onRemoveItem}
+          />
+        ))}
       </div>
 
       <div className="p-4 border-t flex-shrink-0">
