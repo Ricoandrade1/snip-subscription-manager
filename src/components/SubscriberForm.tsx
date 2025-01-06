@@ -1,16 +1,16 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { useMemberContext } from "@/contexts/MemberContext";
 import { PersonalInfoFields } from "./PersonalInfoFields";
 import { PlanFields } from "./PlanFields";
 import { PaymentDateField } from "./PaymentDateField";
 import { BankingFields } from "./BankingFields";
 import { supabase } from "@/lib/supabase/client";
-import { MemberStatus } from "@/contexts/types";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { DialogHeader, DialogTitle } from "./ui/dialog";
 
 const formSchema = z.object({
@@ -24,85 +24,77 @@ const formSchema = z.object({
   payment_date: z.date().optional(),
 });
 
-export type SubscriberFormData = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof formSchema>;
 
 export function SubscriberForm() {
-  const { toast } = useToast();
-  const { addMember } = useMemberContext();
-  
-  const form = useForm<SubscriberFormData>({
+  const navigate = useNavigate();
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       plan: "Basic",
-      name: "",
-      nickname: "",
-      phone: "",
-      nif: "",
-      bankName: "",
-      iban: "",
     },
   });
 
-  const handleSubmit = async (data: SubscriberFormData) => {
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Você precisa estar logado para cadastrar assinantes");
+        navigate("/login");
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
+
+  const onSubmit = async (data: FormValues) => {
     try {
-      const { data: plansData, error: planError } = await supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error("Você precisa estar logado para cadastrar assinantes");
+        navigate("/login");
+        return;
+      }
+
+      // Primeiro, buscar o ID do plano baseado no título
+      const { data: planData, error: planError } = await supabase
         .from('plans')
-        .select('id, title')
+        .select('id')
         .eq('title', data.plan)
         .single();
 
       if (planError) {
-        console.error('Erro ao buscar plano:', planError);
-        toast({
-          title: "Erro ao cadastrar assinante",
-          description: "Erro ao buscar plano. Por favor, tente novamente.",
-          variant: "destructive",
-        });
-        return;
+        throw planError;
       }
 
-      if (!plansData) {
-        console.error('Plano não encontrado:', data.plan);
-        toast({
-          title: "Erro ao cadastrar assinante",
-          description: `Plano "${data.plan}" não encontrado.`,
-          variant: "destructive",
-        });
-        return;
-      }
+      const { error } = await supabase
+        .from('members')
+        .insert([
+          {
+            name: data.name,
+            nickname: data.nickname,
+            phone: data.phone,
+            nif: data.nif,
+            plan_id: planData.id,
+            payment_date: data.payment_date,
+            bank_name: data.bankName,
+            iban: data.iban
+          }
+        ]);
 
-      const memberData = {
-        name: data.name,
-        nickname: data.nickname || "",
-        phone: data.phone || "",
-        nif: data.nif || "",
-        bank: data.bankName,
-        iban: data.iban,
-        plan_id: plansData.id,
-        payment_date: data.payment_date ? data.payment_date.toISOString() : null,
-        status: (data.payment_date ? "pago" : "pendente") as MemberStatus
-      };
+      if (error) throw error;
 
-      await addMember(memberData);
-      
-      toast({
-        title: "Assinante cadastrado com sucesso!",
-        description: `${data.name} foi cadastrado no plano ${data.plan}.`,
-      });
-      
+      toast.success("Assinante cadastrado com sucesso!");
       form.reset();
     } catch (error) {
-      console.error('Erro ao adicionar membro:', error);
-      toast({
-        title: "Erro ao cadastrar assinante",
-        description: "Ocorreu um erro ao cadastrar o assinante. Por favor, tente novamente.",
-        variant: "destructive",
-      });
+      console.error('Erro ao cadastrar assinante:', error);
+      toast.error("Erro ao cadastrar assinante");
     }
   };
 
   return (
-    <>
+    <div className="p-4 bg-barber-black text-barber-light">
       <DialogHeader>
         <DialogTitle className="text-2xl font-bold text-barber-gold">
           Cadastrar Novo Assinante
@@ -110,27 +102,20 @@ export function SubscriberForm() {
       </DialogHeader>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <PersonalInfoFields form={form} />
-          </div>
-
-          <div className="space-y-4">
-            <PlanFields form={form} />
-            <PaymentDateField form={form} />
-            <BankingFields form={form} />
-          </div>
-
-          <div className="flex justify-end pt-4">
-            <Button 
-              type="submit" 
-              className="bg-barber-gold hover:bg-barber-gold/90 text-barber-black w-full md:w-auto"
-            >
-              Cadastrar Assinante
-            </Button>
-          </div>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-4">
+          <PersonalInfoFields form={form} />
+          <BankingFields form={form} />
+          <PlanFields form={form} />
+          <PaymentDateField form={form} />
+          
+          <Button 
+            type="submit" 
+            className="w-full bg-barber-gold hover:bg-barber-gold/90 text-barber-black"
+          >
+            Cadastrar Assinante
+          </Button>
         </form>
       </Form>
-    </>
+    </div>
   );
 }
