@@ -35,7 +35,7 @@ const FIELD_OPTIONS: FieldOption[] = [
 ];
 
 export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps) {
-  const [selectedFields, setSelectedFields] = useState<string[]>(['name', 'phone', 'plan', 'payment_date']);
+  const [selectedFields, setSelectedFields] = useState<string[]>(['name', 'phone', 'nif', 'plan']);
 
   const formatDate = (date: string | null | undefined) => {
     if (!date) return '-';
