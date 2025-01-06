@@ -89,7 +89,7 @@ export default function Users() {
   };
 
   return (
-    <div className="p-8">
+    <div className="container p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         <header className="flex items-center justify-between">
           <div className="space-y-1">
@@ -110,7 +110,7 @@ export default function Users() {
                 Adicionar Utilizador
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-barber-gray border-barber-gold/20">
+            <DialogContent>
               <UserForm onSubmit={handleCreateUser} />
             </DialogContent>
           </Dialog>
