@@ -8,6 +8,7 @@ import {
   DialogTrigger,
   DialogDescription,
   DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { BarberForm } from "../barber-form/BarberForm";
 import { RoleManager } from "./RoleManager";
@@ -15,13 +16,17 @@ import { useState } from "react";
 import { Database } from "@/integrations/supabase/types";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DialogClose } from "@radix-ui/react-dialog";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
 interface Barber {
   id: string;
   name: string;
+  phone: string;
+  email: string | null;
+  specialties: string[];
+  commission_rate: number;
+  status: string;
   roles: UserAuthority[];
 }
 
@@ -74,11 +79,11 @@ export function BarberActions({ barber, onSuccess }: BarberActionsProps) {
             <Pencil className="h-4 w-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Editar Barbeiro</DialogTitle>
           </DialogHeader>
-          <BarberForm barberId={barber.id} onSuccess={onSuccess} />
+          <BarberForm barber={barber} onSuccess={onSuccess} />
         </DialogContent>
       </Dialog>
 
@@ -90,7 +95,7 @@ export function BarberActions({ barber, onSuccess }: BarberActionsProps) {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Gerenciar Funções - {barber.name}</DialogTitle>
+            <DialogTitle>Gerenciar Funções</DialogTitle>
           </DialogHeader>
           <RoleManager barber={barber} onSuccess={handleRoleUpdateSuccess} />
         </DialogContent>
