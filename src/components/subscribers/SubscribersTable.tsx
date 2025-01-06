@@ -66,7 +66,6 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
           onFilterChange={handleStatusFilterChange}
           selectedStatus={statusFilter}
         />
-        <SubscribersPDFButton subscribers={filteredSubscribers} />
       </div>
       
       <SubscribersFilter 
