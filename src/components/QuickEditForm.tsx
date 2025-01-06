@@ -45,7 +45,9 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
 
       // Se o status mudou para "pago", atualize a data de pagamento para hoje se não houver uma data definida
       if (data.status === 'pago' && !data.payment_date) {
-        updateData.payment_date = new Date().toISOString();
+        const today = new Date();
+        updateData.payment_date = today.toISOString();
+        form.setValue('payment_date', today);
       }
 
       console.log('Status sendo enviado:', updateData.status);
@@ -82,6 +84,13 @@ export function QuickEditForm({ member, onSubmit }: QuickEditFormProps) {
 
       console.log('Dados de atualização:', updateData);
       await onSubmit(updateData);
+      
+      // Atualiza o formulário com os novos valores
+      form.reset({
+        ...data,
+        payment_date: updateData.payment_date ? new Date(updateData.payment_date) : undefined,
+      });
+      
     } catch (error) {
       console.error('Error updating member:', error);
       toast.error("Erro ao atualizar membro");

@@ -24,7 +24,8 @@ export function StatusField({ form }: StatusFieldProps) {
               // Se o status for alterado para "pago" e não houver data de pagamento,
               // define a data atual como data de pagamento
               if (value === 'pago' && !form.getValues('payment_date')) {
-                form.setValue('payment_date', new Date(), {
+                const today = new Date();
+                form.setValue('payment_date', today, {
                   shouldValidate: true,
                   shouldDirty: true,
                   shouldTouch: true
