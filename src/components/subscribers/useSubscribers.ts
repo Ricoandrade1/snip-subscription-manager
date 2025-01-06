@@ -33,7 +33,6 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
 
   useEffect(() => {
     fetchSubscribers();
-    calculateStats();
   }, [planFilter, statusFilter]);
 
   const fetchSubscribers = async () => {
@@ -76,6 +75,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
         }));
 
       setSubscribers(formattedSubscribers);
+      calculateStats(formattedSubscribers);
     } catch (error) {
       console.error('Error fetching subscribers:', error);
       toast.error('Erro ao carregar assinantes');
@@ -84,35 +84,20 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     }
   };
 
-  const calculateStats = async () => {
-    try {
-      const { data: members, error } = await supabase
-        .from('members')
-        .select(`
-          *,
-          plans (
-            price
-          )
-        `);
+  const calculateStats = (subscribersList: Subscriber[]) => {
+    const stats = subscribersList.reduce((acc, subscriber) => ({
+      totalSubscribers: acc.totalSubscribers + 1,
+      activeSubscribers: acc.activeSubscribers + (subscriber.status === 'active' ? 1 : 0),
+      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'overdue' ? 1 : 0),
+      monthlyRevenue: acc.monthlyRevenue + (subscriber.status === 'active' ? 50 : 0), // Assuming fixed price of 50
+    }), {
+      totalSubscribers: 0,
+      activeSubscribers: 0,
+      overdueSubscribers: 0,
+      monthlyRevenue: 0,
+    });
 
-      if (error) throw error;
-
-      const stats = members.reduce((acc, member) => ({
-        totalSubscribers: acc.totalSubscribers + 1,
-        activeSubscribers: acc.activeSubscribers + (member.status === 'active' ? 1 : 0),
-        overdueSubscribers: acc.overdueSubscribers + (member.status === 'overdue' ? 1 : 0),
-        monthlyRevenue: acc.monthlyRevenue + (member.status === 'active' && member.plans?.price ? member.plans.price : 0),
-      }), {
-        totalSubscribers: 0,
-        activeSubscribers: 0,
-        overdueSubscribers: 0,
-        monthlyRevenue: 0,
-      });
-
-      setStats(stats);
-    } catch (error) {
-      console.error('Error calculating stats:', error);
-    }
+    setStats(stats);
   };
 
   const handleFilterChange = (field: keyof FilterState, value: string) => {
@@ -139,6 +124,8 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
         case 'revenue':
           matchStatus = subscriber.status === 'active';
           break;
+        default:
+          matchStatus = true;
       }
     }
 

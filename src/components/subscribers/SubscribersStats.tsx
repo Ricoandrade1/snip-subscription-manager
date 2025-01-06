@@ -13,21 +13,19 @@ interface SubscriberStats {
 interface SubscribersStatsProps {
   stats: SubscriberStats;
   onFilterChange: (status: string) => void;
+  selectedStatus: string;
 }
 
-export function SubscribersStats({ stats, onFilterChange }: SubscribersStatsProps) {
+export function SubscribersStats({ stats, onFilterChange, selectedStatus }: SubscribersStatsProps) {
   const [showTotal, setShowTotal] = useState(true);
   const [showActive, setShowActive] = useState(true);
   const [showOverdue, setShowOverdue] = useState(true);
   const [showRevenue, setShowRevenue] = useState(true);
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
   const handleCardClick = (status: string) => {
     if (status === selectedStatus) {
-      setSelectedStatus('all');
       onFilterChange('all');
     } else {
-      setSelectedStatus(status);
       onFilterChange(status);
     }
   };

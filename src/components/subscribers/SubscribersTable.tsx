@@ -54,6 +54,7 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
       <SubscribersStats 
         stats={stats}
         onFilterChange={handleStatusFilterChange}
+        selectedStatus={statusFilter}
       />
       
       <SubscribersFilter 
