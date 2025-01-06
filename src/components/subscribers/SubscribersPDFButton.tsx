@@ -31,9 +31,9 @@ export function SubscribersPDFButton({ subscribers }: SubscribersPDFButtonProps)
 
       // Add table with styling
       autoTable(doc, {
+        ...tableConfig,
         head: [tableHeaders],
         body: tableData,
-        ...tableConfig
       });
 
       // Save PDF with formatted name

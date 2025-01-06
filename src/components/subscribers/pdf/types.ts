@@ -1,6 +1,7 @@
 import { ThemeType, FontStyle } from 'jspdf-autotable';
 
 type RGBColor = [number, number, number];
+type HAlignType = 'left' | 'center' | 'right';
 
 export interface TableConfig {
   startY: number;
@@ -15,7 +16,7 @@ export interface TableConfig {
     fillColor: RGBColor;
     textColor: RGBColor;
     fontStyle: FontStyle;
-    halign: string;
+    halign: HAlignType;
   };
   columnStyles: {
     [key: number]: {
@@ -25,6 +26,14 @@ export interface TableConfig {
   margin: {
     top: number;
   };
-  head: string[][];
-  body: string[][];
 }
+
+export const tableHeaders = [
+  'Nome',
+  'Telefone',
+  'NIF',
+  'Plano',
+  'Último Pagamento',
+  'Próximo Pagamento',
+  'Status'
+];

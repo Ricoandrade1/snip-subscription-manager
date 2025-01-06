@@ -1,7 +1,7 @@
-import { TableConfig } from './types';
+import { TableConfig, tableHeaders } from './types';
 
 export const tableConfig: TableConfig = {
-  startY: 20,
+  startY: 50,
   theme: 'grid',
   styles: {
     fontSize: 8,
@@ -24,6 +24,6 @@ export const tableConfig: TableConfig = {
     5: { cellWidth: 30 },
   },
   margin: { top: 10 },
-  head: [['Código', 'Nome', 'Telefone', 'Plano', 'Status', 'Pagamento']],
-  body: [],
 };
+
+export { tableHeaders };
