@@ -3,7 +3,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { Subscriber, SubscriberStatus } from "../types/subscriber";
 import { toast } from "sonner";
 
-export function useSubscriberData(planFilter?: string) {
+const normalizeStatus = (status: string): SubscriberStatus => {
+  switch (status.toLowerCase()) {
+    case 'pago':
+    case 'active':
+      return 'pago';
+    case 'cancelado':
+    case 'inactive':
+      return 'cancelado';
+    case 'pendente':
+    case 'pending':
+      return 'pendente';
+    default:
+      return 'pendente';
+  }
+};
+
+export function useSubscriberData(planFilter?: "Basic" | "Classic" | "Business") {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -43,7 +59,7 @@ export function useSubscriberData(planFilter?: string) {
           plan_id: member.plan_id,
           created_at: member.created_at,
           payment_date: member.payment_date,
-          status: member.status as SubscriberStatus,
+          status: normalizeStatus(member.status),
           bank_name: member.bank_name,
           iban: member.iban,
           due_date: member.due_date,

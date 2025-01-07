@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { FilterState } from "../types/subscriber-hooks";
+import { FilterState } from "../types/subscriber";
 import { Subscriber } from "../types/subscriber";
 
-export function useSubscriberFilters(subscribers: Subscriber[], statusFilter = 'all') {
+export function useSubscriberFilters(statusFilter: string) {
   const [filters, setFilters] = useState<FilterState>({
     name: "",
     phone: "",
@@ -37,44 +37,46 @@ export function useSubscriberFilters(subscribers: Subscriber[], statusFilter = '
     });
   };
 
-  const filteredSubscribers = sortSubscribers(
-    subscribers.filter((subscriber) => {
-      const matchName = subscriber.name.toLowerCase().includes(filters.name.toLowerCase());
-      const matchPhone = !filters.phone || (subscriber.phone && subscriber.phone.toLowerCase().includes(filters.phone.toLowerCase()));
-      const matchNif = !filters.nif || (subscriber.nif && subscriber.nif.toLowerCase().includes(filters.nif.toLowerCase()));
-      const matchPlan = filters.plan === 'all' || subscriber.plan === filters.plan;
-      const matchStatus = filters.status === 'all' || subscriber.status === filters.status;
+  const filterSubscribers = (subscribers: Subscriber[]) => {
+    return sortSubscribers(
+      subscribers.filter((subscriber) => {
+        const matchName = subscriber.name.toLowerCase().includes(filters.name.toLowerCase());
+        const matchPhone = !filters.phone || (subscriber.phone && subscriber.phone.toLowerCase().includes(filters.phone.toLowerCase()));
+        const matchNif = !filters.nif || (subscriber.nif && subscriber.nif.toLowerCase().includes(filters.nif.toLowerCase()));
+        const matchPlan = filters.plan === 'all' || subscriber.plan === filters.plan;
+        const matchStatus = filters.status === 'all' || subscriber.status === filters.status;
 
-      let matchStatusFilter = true;
-      if (statusFilter !== 'all') {
-        switch (statusFilter) {
-          case 'active':
-            matchStatusFilter = subscriber.status === 'pago';
-            break;
-          case 'pending':
-            matchStatusFilter = subscriber.status === 'pendente';
-            break;
-          case 'overdue':
-            matchStatusFilter = subscriber.status === 'cancelado';
-            break;
-          case 'total':
-            matchStatusFilter = true;
-            break;
-          case 'revenue':
-            matchStatusFilter = subscriber.status === 'pago';
-            break;
-          default:
-            matchStatusFilter = true;
+        let matchStatusFilter = true;
+        if (statusFilter !== 'all') {
+          switch (statusFilter) {
+            case 'active':
+              matchStatusFilter = subscriber.status === 'pago';
+              break;
+            case 'pending':
+              matchStatusFilter = subscriber.status === 'pendente';
+              break;
+            case 'overdue':
+              matchStatusFilter = subscriber.status === 'cancelado';
+              break;
+            case 'total':
+              matchStatusFilter = true;
+              break;
+            case 'revenue':
+              matchStatusFilter = subscriber.status === 'pago';
+              break;
+            default:
+              matchStatusFilter = true;
+          }
         }
-      }
 
-      return matchName && matchPhone && matchNif && matchPlan && matchStatus && matchStatusFilter;
-    })
-  );
+        return matchName && matchPhone && matchNif && matchPlan && matchStatus && matchStatusFilter;
+      })
+    );
+  };
 
   return {
     filters,
     handleFilterChange,
-    filteredSubscribers
+    filterSubscribers
   };
 }
