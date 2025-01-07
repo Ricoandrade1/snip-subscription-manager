@@ -62,6 +62,13 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick, onDeleteC
     return format(nextPayment, "dd/MM/yyyy", { locale: ptBR });
   };
 
+  const handlePhoneClick = () => {
+    if (subscriber.phone) {
+      navigator.clipboard.writeText(subscriber.phone);
+      // Toast notification is handled by the Tooltip
+    }
+  };
+
   return (
     <TableRow 
       className="hover:bg-barber-gray/50 border-b border-barber-gray transition-colors cursor-pointer"
@@ -87,11 +94,17 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick, onDeleteC
       <TableCell className="text-barber-light">
         {subscriber.phone ? (
           <Tooltip>
-            <TooltipTrigger>
-              <div className="flex items-center gap-1">
+            <TooltipTrigger asChild>
+              <button 
+                className="flex items-center gap-1 hover:text-barber-gold transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePhoneClick();
+                }}
+              >
                 <Phone className="h-4 w-4" />
                 {subscriber.phone}
-              </div>
+              </button>
             </TooltipTrigger>
             <TooltipContent>
               <p>Clique para copiar</p>
