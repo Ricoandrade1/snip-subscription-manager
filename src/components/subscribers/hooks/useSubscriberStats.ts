@@ -14,10 +14,10 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
   const planPrices = usePlanPricesFixed();
 
   useEffect(() => {
+    console.log('-------------------');
     console.log('Calculando estatísticas com preços fixos:', planPrices);
     console.log('Total de assinantes:', subscribers.length);
     
-    let totalRevenue = 0;
     const calculatedStats = subscribers.reduce((acc, subscriber) => {
       console.log('-------------------');
       console.log('Processando assinante:', subscriber.name);
@@ -26,8 +26,7 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
       
       let monthlyRevenue = 0;
       if (subscriber.status === 'pago') {
-        monthlyRevenue = planPrices[subscriber.plan];
-        totalRevenue += monthlyRevenue;
+        monthlyRevenue = planPrices[subscriber.plan] || 0;
         console.log('Preço do plano:', monthlyRevenue, '€');
       }
       
@@ -36,7 +35,7 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
         activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
         overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
         pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
-        monthlyRevenue: totalRevenue,
+        monthlyRevenue: acc.monthlyRevenue + monthlyRevenue,
       };
     }, {
       totalSubscribers: 0,
