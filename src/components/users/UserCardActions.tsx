@@ -75,21 +75,14 @@ export function UserCardActions({
   const handleResetPassword = async () => {
     try {
       setIsResettingPassword(true);
-      const response = await fetch('/functions/v1/reset-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('reset-password', {
+        body: {
           userId: user.id,
           userEmail: user.email,
-        }),
+        },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to reset password');
-      }
+      if (error) throw error;
 
       toast({
         title: "Sucesso",
