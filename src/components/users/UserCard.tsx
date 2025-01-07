@@ -6,6 +6,9 @@ import { UserCardActions } from "./UserCardActions";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageUpload } from "../barber-form/ImageUpload";
+import { Button } from "../ui/button";
+import { Trash2 } from "lucide-react";
+import { DeleteUserDialog } from "./dialogs/DeleteUserDialog";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -35,6 +38,7 @@ export function UserCard({
   onSelectUser,
 }: UserCardProps) {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const isAdmin = user.roles?.includes("admin");
   const isSeller = user.roles?.includes("seller");
   const isBarber = user.roles?.includes("barber");
@@ -86,6 +90,12 @@ export function UserCard({
     return "bg-barber-gray border-gray-500/20";
   };
 
+  // Wrap the onRoleUpdateSuccess in an async function
+  const handleDeleteSuccess = async () => {
+    onRoleUpdateSuccess();
+    return Promise.resolve();
+  };
+
   return (
     <Card className={`h-full flex flex-col transition-none group relative ${getCardStyle()}`}>
       <CardHeader className="pb-4 flex-shrink-0">
@@ -107,7 +117,7 @@ export function UserCard({
       </CardHeader>
       <CardContent className="flex-1 flex flex-col justify-between pt-2">
         <UserCardRoles roles={user.roles} />
-        <div className="mt-6">
+        <div className="mt-6 flex justify-between items-center">
           <UserCardActions
             user={user}
             onRoleUpdateSuccess={onRoleUpdateSuccess}
@@ -115,8 +125,23 @@ export function UserCard({
             onSelectUser={onSelectUser}
             getCardStyle={getCardStyle}
           />
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => setIsDeleteDialogOpen(true)}
+            className="ml-2"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
       </CardContent>
+
+      <DeleteUserDialog
+        user={user}
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onSuccess={handleDeleteSuccess}
+      />
     </Card>
   );
 }
