@@ -6,21 +6,25 @@ export function usePlanPrices() {
 
   useEffect(() => {
     const fetchPlanPrices = async () => {
+      console.log('Buscando preços dos planos...');
+      
       const { data: plans, error } = await supabase
         .from('plans')
         .select('title, price');
 
       if (error) {
-        console.error('Error fetching plan prices:', error);
+        console.error('Erro ao buscar preços dos planos:', error);
         return;
       }
+
+      console.log('Dados retornados do Supabase:', plans);
 
       const prices = plans.reduce((acc: Record<string, number>, plan) => {
         acc[plan.title] = Number(plan.price);
         return acc;
       }, {});
 
-      console.log('Preços dos planos:', prices);
+      console.log('Preços dos planos processados:', prices);
       setPlanPrices(prices);
     };
 
