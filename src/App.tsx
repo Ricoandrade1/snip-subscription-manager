@@ -18,6 +18,7 @@ import Story from "./pages/Story";
 import Schedule from "./pages/Schedule";
 import ResetPassword from "./pages/ResetPassword";
 import Users from "./pages/Users";
+import Reports from "./pages/Reports";
 
 // Components
 import { LoginForm } from "./components/auth/LoginForm";
@@ -112,6 +113,7 @@ function App() {
             <Route path="/story" element={<Story />} />
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/reports/*" element={<Reports />} />
           </Routes>
         </main>
       </div>

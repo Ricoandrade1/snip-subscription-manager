@@ -10,6 +10,7 @@ import {
   Scissors,
   Wallet,
   Users,
+  FileBarChart2,
 } from "lucide-react";
 
 export const menuItems = [
@@ -63,6 +64,11 @@ export const menuItems = [
     title: "Lojas",
     icon: Store,
     url: "/stores",
+  },
+  {
+    title: "Relatórios",
+    icon: FileBarChart2,
+    url: "/reports",
   },
   {
     title: "Gestor de Conta",
