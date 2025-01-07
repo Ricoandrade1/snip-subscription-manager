@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Subscriber, SubscriberStats } from "../types/subscriber";
+import { Subscriber, SubscriberStats } from "../types";
+import { calculateSubscriberStats } from "./useSubscriberStats";
 import { toast } from "sonner";
 
-export function useSubscriberData(planFilter?: "Basic" | "Classic" | "Business") {
+interface UseSubscriberDataProps {
+  planFilter?: "Basic" | "Classic" | "Business";
+  statusFilter?: string;
+}
+
+export function useSubscriberData({ planFilter, statusFilter = 'all' }: UseSubscriberDataProps) {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<SubscriberStats>({
@@ -59,7 +65,8 @@ export function useSubscriberData(planFilter?: "Basic" | "Classic" | "Business")
         }));
 
       setSubscribers(formattedSubscribers);
-      calculateStats(formattedSubscribers);
+      const calculatedStats = await calculateSubscriberStats(formattedSubscribers);
+      setStats(calculatedStats);
     } catch (error) {
       console.error('Error fetching subscribers:', error);
       toast.error('Erro ao carregar assinantes');
@@ -68,32 +75,9 @@ export function useSubscriberData(planFilter?: "Basic" | "Classic" | "Business")
     }
   };
 
-  const calculateStats = (subscribersList: Subscriber[]) => {
-    const stats = subscribersList.reduce((acc, subscriber) => {
-      // Calcula a receita mensal apenas para assinantes com status "pago"
-      const monthlyRevenue = subscriber.status === 'pago' ? subscriber.price : 0;
-      
-      return {
-        totalSubscribers: acc.totalSubscribers + 1,
-        activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
-        overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
-        pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
-        monthlyRevenue: acc.monthlyRevenue + monthlyRevenue,
-      };
-    }, {
-      totalSubscribers: 0,
-      activeSubscribers: 0,
-      overdueSubscribers: 0,
-      pendingSubscribers: 0,
-      monthlyRevenue: 0,
-    });
-
-    setStats(stats);
-  };
-
   useEffect(() => {
     fetchSubscribers();
-  }, [planFilter]);
+  }, [planFilter, statusFilter]);
 
   return {
     subscribers,

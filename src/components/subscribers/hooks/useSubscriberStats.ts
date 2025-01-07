@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Subscriber, SubscriberStats } from "../types";
-import { toast } from "sonner";
 
 interface PlanPrices {
   [key: string]: number;
@@ -15,9 +13,9 @@ async function fetchPlanPrices(): Promise<PlanPrices> {
   if (error) {
     console.error('Erro ao buscar preços dos planos:', error);
     return {
-      Basic: 29.99,
-      Classic: 49.99,
-      Business: 99.99
+      Basic: 30,
+      Classic: 40,
+      Business: 50
     };
   }
 
