@@ -1,36 +1,13 @@
-import { Subscriber, SubscriberStats } from "../types/subscriber";
-import { getPlanPrices } from "@/utils/planPrices";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Subscriber, SubscriberStats } from "../types";
 
-export async function calculateSubscriberStats(subscribers: Subscriber[]): Promise<SubscriberStats> {
-  console.log('Calculando estatísticas para', subscribers.length, 'assinantes');
-  
-  const planPrices = await getPlanPrices();
-  
-  console.log('Preços dos planos:', planPrices);
-  
-  const stats = subscribers.reduce((acc, subscriber) => {
-    console.log('-------------------');
-    console.log('Processando assinante:', subscriber.name);
-    console.log('Status:', subscriber.status);
-    console.log('Plano:', subscriber.plan);
-    
-    let monthlyRevenue = 0;
-    if (subscriber.status === 'pago') {
-      monthlyRevenue = planPrices[subscriber.plan] || 0;
-      console.log('Receita do plano:', monthlyRevenue, '€');
-    }
-    
-    const newStats = {
-      totalSubscribers: acc.totalSubscribers + 1,
-      activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
-      overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
-      pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
-      monthlyRevenue: acc.monthlyRevenue + monthlyRevenue,
-    };
-    
-    console.log('Receita mensal acumulada:', newStats.monthlyRevenue, '€');
-    return newStats;
-  }, {
+interface PlanPrices {
+  [key: string]: number;
+}
+
+export function useSubscriberStats(subscribers: Subscriber[]) {
+  const [stats, setStats] = useState<SubscriberStats>({
     totalSubscribers: 0,
     activeSubscribers: 0,
     overdueSubscribers: 0,
@@ -38,11 +15,45 @@ export async function calculateSubscriberStats(subscribers: Subscriber[]): Promi
     monthlyRevenue: 0,
   });
 
-  console.log('-------------------');
-  console.log('Estatísticas finais:');
-  console.log('Total de assinantes:', stats.totalSubscribers);
-  console.log('Assinantes ativos:', stats.activeSubscribers);
-  console.log('Receita mensal total:', stats.monthlyRevenue, '€');
-  
+  useEffect(() => {
+    const calculateStats = async () => {
+      // Buscar preços atualizados dos planos
+      const { data: plans } = await supabase.from('plans').select('title, price');
+      const planPrices: PlanPrices = plans?.reduce((acc: PlanPrices, plan) => {
+        acc[plan.title] = Number(plan.price);
+        return acc;
+      }, {}) || {};
+
+      console.log('Preços dos planos:', planPrices);
+
+      const calculatedStats = subscribers.reduce((acc, subscriber) => {
+        let monthlyRevenue = 0;
+        if (subscriber.status === 'pago' && subscriber.plan) {
+          monthlyRevenue = planPrices[subscriber.plan] || 0;
+          console.log(`Receita do assinante ${subscriber.name}:`, monthlyRevenue);
+        }
+
+        return {
+          totalSubscribers: acc.totalSubscribers + 1,
+          activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
+          overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
+          pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
+          monthlyRevenue: acc.monthlyRevenue + monthlyRevenue,
+        };
+      }, {
+        totalSubscribers: 0,
+        activeSubscribers: 0,
+        overdueSubscribers: 0,
+        pendingSubscribers: 0,
+        monthlyRevenue: 0,
+      });
+
+      console.log('Estatísticas calculadas:', calculatedStats);
+      setStats(calculatedStats);
+    };
+
+    calculateStats();
+  }, [subscribers]);
+
   return stats;
 }
