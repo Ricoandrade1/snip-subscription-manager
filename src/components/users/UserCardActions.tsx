@@ -20,7 +20,7 @@ interface UserCardActionsProps {
     email: string;
     roles: UserAuthority[];
   };
-  onRoleUpdateSuccess: () => void;
+  onRoleUpdateSuccess: () => Promise<void>;
   selectedUserId: string | null;
   onSelectUser: (userId: string | null) => void;
   getCardStyle: () => string;
@@ -36,13 +36,8 @@ export function UserCardActions({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
 
-  const handleEditClick = () => {
-    setIsEditDialogOpen(true);
-  };
-
-  const handlePasswordClick = () => {
-    setIsPasswordDialogOpen(true);
-  };
+  const handleEditClick = () => setIsEditDialogOpen(true);
+  const handlePasswordClick = () => setIsPasswordDialogOpen(true);
 
   return (
     <div className="flex justify-end pt-2 space-x-2">

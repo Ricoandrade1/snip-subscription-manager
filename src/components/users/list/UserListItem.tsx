@@ -22,7 +22,7 @@ interface UserListItemProps {
   userDetails: UserDetails | undefined;
   selectedUserId: string | null;
   onSelectUser: (userId: string | null) => void;
-  onRoleUpdateSuccess: () => void;
+  onRoleUpdateSuccess: () => Promise<void>;
 }
 
 export function UserListItem({
@@ -34,19 +34,6 @@ export function UserListItem({
 }: UserListItemProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const getRoleStyle = (role: string) => {
-    switch (role) {
-      case "admin":
-        return "bg-barber-gold/10 text-barber-gold border-barber-gold/20";
-      case "seller":
-        return "bg-blue-500/10 text-blue-400 border-blue-500/20";
-      case "barber":
-        return "bg-gray-500/10 text-gray-400 border-gray-500/20";
-      default:
-        return "bg-gray-500/10 text-gray-400 border-gray-500/20";
-    }
-  };
-
   const getCardStyle = () => {
     if (user.roles?.includes("admin")) {
       return "bg-barber-gray border-barber-gold/20";
@@ -54,16 +41,7 @@ export function UserListItem({
     if (user.roles?.includes("seller")) {
       return "bg-barber-gray border-blue-500/20";
     }
-    if (user.roles?.includes("barber")) {
-      return "bg-barber-gray border-gray-500/20";
-    }
     return "bg-barber-gray border-gray-500/20";
-  };
-
-  // Wrap the onRoleUpdateSuccess in an async function
-  const handleDeleteSuccess = async () => {
-    onRoleUpdateSuccess();
-    return Promise.resolve();
   };
 
   return (
@@ -84,19 +62,6 @@ export function UserListItem({
               </p>
             </div>
           )}
-          <div className="flex flex-wrap gap-2 mt-2">
-            {user.roles?.map((role) => (
-              <span
-                key={role}
-                className={cn(
-                  "px-3 py-1.5 rounded-full text-xs font-medium border",
-                  getRoleStyle(role)
-                )}
-              >
-                {role}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
 
@@ -121,7 +86,7 @@ export function UserListItem({
         user={user}
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        onSuccess={handleDeleteSuccess}
+        onSuccess={onRoleUpdateSuccess}
       />
     </div>
   );
