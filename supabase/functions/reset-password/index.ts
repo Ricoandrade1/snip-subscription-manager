@@ -83,9 +83,9 @@ serve(async (req) => {
     })
 
     if (!emailResponse.ok) {
-      const errorText = await emailResponse.text()
-      console.error('Error sending email:', errorText)
-      throw new Error(`Failed to send email: ${errorText}`)
+      const errorData = await emailResponse.json()
+      console.error('Error sending email:', errorData)
+      throw new Error(`Failed to send email: ${JSON.stringify(errorData)}`)
     }
 
     const emailData = await emailResponse.json()
