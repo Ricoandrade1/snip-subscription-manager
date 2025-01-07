@@ -1,6 +1,6 @@
 import { Pencil, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RoleManager } from "@/components/barber-list/RoleManager";
 import { Database } from "@/integrations/supabase/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -124,19 +124,17 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
                     </Button>
                   </DialogTrigger>
                   <DialogContent className={cn("border-barber-gold/20", getCardStyle())}>
-                    <div className="space-y-4">
-                      <h2 className="text-xl font-semibold text-barber-light">
-                        Gerir Funções - {user.email || "Usuário sem email"}
-                      </h2>
-                      <RoleManager
-                        barber={{
-                          id: user.id,
-                          name: user.email || 'Usuário sem email',
-                          roles: user.roles || []
-                        }}
-                        onSuccess={onRoleUpdateSuccess}
-                      />
-                    </div>
+                    <DialogTitle className="text-xl font-semibold text-barber-light">
+                      Gerir Funções - {user.email || "Usuário sem email"}
+                    </DialogTitle>
+                    <RoleManager
+                      barber={{
+                        id: user.id,
+                        name: user.email || 'Usuário sem email',
+                        roles: user.roles || []
+                      }}
+                      onSuccess={onRoleUpdateSuccess}
+                    />
                   </DialogContent>
                 </Dialog>
               </div>
