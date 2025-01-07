@@ -1,8 +1,10 @@
 import { Subscriber, SubscriberStats } from "../types/subscriber";
-import { PLAN_PRICES } from "../utils/planPrices";
+import { getPlanPrices } from "@/utils/planPrices";
 
-export function calculateSubscriberStats(subscribers: Subscriber[]): SubscriberStats {
+export async function calculateSubscriberStats(subscribers: Subscriber[]): Promise<SubscriberStats> {
   console.log('Calculando estatísticas para', subscribers.length, 'assinantes');
+  
+  const planPrices = await getPlanPrices();
   
   return subscribers.reduce((acc, subscriber) => {
     console.log('-------------------');
@@ -12,7 +14,7 @@ export function calculateSubscriberStats(subscribers: Subscriber[]): SubscriberS
     
     let monthlyRevenue = 0;
     if (subscriber.status === 'pago') {
-      monthlyRevenue = PLAN_PRICES[subscriber.plan] || 0;
+      monthlyRevenue = planPrices[subscriber.plan] || 0;
       console.log('Receita do plano:', monthlyRevenue, '€');
     }
     

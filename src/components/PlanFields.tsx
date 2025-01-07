@@ -2,13 +2,28 @@ import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/for
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { UseFormReturn } from "react-hook-form";
 import { SubscriberFormData } from "./SubscriberForm";
-import { PLAN_PRICES } from "./subscribers/utils/planPrices";
+import { useEffect, useState } from "react";
+import { getPlanPrices } from "@/utils/planPrices";
 
 interface PlanFieldsProps {
   form: UseFormReturn<SubscriberFormData>;
 }
 
 export function PlanFields({ form }: PlanFieldsProps) {
+  const [planPrices, setPlanPrices] = useState<Record<string, number>>({
+    Basic: 30,
+    Classic: 40,
+    Business: 50
+  });
+
+  useEffect(() => {
+    const loadPlanPrices = async () => {
+      const prices = await getPlanPrices();
+      setPlanPrices(prices);
+    };
+    loadPlanPrices();
+  }, []);
+
   return (
     <FormField
       control={form.control}
@@ -27,7 +42,7 @@ export function PlanFields({ form }: PlanFieldsProps) {
                   <RadioGroupItem value="Basic" />
                 </FormControl>
                 <FormLabel className="text-sm">
-                  Basic ({PLAN_PRICES.Basic}€)
+                  Basic ({planPrices.Basic}€)
                 </FormLabel>
               </FormItem>
               <FormItem className="flex items-center space-x-2">
@@ -35,7 +50,7 @@ export function PlanFields({ form }: PlanFieldsProps) {
                   <RadioGroupItem value="Classic" />
                 </FormControl>
                 <FormLabel className="text-sm">
-                  Classic ({PLAN_PRICES.Classic}€)
+                  Classic ({planPrices.Classic}€)
                 </FormLabel>
               </FormItem>
               <FormItem className="flex items-center space-x-2">
@@ -43,7 +58,7 @@ export function PlanFields({ form }: PlanFieldsProps) {
                   <RadioGroupItem value="Business" />
                 </FormControl>
                 <FormLabel className="text-sm">
-                  Business ({PLAN_PRICES.Business}€)
+                  Business ({planPrices.Business}€)
                 </FormLabel>
               </FormItem>
             </RadioGroup>
