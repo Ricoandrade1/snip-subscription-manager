@@ -28,26 +28,25 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
         return acc;
       }, {});
 
-      console.log('-------------------');
+      console.log('=== INÍCIO DO CÁLCULO DE RECEITA ===');
       console.log('Preços dos planos no banco:', planPrices);
-      console.log('Total de assinantes:', subscribers.length);
+      console.log('Número total de assinantes:', subscribers.length);
       
-      const calculatedStats = subscribers.reduce((acc, subscriber) => {
-        console.log('-------------------');
-        console.log('Processando assinante:', subscriber.name);
+      let totalRevenue = 0;
+      const calculatedStats = subscribers.reduce((acc, subscriber, index) => {
+        console.log(`\n--- Assinante ${index + 1} ---`);
+        console.log('Nome:', subscriber.name);
         console.log('Status:', subscriber.status);
         console.log('Plano:', subscriber.plan);
-        console.log('Preço encontrado para o plano:', planPrices[subscriber.plan]);
-        console.log('Tipo do preço:', typeof planPrices[subscriber.plan]);
         
         let monthlyRevenue = 0;
         if (subscriber.status === 'pago') {
           const planPrice = planPrices[subscriber.plan];
-          console.log('Preço bruto do plano:', planPrice);
+          console.log('Preço do plano (bruto):', planPrice);
           monthlyRevenue = Number(planPrice) || 0;
-          console.log('Preço convertido:', monthlyRevenue);
-          console.log('Receita atual acumulada:', acc.monthlyRevenue);
-          console.log('Nova receita após adicionar:', acc.monthlyRevenue + monthlyRevenue);
+          totalRevenue += monthlyRevenue;
+          console.log('Preço do plano (convertido):', monthlyRevenue);
+          console.log('Receita acumulada até agora:', totalRevenue);
         }
         
         return {
@@ -55,7 +54,7 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
           activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
           overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
           pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
-          monthlyRevenue: acc.monthlyRevenue + monthlyRevenue,
+          monthlyRevenue: totalRevenue,
         };
       }, {
         totalSubscribers: 0,
@@ -65,11 +64,11 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
         monthlyRevenue: 0,
       });
 
-      console.log('-------------------');
-      console.log('Estatísticas finais:');
+      console.log('\n=== RESUMO FINAL ===');
       console.log('Total de assinantes:', calculatedStats.totalSubscribers);
       console.log('Assinantes ativos:', calculatedStats.activeSubscribers);
       console.log('Receita mensal total:', calculatedStats.monthlyRevenue, '€');
+      console.log('========================');
       
       setStats(calculatedStats);
     };
