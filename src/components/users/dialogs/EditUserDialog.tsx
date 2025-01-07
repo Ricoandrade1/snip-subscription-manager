@@ -3,6 +3,7 @@ import { UserForm } from "../UserForm";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
 
 interface EditUserDialogProps {
   user: {
@@ -15,6 +16,12 @@ interface EditUserDialogProps {
   getCardStyle: () => string;
 }
 
+interface UserData {
+  name: string;
+  phone: string;
+  nif: string;
+}
+
 export function EditUserDialog({
   user,
   isOpen,
@@ -23,8 +30,35 @@ export function EditUserDialog({
   getCardStyle,
 }: EditUserDialogProps) {
   const { toast } = useToast();
+  const [userData, setUserData] = useState<UserData | null>(null);
 
-  const handleUpdateUser = async (data: any) => {
+  useEffect(() => {
+    if (isOpen) {
+      fetchUserData();
+    }
+  }, [isOpen, user.id]);
+
+  const fetchUserData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('barbers')
+        .select('name, phone, nif')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      setUserData(data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível carregar os dados do usuário.",
+      });
+    }
+  };
+
+  const handleUpdateUser = async (data: UserData) => {
     try {
       const { error } = await supabase
         .from('barbers')
@@ -42,8 +76,8 @@ export function EditUserDialog({
         description: "Informações do usuário atualizadas com sucesso!",
       });
       
-      onSuccess(); // Call onSuccess first to trigger data refresh
-      onOpenChange(false); // Then close the dialog
+      await onSuccess(); // Aguarda a atualização dos dados
+      onOpenChange(false); // Fecha o diálogo após a atualização
     } catch (error) {
       console.error('Error updating user:', error);
       toast({
@@ -58,19 +92,21 @@ export function EditUserDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className={cn("border-barber-gold/20", getCardStyle())}>
         <DialogTitle className="text-xl font-semibold text-barber-light">
-          Editar Usuário - {user.email || "Usuário sem email"}
+          Editar Usuário - {user.email}
         </DialogTitle>
-        <UserForm 
-          onSubmit={handleUpdateUser}
-          initialData={{
-            email: user.email,
-            name: "",
-            phone: "",
-            nif: "",
-            role: "user"
-          }}
-          isEditing={true}
-        />
+        {userData && (
+          <UserForm 
+            onSubmit={handleUpdateUser}
+            initialData={{
+              email: user.email,
+              name: userData.name,
+              phone: userData.phone,
+              nif: userData.nif,
+              role: "user"
+            }}
+            isEditing={true}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

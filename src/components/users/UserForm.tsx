@@ -40,9 +40,6 @@ export function UserForm({ onSubmit, initialData, isEditing = false }: UserFormP
   return (
     <ScrollArea className="max-h-[80vh]">
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-barber-gold mb-6">
-          {isEditing ? "Editar Utilizador" : "Adicionar Novo Utilizador"}
-        </h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -63,26 +60,6 @@ export function UserForm({ onSubmit, initialData, isEditing = false }: UserFormP
                 </FormItem>
               )}
             />
-
-            {!isEditing && (
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-barber-light">Senha</FormLabel>
-                    <FormControl>
-                      <Input 
-                        {...field} 
-                        type="password"
-                        className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
 
             <FormField
               control={form.control}
