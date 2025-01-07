@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { UserForm } from "../UserForm";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface EditUserDialogProps {
   user: {
@@ -42,8 +42,8 @@ export function EditUserDialog({
         description: "Informações do usuário atualizadas com sucesso!",
       });
       
-      onOpenChange(false);
-      onSuccess();
+      onSuccess(); // Call onSuccess first to trigger data refresh
+      onOpenChange(false); // Then close the dialog
     } catch (error) {
       console.error('Error updating user:', error);
       toast({
