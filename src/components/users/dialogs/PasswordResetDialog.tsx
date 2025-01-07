@@ -67,7 +67,18 @@ export function PasswordResetDialog({
         password: data.password
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check for the specific "same password" error
+        if (error.message.includes("same_password")) {
+          toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "A nova senha deve ser diferente da senha atual.",
+          });
+          return;
+        }
+        throw error;
+      }
 
       toast({
         title: "Sucesso",
