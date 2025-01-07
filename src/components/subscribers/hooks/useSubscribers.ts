@@ -1,112 +1,44 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Subscriber, SubscriberStats } from "../types/subscriber";
-import { UseSubscribersProps } from "../types/subscriber-hooks";
-import { useSubscribersFilters } from "./useSubscribersFilters";
-import { calculateSubscriberStats } from "./useSubscribersStats";
-import { sortSubscribers } from "../utils/sortSubscribers";
-import { toast } from "sonner";
+import { useState } from "react";
+import { Subscriber } from "../types/subscriber";
+import { calculateSubscriberStats } from "./useSubscriberStats";
+import { FilterState, UseSubscribersProps } from "../types/subscriber-hooks";
 
 export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscribersProps) {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [stats, setStats] = useState<SubscriberStats>({
-    totalSubscribers: 0,
-    activeSubscribers: 0,
-    overdueSubscribers: 0,
-    pendingSubscribers: 0,
-    monthlyRevenue: 0,
+  const [filters, setFilters] = useState<FilterState>({
+    name: "",
+    phone: "",
+    nif: "",
+    plan: "all",
+    status: "all",
+    sortBy: "name",
+    sortOrder: "asc",
   });
-  
-  const { filters, handleFilterChange } = useSubscribersFilters();
 
-  const fetchSubscribers = async () => {
-    try {
-      setIsLoading(true);
-      console.log('Fetching subscribers...');
-      
-      let query = supabase
-        .from('members')
-        .select(`
-          *,
-          plans (
-            id,
-            title,
-            price
-          )
-        `);
-
-      if (planFilter) {
-        query = query.eq('plans.title', planFilter);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        throw error;
-      }
-
-      console.log('Raw data from database:', data);
-
-      const formattedSubscribers: Subscriber[] = data
-        .filter(member => member.plans)
-        .map(member => ({
-          id: member.id,
-          name: member.name,
-          nickname: member.nickname,
-          phone: member.phone,
-          nif: member.nif,
-          plan: member.plans?.title as "Basic" | "Classic" | "Business",
-          plan_id: member.plan_id,
-          created_at: member.created_at,
-          payment_date: member.payment_date,
-          status: member.status as "pago" | "cancelado" | "pendente",
-          bank_name: member.bank_name,
-          iban: member.iban,
-          due_date: member.due_date,
-          last_plan_change: member.last_plan_change
-        }));
-
-      console.log('Formatted subscribers:', formattedSubscribers);
-      setSubscribers(formattedSubscribers);
-      
-      const calculatedStats = await calculateSubscriberStats(formattedSubscribers);
-      console.log('Calculated stats:', calculatedStats);
-      setStats(calculatedStats);
-    } catch (error) {
-      console.error('Error fetching subscribers:', error);
-      toast.error('Erro ao carregar assinantes');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleFilterChange = (field: keyof FilterState, value: string) => {
+    setFilters(prev => ({ ...prev, [field]: value }));
   };
 
-  // Set up real-time subscription
-  useEffect(() => {
-    const channel = supabase
-      .channel('members-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'members'
-        },
-        (payload) => {
-          console.log('Real-time update received:', payload);
-          fetchSubscribers(); // Refresh the list when changes occur
-        }
-      )
-      .subscribe();
-
-    // Initial fetch
-    fetchSubscribers();
-
-    // Cleanup subscription
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [planFilter, statusFilter]);
+  const sortSubscribers = (subscribers: Subscriber[]) => {
+    return [...subscribers].sort((a, b) => {
+      const sortOrder = filters.sortOrder === 'asc' ? 1 : -1;
+      
+      switch (filters.sortBy) {
+        case 'name':
+          return sortOrder * a.name.localeCompare(b.name);
+        case 'payment_date':
+          if (!a.payment_date && !b.payment_date) return 0;
+          if (!a.payment_date) return sortOrder;
+          if (!b.payment_date) return -sortOrder;
+          return sortOrder * (new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime());
+        case 'plan':
+          return sortOrder * a.plan.localeCompare(b.plan);
+        default:
+          return 0;
+      }
+    });
+  };
 
   const filteredSubscribers = sortSubscribers(
     subscribers.filter((subscriber) => {
@@ -140,9 +72,10 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
       }
 
       return matchName && matchPhone && matchNif && matchPlan && matchStatus && matchStatusFilter;
-    }),
-    filters
+    })
   );
+
+  const stats = calculateSubscriberStats(subscribers);
 
   return {
     subscribers,
@@ -151,6 +84,7 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     handleFilterChange,
     filteredSubscribers,
     stats,
-    refetch: fetchSubscribers,
+    setSubscribers,
+    setIsLoading
   };
 }

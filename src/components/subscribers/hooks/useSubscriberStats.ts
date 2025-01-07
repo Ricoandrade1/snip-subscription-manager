@@ -1,34 +1,8 @@
-import { supabase } from "@/integrations/supabase/client";
 import { Subscriber, SubscriberStats } from "../types/subscriber";
+import { PLAN_PRICES } from "../utils/planPrices";
 
-interface PlanPrices {
-  [key: string]: number;
-}
-
-async function fetchPlanPrices(): Promise<PlanPrices> {
-  const { data: plans, error } = await supabase
-    .from('plans')
-    .select('title, price');
-
-  if (error) {
-    console.error('Erro ao buscar preços dos planos:', error);
-    return {
-      Basic: 29.99,
-      Classic: 49.99,
-      Business: 99.99
-    };
-  }
-
-  return plans.reduce((acc: PlanPrices, plan) => {
-    acc[plan.title] = Number(plan.price);
-    return acc;
-  }, {});
-}
-
-export async function calculateSubscriberStats(subscribers: Subscriber[]): Promise<SubscriberStats> {
+export function calculateSubscriberStats(subscribers: Subscriber[]): SubscriberStats {
   console.log('Calculando estatísticas para', subscribers.length, 'assinantes');
-  
-  const planPrices = await fetchPlanPrices();
   
   return subscribers.reduce((acc, subscriber) => {
     console.log('-------------------');
@@ -38,17 +12,20 @@ export async function calculateSubscriberStats(subscribers: Subscriber[]): Promi
     
     let monthlyRevenue = 0;
     if (subscriber.status === 'pago') {
-      monthlyRevenue = planPrices[subscriber.plan] || 0;
+      monthlyRevenue = PLAN_PRICES[subscriber.plan] || 0;
       console.log('Receita do plano:', monthlyRevenue, '€');
     }
     
-    return {
+    const newStats = {
       totalSubscribers: acc.totalSubscribers + 1,
       activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
       overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
       pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
       monthlyRevenue: acc.monthlyRevenue + monthlyRevenue,
     };
+    
+    console.log('Receita mensal acumulada:', newStats.monthlyRevenue, '€');
+    return newStats;
   }, {
     totalSubscribers: 0,
     activeSubscribers: 0,
