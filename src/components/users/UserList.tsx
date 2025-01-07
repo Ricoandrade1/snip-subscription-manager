@@ -39,22 +39,22 @@ export function UserList({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
       {users.map((user) => (
         <div
           key={user.id}
-          className="bg-barber-gray border border-barber-gray/20 rounded-lg p-4 flex items-center justify-between"
+          className="bg-barber-gray border border-barber-gray/20 rounded-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
         >
-          <div className="flex items-center space-x-4">
-            <UserCog className="h-5 w-5 text-barber-gold" />
-            <div>
-              <h3 className="text-barber-light font-medium">{user.email}</h3>
-              <div className="flex flex-wrap gap-2 mt-1">
+          <div className="flex items-center space-x-4 flex-1">
+            <UserCog className="h-5 w-5 text-barber-gold shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="text-barber-light font-medium truncate">{user.email}</h3>
+              <div className="flex flex-wrap gap-2 mt-2">
                 {user.roles?.map((role) => (
                   <span
                     key={role}
                     className={cn(
-                      "px-2 py-1 rounded-full text-xs border",
+                      "px-3 py-1.5 rounded-full text-xs font-medium border",
                       getRoleStyle(role)
                     )}
                   >
@@ -72,7 +72,7 @@ export function UserList({
             <DialogTrigger asChild>
               <button
                 onClick={() => onSelectUser(user.id)}
-                className="px-4 py-2 text-sm bg-barber-gray border border-barber-gold text-barber-gold rounded-md hover:bg-barber-gold/10 transition-colors"
+                className="px-4 py-2 text-sm bg-barber-gray border border-barber-gold text-barber-gold rounded-md hover:bg-barber-gold/10 transition-colors whitespace-nowrap"
               >
                 Gerir Funções
               </button>

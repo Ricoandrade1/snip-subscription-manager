@@ -60,15 +60,16 @@ export function UserGrid({
       </div>
 
       {viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {users.map((user) => (
-            <UserCard
-              key={user.id}
-              user={user}
-              onRoleUpdateSuccess={onRoleUpdateSuccess}
-              selectedUserId={selectedUserId}
-              onSelectUser={onSelectUser}
-            />
+            <div key={user.id} className="h-full">
+              <UserCard
+                user={user}
+                onRoleUpdateSuccess={onRoleUpdateSuccess}
+                selectedUserId={selectedUserId}
+                onSelectUser={onSelectUser}
+              />
+            </div>
           ))}
         </div>
       ) : (
