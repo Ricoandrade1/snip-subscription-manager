@@ -30,51 +30,60 @@ interface BarberProduction {
 export function BarberProductionReport() {
   const [period, setPeriod] = useState("month");
   const [searchTerm, setSearchTerm] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(true);
 
   const { data: barberStats, isLoading } = useQuery({
     queryKey: ["barber-production", period],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error("No authenticated session");
-      }
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          toast.error("Sessão não autenticada");
+          return [];
+        }
 
-      const { data, error } = await supabase
-        .from("sales")
-        .select(`
-          sellers,
-          total,
-          created_at
-        `)
-        .gte('created_at', getPeriodDate(period))
-        .order('created_at', { ascending: false });
+        const { data, error } = await supabase
+          .from("sales")
+          .select(`
+            sellers,
+            total,
+            created_at
+          `)
+          .gte('created_at', getPeriodDate(period))
+          .order('created_at', { ascending: false });
 
-      if (error) {
-        toast.error("Erro ao carregar dados de produção");
-        throw error;
-      }
+        if (error) {
+          toast.error("Erro ao carregar dados de produção");
+          console.error("Error fetching barber stats:", error);
+          return [];
+        }
 
-      const barberProduction: Record<string, BarberProduction> = {};
+        const barberProduction: Record<string, BarberProduction> = {};
 
-      data?.forEach((sale) => {
-        const sellers = sale.sellers as { id: string; name: string; commission: number }[];
-        sellers?.forEach((seller) => {
-          if (!barberProduction[seller.name]) {
-            barberProduction[seller.name] = {
-              barber_name: seller.name,
-              total_services: 0,
-              total_revenue: 0,
-            };
-          }
-          barberProduction[seller.name].total_services += 1;
-          barberProduction[seller.name].total_revenue += sale.total * (seller.commission / 100);
+        data?.forEach((sale) => {
+          const sellers = sale.sellers as { id: string; name: string; commission: number }[];
+          sellers?.forEach((seller) => {
+            if (!barberProduction[seller.name]) {
+              barberProduction[seller.name] = {
+                barber_name: seller.name,
+                total_services: 0,
+                total_revenue: 0,
+              };
+            }
+            barberProduction[seller.name].total_services += 1;
+            barberProduction[seller.name].total_revenue += sale.total * (seller.commission / 100);
+          });
         });
-      });
 
-      return Object.values(barberProduction);
+        return Object.values(barberProduction);
+      } catch (error) {
+        console.error("Error in barber stats query:", error);
+        toast.error("Erro ao processar dados de produção");
+        return [];
+      }
     },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    retry: 1,
   });
 
   const getPeriodDate = (selectedPeriod: string) => {
@@ -97,14 +106,23 @@ export function BarberProductionReport() {
 
   const filteredBarberStats = barberStats?.filter((barber) =>
     barber.barber_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) || [];
 
   if (isLoading) {
-    return <Skeleton className="w-full h-[400px]" />;
+    return (
+      <Dialog open={true}>
+        <DialogContent className="bg-barber-black border-barber-gold/20">
+          <DialogHeader>
+            <DialogTitle className="text-barber-gold">Carregando dados...</DialogTitle>
+          </DialogHeader>
+          <Skeleton className="w-full h-[400px]" />
+        </DialogContent>
+      </Dialog>
+    );
   }
 
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <Dialog open={true}>
       <DialogContent className="bg-barber-black border-barber-gold/20 max-w-5xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-barber-gold">
@@ -140,31 +158,37 @@ export function BarberProductionReport() {
           </div>
 
           <div className="w-full overflow-x-auto">
-            <BarChart
-              width={800}
-              height={400}
-              data={filteredBarberStats}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="barber_name" />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
-              <Tooltip />
-              <Legend />
-              <Bar
-                yAxisId="left"
-                dataKey="total_services"
-                name="Total de Serviços"
-                fill="#FFB000"
-              />
-              <Bar
-                yAxisId="right"
-                dataKey="total_revenue"
-                name="Receita Total (R$)"
-                fill="#22C55E"
-              />
-            </BarChart>
+            {filteredBarberStats.length > 0 ? (
+              <BarChart
+                width={800}
+                height={400}
+                data={filteredBarberStats}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="barber_name" />
+                <YAxis yAxisId="left" />
+                <YAxis yAxisId="right" orientation="right" />
+                <Tooltip />
+                <Legend />
+                <Bar
+                  yAxisId="left"
+                  dataKey="total_services"
+                  name="Total de Serviços"
+                  fill="#FFB000"
+                />
+                <Bar
+                  yAxisId="right"
+                  dataKey="total_revenue"
+                  name="Receita Total (R$)"
+                  fill="#22C55E"
+                />
+              </BarChart>
+            ) : (
+              <div className="text-center py-8 text-barber-light">
+                Nenhum dado encontrado para o período selecionado
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>
