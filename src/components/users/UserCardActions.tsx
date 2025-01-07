@@ -76,18 +76,9 @@ export function UserCardActions({
     try {
       setIsResettingPassword(true);
       
-      // First get the auth user ID
-      const { data: authData, error: authError } = await supabase
-        .from('barbers')
-        .select('id')
-        .eq('email', user.email)
-        .single();
-
-      if (authError) throw authError;
-
       const { data, error } = await supabase.functions.invoke('reset-password', {
         body: {
-          userId: authData.id,
+          userId: user.id,
           userEmail: user.email,
         },
       });

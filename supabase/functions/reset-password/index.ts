@@ -22,17 +22,20 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // First verify if the user exists in auth.users
-    const { data: userData, error: userError } = await supabaseAdmin
-      .from('auth.users')
-      .select('id')
-      .eq('email', userEmail)
-      .single()
+    // First list users to find the one with matching email
+    const { data: users, error: listError } = await supabaseAdmin.auth.admin.listUsers()
+    
+    if (listError) {
+      console.error('Error listing users:', listError)
+      throw listError
+    }
 
-    if (userError) {
-      console.error('Error finding user:', userError)
+    const user = users.users.find(u => u.email === userEmail)
+    
+    if (!user) {
+      console.error('User not found with email:', userEmail)
       return new Response(
-        JSON.stringify({ error: 'User not found in auth system' }),
+        JSON.stringify({ error: 'User not found with provided email' }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 400,
@@ -40,9 +43,11 @@ serve(async (req) => {
       )
     }
 
+    console.log('Found user:', user.id)
+
     // Update user's password to '123456'
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-      userData.id,
+      user.id,
       { password: '123456' }
     )
 
