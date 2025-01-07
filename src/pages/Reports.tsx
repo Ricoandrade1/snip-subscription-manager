@@ -1,7 +1,8 @@
-import { FileBarChart2, FileText, FileSpreadsheet } from "lucide-react";
+import { FileBarChart2, FileText, FileSpreadsheet, Scissors } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { BarberProductionReport } from "@/components/reports/BarberProductionReport";
 
 export default function Reports() {
   const navigate = useNavigate();
@@ -24,6 +25,12 @@ export default function Reports() {
       description: "Análise de estoque e movimentação",
       icon: FileSpreadsheet,
       path: "/reports/products"
+    },
+    {
+      title: "Produção de Barbeiros",
+      description: "Análise de produção e receita por barbeiro",
+      icon: Scissors,
+      path: "/reports/barbers"
     }
   ];
 
@@ -31,7 +38,7 @@ export default function Reports() {
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold text-barber-gold mb-6">Relatórios</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {reports.map((report) => (
           <Card 
             key={report.title}
@@ -56,6 +63,8 @@ export default function Reports() {
           </Card>
         ))}
       </div>
+
+      <BarberProductionReport />
     </div>
   );
 }
