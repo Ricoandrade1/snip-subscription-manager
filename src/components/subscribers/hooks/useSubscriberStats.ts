@@ -18,26 +18,22 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
     console.log('Calculando estatísticas com preços fixos:', planPrices);
     console.log('Total de assinantes:', subscribers.length);
     
-    let totalRevenue = 0;
-    
     const calculatedStats = subscribers.reduce((acc, subscriber) => {
       console.log('-------------------');
       console.log('Processando assinante:', subscriber.name);
       console.log('Status:', subscriber.status);
       console.log('Plano:', subscriber.plan);
       
-      if (subscriber.status === 'pago') {
-        const monthlyRevenue = planPrices[subscriber.plan];
-        totalRevenue += monthlyRevenue;
-        console.log('Preço do plano:', monthlyRevenue, '€');
-      }
+      // Calcula a receita apenas se o status for 'pago'
+      const monthlyRevenue = subscriber.status === 'pago' ? planPrices[subscriber.plan] : 0;
+      console.log('Receita do assinante:', monthlyRevenue, '€');
       
       return {
         totalSubscribers: acc.totalSubscribers + 1,
         activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
         overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
         pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
-        monthlyRevenue: totalRevenue, // Usando o totalRevenue acumulado
+        monthlyRevenue: acc.monthlyRevenue + monthlyRevenue, // Soma a receita do assinante atual
       };
     }, {
       totalSubscribers: 0,
