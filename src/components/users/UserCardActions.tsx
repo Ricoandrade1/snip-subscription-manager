@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { RoleManagementDialog } from "./dialogs/RoleManagementDialog";
 import { EditUserDialog } from "./dialogs/EditUserDialog";
 import { PasswordResetDialog } from "./dialogs/PasswordResetDialog";
+import { Pencil } from "lucide-react";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -36,7 +37,7 @@ export function UserCardActions({
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
 
   return (
-    <div className="flex justify-end pt-2">
+    <div className="flex justify-end pt-2 space-x-2">
       <RoleManagementDialog
         user={user}
         selectedUserId={selectedUserId}
@@ -60,12 +61,22 @@ export function UserCardActions({
         getCardStyle={getCardStyle}
       />
 
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setIsEditDialogOpen(true)}
+        className="text-barber-light/60 hover:text-barber-light"
+      >
+        <Pencil className="h-4 w-4" />
+        <span className="sr-only">Editar usuário</span>
+      </Button>
+
       <ContextMenu>
         <ContextMenuTrigger>
           <Button
             variant="ghost"
             size="icon"
-            className="ml-2 text-barber-light/60 hover:text-barber-light"
+            className="text-barber-light/60 hover:text-barber-light"
           >
             <span className="sr-only">Abrir menu</span>
             <svg
