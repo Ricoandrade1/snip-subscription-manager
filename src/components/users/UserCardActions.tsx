@@ -36,6 +36,14 @@ export function UserCardActions({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
 
+  const handleEditClick = () => {
+    setIsEditDialogOpen(true);
+  };
+
+  const handlePasswordClick = () => {
+    setIsPasswordDialogOpen(true);
+  };
+
   return (
     <div className="flex justify-end pt-2 space-x-2">
       <RoleManagementDialog
@@ -73,10 +81,10 @@ export function UserCardActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => setIsEditDialogOpen(true)}>
+          <DropdownMenuItem onClick={handleEditClick}>
             Editar Informações
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setIsPasswordDialogOpen(true)}>
+          <DropdownMenuItem onClick={handlePasswordClick}>
             Alterar Senha
           </DropdownMenuItem>
         </DropdownMenuContent>
