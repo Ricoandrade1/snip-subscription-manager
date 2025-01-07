@@ -6,49 +6,38 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')
+
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { userId, userEmail } = await req.json()
-    
-    console.log('Attempting to reset password for:', { userId, userEmail })
-    
-    // Initialize Supabase client with admin privileges
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    const supabase = createClient(
+      SUPABASE_URL!,
+      SUPABASE_ANON_KEY!
     )
 
-    // First list users to find the one with matching email
-    const { data: users, error: listError } = await supabaseAdmin.auth.admin.listUsers()
-    
-    if (listError) {
-      console.error('Error listing users:', listError)
-      throw listError
+    // Get request body
+    const { userId, userEmail } = await req.json()
+    console.log('Received request for user:', { userId, userEmail })
+
+    if (!userId || !userEmail) {
+      throw new Error('User ID and email are required')
     }
 
-    const user = users.users.find(u => u.email === userEmail)
-    
-    if (!user) {
-      console.error('User not found with email:', userEmail)
-      return new Response(
-        JSON.stringify({ error: 'User not found with provided email' }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400,
-        },
-      )
-    }
+    // Generate a random password
+    const tempPassword = Math.random().toString(36).slice(-8)
+    console.log('Generated temporary password')
 
-    console.log('Found user:', user.id)
-
-    // Update user's password to '123456'
-    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-      user.id,
-      { password: '123456' }
+    // Update user's password
+    const { error: updateError } = await supabase.auth.admin.updateUserById(
+      userId,
+      { password: tempPassword }
     )
 
     if (updateError) {
@@ -56,14 +45,9 @@ serve(async (req) => {
       throw updateError
     }
 
-    // Send email using Resend
-    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-    if (!RESEND_API_KEY) {
-      throw new Error('Missing RESEND_API_KEY')
-    }
+    console.log('Password updated successfully')
 
-    console.log('Attempting to send email to:', userEmail)
-
+    // Send email with new password
     const emailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -73,39 +57,46 @@ serve(async (req) => {
       body: JSON.stringify({
         from: 'Barber System <onboarding@resend.dev>',
         to: [userEmail],
-        subject: 'Sua senha foi redefinida',
+        subject: 'Sua nova senha',
         html: `
-          <h1>Sua senha foi redefinida</h1>
-          <p>Sua nova senha é: <strong>123456</strong></p>
-          <p>Por favor, altere sua senha após o primeiro acesso.</p>
-        `,
-      }),
+          <h1>Nova Senha</h1>
+          <p>Sua senha foi redefinida com sucesso.</p>
+          <p>Sua nova senha temporária é: <strong>${tempPassword}</strong></p>
+          <p>Por favor, faça login e altere sua senha imediatamente.</p>
+        `
+      })
     })
 
-    if (!emailResponse.ok) {
-      const errorData = await emailResponse.json()
-      console.error('Error sending email:', errorData)
-      throw new Error(`Failed to send email: ${JSON.stringify(errorData)}`)
-    }
+    // Log the complete response for debugging
+    console.log('Resend API Response Status:', emailResponse.status)
+    const responseBody = await emailResponse.text()
+    console.log('Resend API Response Body:', responseBody)
 
-    const emailData = await emailResponse.json()
-    console.log('Email sent successfully:', emailData)
+    if (!emailResponse.ok) {
+      throw new Error(`Failed to send email: ${responseBody}`)
+    }
 
     return new Response(
       JSON.stringify({ message: 'Password reset successful' }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      },
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      }
     )
+
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error in reset-password function:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
-      },
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      }
     )
   }
 })
