@@ -14,7 +14,7 @@ interface RoleManagementDialogProps {
   };
   selectedUserId: string | null;
   onSelectUser: (userId: string | null) => void;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void>;
   getCardStyle: () => string;
 }
 

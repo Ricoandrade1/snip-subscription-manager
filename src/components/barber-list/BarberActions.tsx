@@ -26,7 +26,7 @@ interface Barber {
 
 interface BarberActionsProps {
   barber: Barber;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void>;
 }
 
 export function BarberActions({ barber, onSuccess }: BarberActionsProps) {
@@ -34,9 +34,9 @@ export function BarberActions({ barber, onSuccess }: BarberActionsProps) {
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const { toast } = useToast();
 
-  const handleRoleUpdateSuccess = () => {
+  const handleRoleUpdateSuccess = async () => {
     setIsEditingRoles(false);
-    onSuccess();
+    await onSuccess();
   };
 
   const handleDelete = async () => {
@@ -54,7 +54,7 @@ export function BarberActions({ barber, onSuccess }: BarberActionsProps) {
       });
       
       setIsConfirmingDelete(false);
-      onSuccess();
+      await onSuccess();
     } catch (error) {
       console.error('Error deleting barber:', error);
       toast({
