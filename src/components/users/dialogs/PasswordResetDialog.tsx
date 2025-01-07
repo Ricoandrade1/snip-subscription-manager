@@ -63,10 +63,9 @@ export function PasswordResetDialog({
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.admin.updateUserById(
-        user.id,
-        { password: data.password }
-      );
+      const { error } = await supabase.auth.updateUser({
+        password: data.password
+      });
 
       if (error) throw error;
 
@@ -78,7 +77,6 @@ export function PasswordResetDialog({
       form.reset();
       onOpenChange(false);
       
-      // Call onSuccess callback if provided
       if (onSuccess) {
         onSuccess();
       }
