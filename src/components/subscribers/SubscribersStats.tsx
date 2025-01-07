@@ -94,7 +94,7 @@ export function SubscribersStats({ stats, onFilterChange, selectedStatus }: Subs
       />
 
       <StatCard
-        label="Rendimento Mensal"
+        label="Rendimento Mês"
         value={stats.monthlyRevenue}
         show={showRevenue}
         onToggleVisibility={() => setShowRevenue(!showRevenue)}
