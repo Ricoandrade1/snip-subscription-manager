@@ -22,13 +22,13 @@ export function UserCardRoles({ roles }: UserCardRolesProps) {
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap items-center gap-2 mt-2">
       {roles?.length > 0 ? (
         roles.map((role) => (
           <span
             key={role}
             className={cn(
-              "px-2 py-1 rounded-full text-xs border",
+              "inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium border",
               getRoleStyle(role)
             )}
           >
@@ -36,7 +36,9 @@ export function UserCardRoles({ roles }: UserCardRolesProps) {
           </span>
         ))
       ) : (
-        <span className="text-barber-light text-sm">Sem funções atribuídas</span>
+        <span className="text-barber-light/60 text-sm italic">
+          Sem funções atribuídas
+        </span>
       )}
     </div>
   );
