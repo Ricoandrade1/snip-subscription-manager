@@ -71,10 +71,10 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
 
   const handleUpdateUser = async (data: any) => {
     try {
+      // Update user information in the barbers table
       const { error } = await supabase
         .from('barbers')
         .update({
-          email: data.email,
           name: data.name,
           phone: data.phone,
           nif: data.nif,
@@ -176,7 +176,6 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
                   </DialogContent>
                 </Dialog>
 
-                {/* Edit User Dialog */}
                 <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                   <DialogContent className={cn("border-barber-gold/20", getCardStyle())}>
                     <DialogTitle className="text-xl font-semibold text-barber-light">
