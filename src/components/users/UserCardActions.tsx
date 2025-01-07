@@ -61,26 +61,28 @@ export function UserCardActions({
         getCardStyle={getCardStyle}
       />
 
-      <ContextMenu>
-        <ContextMenuTrigger>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-barber-light/60 hover:text-barber-light"
-          >
-            <span className="sr-only">Abrir menu</span>
-            <Pencil className="h-4 w-4" />
-          </Button>
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem onSelect={() => setIsEditDialogOpen(true)}>
-            Editar Informações
-          </ContextMenuItem>
-          <ContextMenuItem onSelect={() => setIsPasswordDialogOpen(true)}>
-            Alterar Senha
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
+      <div>
+        <ContextMenu>
+          <ContextMenuTrigger>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-barber-light/60 hover:text-barber-light"
+            >
+              <span className="sr-only">Abrir menu</span>
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem onSelect={() => setIsEditDialogOpen(true)}>
+              Editar Informações
+            </ContextMenuItem>
+            <ContextMenuItem onSelect={() => setIsPasswordDialogOpen(true)}>
+              Alterar Senha
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
+      </div>
     </div>
   );
 }
