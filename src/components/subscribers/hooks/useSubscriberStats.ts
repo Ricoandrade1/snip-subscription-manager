@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Subscriber, SubscriberStats } from "../types/subscriber";
-import { usePlanPrices } from "./usePlanPrices";
+import { usePlanPricesFixed } from "./usePlanPricesFixed";
 
 export function useSubscriberStats(subscribers: Subscriber[]) {
   const [stats, setStats] = useState<SubscriberStats>({
@@ -11,15 +11,10 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
     monthlyRevenue: 0,
   });
 
-  const planPrices = usePlanPrices();
+  const planPrices = usePlanPricesFixed();
 
   useEffect(() => {
-    if (!Object.keys(planPrices).length) {
-      console.log('Aguardando preços dos planos...');
-      return;
-    }
-
-    console.log('Calculando estatísticas com preços:', planPrices);
+    console.log('Calculando estatísticas com preços fixos:', planPrices);
     console.log('Total de assinantes:', subscribers.length);
     
     let totalRevenue = 0;
@@ -30,8 +25,8 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
       console.log('Plano:', subscriber.plan);
       
       let monthlyRevenue = 0;
-      if (subscriber.status === 'pago' && planPrices[subscriber.plan]) {
-        monthlyRevenue = Number(planPrices[subscriber.plan]);
+      if (subscriber.status === 'pago') {
+        monthlyRevenue = planPrices[subscriber.plan];
         totalRevenue += monthlyRevenue;
         console.log('Preço do plano:', monthlyRevenue, '€');
       }
