@@ -23,10 +23,11 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
       console.log('Processando assinante:', subscriber.name);
       console.log('Status:', subscriber.status);
       console.log('Plano:', subscriber.plan);
+      console.log('Preço do plano:', planPrices[subscriber.plan], '€');
       
       let monthlyRevenue = 0;
       if (subscriber.status === 'pago') {
-        monthlyRevenue = planPrices[subscriber.plan]; // Usando o valor inteiro diretamente
+        monthlyRevenue = planPrices[subscriber.plan];
         console.log('Receita do plano:', monthlyRevenue, '€');
         console.log('Receita acumulada:', acc.monthlyRevenue + monthlyRevenue, '€');
       }
@@ -36,7 +37,7 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
         activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
         overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
         pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
-        monthlyRevenue: acc.monthlyRevenue + monthlyRevenue, // Somando valores inteiros
+        monthlyRevenue: acc.monthlyRevenue + monthlyRevenue,
       };
     }, {
       totalSubscribers: 0,
