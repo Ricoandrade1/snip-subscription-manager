@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+// Define the form schema with password as optional
 const formSchema = z.object({
   email: z.string().email("Email inválido"),
   name: z.string().min(1, "Nome é obrigatório"),
@@ -22,28 +23,30 @@ const formSchema = z.object({
   password: z.string().optional(),
 });
 
+// Define the form data type based on the schema
+type FormData = z.infer<typeof formSchema>;
+
 interface UserFormProps {
-  onSubmit: (data: any) => void;
-  initialData?: {
-    email: string;
-    name: string;
-    phone: string;
-    nif: string;
-    role: string;
-  };
+  onSubmit: (data: FormData) => void;
+  initialData?: Partial<FormData>;
   isEditing?: boolean;
   isLoading?: boolean;
 }
 
-export function UserForm({ onSubmit, initialData, isEditing = false, isLoading = false }: UserFormProps) {
-  const form = useForm({
+export function UserForm({ 
+  onSubmit, 
+  initialData, 
+  isEditing = false, 
+  isLoading = false 
+}: UserFormProps) {
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      email: "",
-      name: "",
-      phone: "",
-      nif: "",
-      role: "user",
+    defaultValues: {
+      email: initialData?.email || "",
+      name: initialData?.name || "",
+      phone: initialData?.phone || "",
+      nif: initialData?.nif || "",
+      role: initialData?.role || "user",
       password: "",
     },
   });
