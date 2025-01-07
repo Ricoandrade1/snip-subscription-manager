@@ -15,6 +15,7 @@ export interface Subscriber {
   iban: string | null;
   due_date: string | null;
   last_plan_change: string | null;
+  price: number;
 }
 
 export interface SubscriberStats {
