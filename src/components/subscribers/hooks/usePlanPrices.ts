@@ -1,33 +1,25 @@
-import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export function usePlanPrices() {
-  const [planPrices, setPlanPrices] = useState<Record<string, number>>({});
-
-  useEffect(() => {
-    const fetchPlanPrices = async () => {
-      console.log('Buscando preços dos planos...');
-      
-      const { data: plans, error } = await supabase
-        .from('plans')
-        .select('title, price');
-
-      if (error) {
-        console.error('Erro ao buscar preços dos planos:', error);
-        return;
-      }
-
-      const prices = plans.reduce((acc: Record<string, number>, plan) => {
-        acc[plan.title] = Number(plan.price);
-        return acc;
-      }, {});
-
-      console.log('Preços dos planos obtidos:', prices);
-      setPlanPrices(prices);
-    };
-
-    fetchPlanPrices();
-  }, []);
-
-  return planPrices;
+export interface PlanPrices {
+  [key: string]: number;
 }
+
+export const usePlanPrices = async (): Promise<PlanPrices> => {
+  const { data: plans, error } = await supabase
+    .from('plans')
+    .select('title, price');
+
+  if (error) {
+    console.error('Error fetching plan prices:', error);
+    return {
+      Basic: 30,
+      Classic: 40,
+      Business: 50
+    };
+  }
+
+  return plans.reduce((acc: PlanPrices, plan) => {
+    acc[plan.title] = Number(plan.price);
+    return acc;
+  }, {});
+};
