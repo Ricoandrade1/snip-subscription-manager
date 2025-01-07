@@ -1,166 +1,62 @@
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
-
-// Define the form schema type here since we can't import it from BarberForm
-type BarberFormData = z.infer<typeof formSchema>;
-const formSchema = z.object({
-  name: z.string(),
-  nickname: z.string().optional(),
-  phone: z.string(),
-  email: z.string().optional(),
-  nif: z.string(),
-  birthDate: z.string(),
-  startDate: z.string(),
-  specialties: z.array(z.string()),
-  commissionRate: z.number(),
-  bankName: z.string(),
-  iban: z.string(),
-});
+import { FormInputField } from "./FormInputField";
 
 interface PersonalInfoFieldsProps {
-  form: UseFormReturn<BarberFormData>;
+  form: UseFormReturn<any>;
 }
 
 export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
-  const { watch } = form;
-  const currentValues = watch();
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <FormField
-        control={form.control}
+      <FormInputField
+        form={form}
         name="name"
-        render={({ field }) => (
-          <FormItem className="col-span-2">
-            <FormLabel className="text-sm">Nome</FormLabel>
-            <FormControl>
-              <Input 
-                placeholder="Nome completo" 
-                {...field} 
-                className="h-9"
-                value={currentValues.name || ""}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="Nome"
+        placeholder="Nome completo"
+        className="col-span-2"
       />
 
-      <FormField
-        control={form.control}
+      <FormInputField
+        form={form}
         name="nickname"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm">Apelido</FormLabel>
-            <FormControl>
-              <Input 
-                placeholder="Apelido" 
-                {...field} 
-                className="h-9"
-                value={currentValues.nickname || ""}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="Apelido"
+        placeholder="Apelido"
       />
 
-      <FormField
-        control={form.control}
+      <FormInputField
+        form={form}
         name="phone"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm">Telefone</FormLabel>
-            <FormControl>
-              <Input 
-                placeholder="+351 912 345 678" 
-                {...field} 
-                className="h-9"
-                value={currentValues.phone || ""}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="Telefone"
+        placeholder="+351 912 345 678"
       />
 
-      <FormField
-        control={form.control}
+      <FormInputField
+        form={form}
         name="email"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm">Email</FormLabel>
-            <FormControl>
-              <Input 
-                type="email" 
-                placeholder="email@exemplo.com" 
-                {...field} 
-                className="h-9"
-                value={currentValues.email || ""}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="Email"
+        type="email"
+        placeholder="email@exemplo.com"
       />
 
-      <FormField
-        control={form.control}
+      <FormInputField
+        form={form}
         name="birthDate"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm">Data de Nascimento</FormLabel>
-            <FormControl>
-              <Input 
-                type="date" 
-                {...field} 
-                className="h-9"
-                value={currentValues.birthDate || ""}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="Data de Nascimento"
+        type="date"
       />
 
-      <FormField
-        control={form.control}
+      <FormInputField
+        form={form}
         name="nif"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm">NIF</FormLabel>
-            <FormControl>
-              <Input 
-                placeholder="Número de Identificação Fiscal" 
-                {...field} 
-                className="h-9"
-                value={currentValues.nif || ""}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="NIF"
+        placeholder="Número de Identificação Fiscal"
       />
 
-      <FormField
-        control={form.control}
+      <FormInputField
+        form={form}
         name="startDate"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm">Data de Início</FormLabel>
-            <FormControl>
-              <Input 
-                type="date" 
-                {...field} 
-                className="h-9"
-                value={currentValues.startDate || ""}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="Data de Início"
+        type="date"
       />
     </div>
   );
