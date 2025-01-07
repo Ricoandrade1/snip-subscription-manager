@@ -26,7 +26,7 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
       
       let monthlyRevenue = 0;
       if (subscriber.status === 'pago') {
-        monthlyRevenue = Math.round(planPrices[subscriber.plan]); // Arredonda para garantir números inteiros
+        monthlyRevenue = planPrices[subscriber.plan]; // Usando o valor inteiro diretamente
         console.log('Receita do plano:', monthlyRevenue, '€');
         console.log('Receita acumulada:', acc.monthlyRevenue + monthlyRevenue, '€');
       }
@@ -36,7 +36,7 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
         activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
         overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
         pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
-        monthlyRevenue: Math.round(acc.monthlyRevenue + monthlyRevenue), // Arredonda o total também
+        monthlyRevenue: acc.monthlyRevenue + monthlyRevenue, // Somando valores inteiros
       };
     }, {
       totalSubscribers: 0,
