@@ -15,7 +15,7 @@ interface UserListProps {
   users: User[];
   selectedUserId: string | null;
   onSelectUser: (userId: string | null) => void;
-  onRoleUpdateSuccess: () => void;
+  onRoleUpdateSuccess: () => Promise<void>;
   loading?: boolean;
 }
 
@@ -41,6 +41,10 @@ export function UserList({
     );
   }
 
+  const handleRoleUpdateSuccess = async () => {
+    await onRoleUpdateSuccess();
+  };
+
   return (
     <div className="space-y-4">
       {users.map((user) => (
@@ -50,7 +54,7 @@ export function UserList({
           userDetails={userDetails[user.id]}
           selectedUserId={selectedUserId}
           onSelectUser={onSelectUser}
-          onRoleUpdateSuccess={onRoleUpdateSuccess}
+          onRoleUpdateSuccess={handleRoleUpdateSuccess}
         />
       ))}
     </div>

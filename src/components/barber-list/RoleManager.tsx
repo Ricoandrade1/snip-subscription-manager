@@ -20,19 +20,25 @@ interface RoleManagerProps {
   onSuccess: () => Promise<void>;
 }
 
-const availableRoles = [
+type AvailableRole = {
+  id: UserAuthority;
+  label: string;
+  description: string;
+};
+
+const availableRoles: AvailableRole[] = [
   { id: "admin", label: "Administrador", description: "Acesso total ao sistema" },
   { id: "seller", label: "Vendedor", description: "Acesso à PDV e produtos" },
   { id: "barber", label: "Barbeiro", description: "Acesso básico ao sistema" },
   { id: "manager", label: "Gerente", description: "Acesso administrativo limitado" },
-] as const;
+];
 
-const roleAccessMap = {
-  admin: menuItems.map(item => item.url), // Admin has access to all routes
-  seller: ["/cash-flow", "/products"], // Seller has access to cash flow and products
-  barber: ["/", "/schedule", "/account"], // Barber has access to dashboard, schedule and account
-  manager: ["/", "/members", "/barbers", "/cash-flow", "/products", "/stores"], // Manager has most access except sensitive areas
-} as const;
+const roleAccessMap: Record<UserAuthority, string[]> = {
+  admin: menuItems.map(item => item.url),
+  seller: ["/cash-flow", "/products"],
+  barber: ["/", "/schedule", "/account"],
+  manager: ["/", "/members", "/barbers", "/cash-flow", "/products", "/stores"],
+};
 
 export function RoleManager({ barber, onSuccess }: RoleManagerProps) {
   const [selectedRoles, setSelectedRoles] = useState<UserAuthority[]>(barber.roles || []);
@@ -75,8 +81,8 @@ export function RoleManager({ barber, onSuccess }: RoleManagerProps) {
     }
   };
 
-  const getRoleAccessList = (roleId: UserAuthority) => {
-    const accessRoutes = roleAccessMap[roleId as keyof typeof roleAccessMap] || [];
+  const getRoleAccessList = (roleId: UserAuthority): string => {
+    const accessRoutes = roleAccessMap[roleId] || [];
     return menuItems
       .filter(item => accessRoutes.includes(item.url))
       .map(item => item.title)
@@ -91,8 +97,8 @@ export function RoleManager({ barber, onSuccess }: RoleManagerProps) {
             <div key={role.id} className="flex items-start space-x-3 p-2 rounded-lg hover:bg-muted/50">
               <Checkbox
                 id={role.id}
-                checked={selectedRoles.includes(role.id as UserAuthority)}
-                onCheckedChange={() => handleRoleToggle(role.id as UserAuthority)}
+                checked={selectedRoles.includes(role.id)}
+                onCheckedChange={() => handleRoleToggle(role.id)}
               />
               <div className="space-y-1">
                 <label
@@ -105,7 +111,7 @@ export function RoleManager({ barber, onSuccess }: RoleManagerProps) {
                   {role.description}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Acesso a: {getRoleAccessList(role.id as UserAuthority)}
+                  Acesso a: {getRoleAccessList(role.id)}
                 </p>
               </div>
             </div>

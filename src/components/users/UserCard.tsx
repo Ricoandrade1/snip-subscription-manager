@@ -90,10 +90,8 @@ export function UserCard({
     return "bg-barber-gray border-gray-500/20";
   };
 
-  // Wrap the onRoleUpdateSuccess in an async function
   const handleDeleteSuccess = async () => {
-    onRoleUpdateSuccess();
-    return Promise.resolve();
+    await onRoleUpdateSuccess();
   };
 
   return (
