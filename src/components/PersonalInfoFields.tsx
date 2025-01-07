@@ -8,8 +8,11 @@ interface PersonalInfoFieldsProps {
 }
 
 export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
+  // Use watch to get current form values
+  const { name, phone } = form.watch();
+
   return (
-    <>
+    <div className="space-y-4">
       <FormField
         control={form.control}
         name="name"
@@ -20,25 +23,8 @@ export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
               <Input 
                 placeholder="Nome completo" 
                 {...field} 
-                className="bg-barber-gray border-barber-gold/20 focus:border-barber-gold"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="nickname"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-barber-light">Apelido</FormLabel>
-            <FormControl>
-              <Input 
-                placeholder="Apelido" 
-                {...field} 
-                className="bg-barber-gray border-barber-gold/20 focus:border-barber-gold"
+                value={name || ''}
+                className="bg-barber-gray border-barber-gold/20 focus:border-barber-gold text-barber-light"
               />
             </FormControl>
             <FormMessage />
@@ -56,31 +42,14 @@ export function PersonalInfoFields({ form }: PersonalInfoFieldsProps) {
               <Input 
                 placeholder="+351 912 345 678" 
                 {...field} 
-                className="bg-barber-gray border-barber-gold/20 focus:border-barber-gold"
+                value={phone || ''}
+                className="bg-barber-gray border-barber-gold/20 focus:border-barber-gold text-barber-light"
               />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-
-      <FormField
-        control={form.control}
-        name="nif"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-barber-light">NIF</FormLabel>
-            <FormControl>
-              <Input 
-                placeholder="Número de Identificação Fiscal" 
-                {...field} 
-                className="bg-barber-gray border-barber-gold/20 focus:border-barber-gold"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
+    </div>
   );
 }
