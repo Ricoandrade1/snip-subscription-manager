@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Subscriber, SubscriberStats } from "../types";
+import { Subscriber, SubscriberStats } from "../types/subscriber";
 import { supabase } from "@/integrations/supabase/client";
 
 export function useSubscriberStats(subscribers: Subscriber[]) {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Subscriber, SubscriberStatus } from "../types";
+import { Subscriber, SubscriberStatus } from "../types/subscriber";
 import { toast } from "sonner";
 
 const normalizeStatus = (status: string): SubscriberStatus => {

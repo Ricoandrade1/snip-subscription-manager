@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { SubscriberStats } from "../types";
 import { useSubscriberData } from "./useSubscriberData";
 import { useSubscriberFilters } from "./useSubscriberFilters";
 import { useSubscriberStats } from "./useSubscriberStats";
