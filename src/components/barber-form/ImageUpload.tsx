@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
+import { Upload, Pencil } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
@@ -65,34 +65,60 @@ export function ImageUpload({ currentImage, onUpload }: ImageUploadProps) {
       <form className="space-y-4">
         <div className="flex flex-col items-center gap-4">
           {currentImage ? (
-            <img
-              src={currentImage}
-              alt="Profile"
-              className="w-24 h-24 rounded-full object-cover border-2 border-barber-gold"
-            />
+            <div className="relative">
+              <img
+                src={currentImage}
+                alt="Profile"
+                className="w-24 h-24 rounded-full object-cover border-2 border-barber-gold"
+              />
+              <div className="absolute -bottom-1 -right-1">
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    disabled={isUploading}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full bg-barber-gray border-barber-gold text-barber-gold hover:bg-barber-gold hover:text-barber-black"
+                    disabled={isUploading}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
           ) : (
-            <div className="w-24 h-24 rounded-full bg-barber-gray flex items-center justify-center border-2 border-barber-gold">
-              <Upload className="w-8 h-8 text-barber-gold" />
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full bg-barber-gray flex items-center justify-center border-2 border-barber-gold">
+                <Upload className="w-8 h-8 text-barber-gold" />
+              </div>
+              <div className="absolute -bottom-1 -right-1">
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    disabled={isUploading}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full bg-barber-gray border-barber-gold text-barber-gold hover:bg-barber-gold hover:text-barber-black"
+                    disabled={isUploading}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
           )}
-          
-          <div className="relative">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleUpload}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              disabled={isUploading}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="border-barber-gold text-barber-gold hover:bg-barber-gold hover:text-barber-black"
-              disabled={isUploading}
-            >
-              {isUploading ? "Enviando..." : "Alterar foto"}
-            </Button>
-          </div>
         </div>
       </form>
     </Form>
