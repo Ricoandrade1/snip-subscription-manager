@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Database } from "@/integrations/supabase/types";
 import { supabase } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 import { Key } from "lucide-react";
 import { useState } from "react";
 import { UserForm } from "./UserForm";
+import { RoleManager } from "@/components/barber-list/RoleManager";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
