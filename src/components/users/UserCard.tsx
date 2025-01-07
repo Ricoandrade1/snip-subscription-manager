@@ -5,6 +5,10 @@ import { RoleManager } from "@/components/barber-list/RoleManager";
 import { Database } from "@/integrations/supabase/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { UserForm } from "./UserForm";
+import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/lib/supabase/client";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -28,6 +32,9 @@ interface UserCardProps {
 }
 
 export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUser }: UserCardProps) {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const { toast } = useToast();
+  
   const isAdmin = user.roles?.includes("admin");
   const isSeller = user.roles?.includes("seller");
   const isBarber = user.roles?.includes("barber");
@@ -59,7 +66,38 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
   };
 
   const handleEditClick = () => {
-    onSelectUser(user.id);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateUser = async (data: any) => {
+    try {
+      const { error } = await supabase
+        .from('barbers')
+        .update({
+          email: data.email,
+          name: data.name,
+          phone: data.phone,
+          nif: data.nif,
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: "Informações do usuário atualizadas com sucesso!",
+      });
+      
+      setIsEditDialogOpen(false);
+      onRoleUpdateSuccess(); // Refresh user data
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível atualizar as informações do usuário.",
+      });
+    }
   };
 
   return (
@@ -137,6 +175,26 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
                     />
                   </DialogContent>
                 </Dialog>
+
+                {/* Edit User Dialog */}
+                <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                  <DialogContent className={cn("border-barber-gold/20", getCardStyle())}>
+                    <DialogTitle className="text-xl font-semibold text-barber-light">
+                      Editar Usuário - {user.email || "Usuário sem email"}
+                    </DialogTitle>
+                    <UserForm 
+                      onSubmit={handleUpdateUser}
+                      initialData={{
+                        email: user.email,
+                        name: "",
+                        phone: "",
+                        nif: "",
+                        role: "user"
+                      }}
+                      isEditing={true}
+                    />
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </CardContent>
@@ -144,7 +202,7 @@ export function UserCard({ user, onRoleUpdateSuccess, selectedUserId, onSelectUs
       </ContextMenuTrigger>
       <ContextMenuContent className="w-48">
         <ContextMenuItem onClick={handleEditClick}>
-          Editar Funções
+          Editar Informações
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>

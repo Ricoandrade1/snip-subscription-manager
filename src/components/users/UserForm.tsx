@@ -9,7 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 const userFormSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres").optional(),
   name: z.string().min(1, "Nome é obrigatório"),
   phone: z.string().min(1, "Telefone é obrigatório"),
   nif: z.string().optional(),
@@ -20,25 +20,29 @@ type UserFormValues = z.infer<typeof userFormSchema>;
 
 interface UserFormProps {
   onSubmit: (data: UserFormValues) => Promise<void>;
+  initialData?: Partial<UserFormValues>;
+  isEditing?: boolean;
 }
 
-export function UserForm({ onSubmit }: UserFormProps) {
+export function UserForm({ onSubmit, initialData, isEditing = false }: UserFormProps) {
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
-      email: "",
+      email: initialData?.email || "",
       password: "",
-      name: "",
-      phone: "",
-      nif: "",
-      role: "user",
+      name: initialData?.name || "",
+      phone: initialData?.phone || "",
+      nif: initialData?.nif || "",
+      role: initialData?.role || "user",
     },
   });
 
   return (
     <ScrollArea className="max-h-[80vh]">
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-barber-gold mb-6">Adicionar Novo Utilizador</h2>
+        <h2 className="text-2xl font-bold text-barber-gold mb-6">
+          {isEditing ? "Editar Utilizador" : "Adicionar Novo Utilizador"}
+        </h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -52,6 +56,7 @@ export function UserForm({ onSubmit }: UserFormProps) {
                       {...field} 
                       type="email"
                       className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
+                      disabled={isEditing}
                     />
                   </FormControl>
                   <FormMessage />
@@ -59,23 +64,25 @@ export function UserForm({ onSubmit }: UserFormProps) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-barber-light">Senha</FormLabel>
-                  <FormControl>
-                    <Input 
-                      {...field} 
-                      type="password"
-                      className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!isEditing && (
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-barber-light">Senha</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
+                        type="password"
+                        className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}
@@ -132,7 +139,7 @@ export function UserForm({ onSubmit }: UserFormProps) {
               type="submit" 
               className="w-full bg-barber-gold hover:bg-barber-gold/90 text-barber-black"
             >
-              Criar Utilizador
+              {isEditing ? "Atualizar Utilizador" : "Criar Utilizador"}
             </Button>
           </form>
         </Form>
