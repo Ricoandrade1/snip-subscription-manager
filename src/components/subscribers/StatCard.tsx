@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Eye, EyeOff, Users } from "lucide-react";
+import { Eye, EyeOff, Users, EuroIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface StatCardProps {
@@ -14,6 +14,7 @@ interface StatCardProps {
     border: string;
     text: string;
   };
+  isCurrency?: boolean;
 }
 
 export function StatCard({
@@ -24,7 +25,18 @@ export function StatCard({
   onClick,
   isSelected,
   colorScheme,
+  isCurrency = false,
 }: StatCardProps) {
+  const formatValue = (value: number) => {
+    if (isCurrency) {
+      return new Intl.NumberFormat('pt-PT', {
+        style: 'currency',
+        currency: 'EUR'
+      }).format(value);
+    }
+    return value;
+  };
+
   return (
     <Card 
       className={`p-4 cursor-pointer transition-colors ${
@@ -50,11 +62,15 @@ export function StatCard({
         </Button>
       </div>
       <div className="flex items-center gap-2">
-        <Users className={`h-8 w-8 ${colorScheme.text}`} />
+        {isCurrency ? (
+          <EuroIcon className={`h-8 w-8 ${colorScheme.text}`} />
+        ) : (
+          <Users className={`h-8 w-8 ${colorScheme.text}`} />
+        )}
         <div className="flex items-baseline">
           {show ? (
             <h3 className={`text-2xl font-semibold ${colorScheme.text}`}>
-              {value}
+              {formatValue(value)}
             </h3>
           ) : (
             <h3 className={`text-2xl font-semibold ${colorScheme.text}`}>****</h3>
