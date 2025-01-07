@@ -6,7 +6,7 @@ export function usePlanPrices() {
 
   useEffect(() => {
     const fetchPlanPrices = async () => {
-      console.log('Buscando preços dos planos...');
+      console.log('Buscando preços dos planos do banco de dados...');
       
       const { data: plans, error } = await supabase
         .from('plans')
@@ -17,7 +17,7 @@ export function usePlanPrices() {
         return;
       }
 
-      console.log('Dados retornados do Supabase:', plans);
+      console.log('Dados dos planos retornados:', plans);
 
       const prices = plans.reduce((acc: Record<string, number>, plan) => {
         acc[plan.title] = Number(plan.price);
