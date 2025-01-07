@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { RoleManagementDialog } from "./dialogs/RoleManagementDialog";
 import { EditUserDialog } from "./dialogs/EditUserDialog";
 import { PasswordResetDialog } from "./dialogs/PasswordResetDialog";
-import { Pencil } from "lucide-react";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -85,10 +84,10 @@ export function UserCardActions({
           </Button>
         </ContextMenuTrigger>
         <ContextMenuContent>
-          <ContextMenuItem onClick={() => setIsEditDialogOpen(true)}>
+          <ContextMenuItem onSelect={() => setIsEditDialogOpen(true)}>
             Editar Informações
           </ContextMenuItem>
-          <ContextMenuItem onClick={() => setIsPasswordDialogOpen(true)}>
+          <ContextMenuItem onSelect={() => setIsPasswordDialogOpen(true)}>
             Alterar Senha
           </ContextMenuItem>
         </ContextMenuContent>
