@@ -80,6 +80,7 @@ export function useSubscriberData({ planFilter, statusFilter = 'all' }: UseSubsc
 
   // Set up real-time subscription
   useEffect(() => {
+    console.log('Setting up real-time subscription for members table');
     const channel = supabase
       .channel('members-changes')
       .on(
@@ -107,9 +108,12 @@ export function useSubscriberData({ planFilter, statusFilter = 'all' }: UseSubsc
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+      });
 
     return () => {
+      console.log('Cleaning up real-time subscription');
       supabase.removeChannel(channel);
     };
   }, [planFilter, statusFilter]); // Re-subscribe when filters change
