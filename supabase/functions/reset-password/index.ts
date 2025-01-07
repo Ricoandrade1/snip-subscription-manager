@@ -62,6 +62,8 @@ serve(async (req) => {
       throw new Error('Missing RESEND_API_KEY')
     }
 
+    console.log('Attempting to send email to:', userEmail)
+
     const emailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -81,9 +83,13 @@ serve(async (req) => {
     })
 
     if (!emailResponse.ok) {
-      console.error('Error sending email:', await emailResponse.text())
-      throw new Error('Failed to send email')
+      const errorText = await emailResponse.text()
+      console.error('Error sending email:', errorText)
+      throw new Error(`Failed to send email: ${errorText}`)
     }
+
+    const emailData = await emailResponse.json()
+    console.log('Email sent successfully:', emailData)
 
     return new Response(
       JSON.stringify({ message: 'Password reset successful' }),
