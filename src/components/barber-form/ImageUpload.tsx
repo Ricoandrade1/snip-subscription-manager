@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { FormLabel } from "@/components/ui/form";
-import { UserCircle2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { Upload } from "lucide-react";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 interface ImageUploadProps {
   currentImage: string | null;
@@ -11,88 +12,89 @@ interface ImageUploadProps {
 }
 
 export function ImageUpload({ currentImage, onUpload }: ImageUploadProps) {
-  const [uploading, setUploading] = useState(false);
-  const { toast } = useToast();
+  const [isUploading, setIsUploading] = useState(false);
+  const form = useForm();
 
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      setUploading(true);
+      setIsUploading(true);
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-      if (!event.target.files || event.target.files.length === 0) {
+      // Check file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("Imagem muito grande. Máximo 2MB permitido.");
         return;
       }
 
-      const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${crypto.randomUUID()}.${fileExt}`;
+      // Check file type
+      if (!file.type.startsWith("image/")) {
+        toast.error("Apenas imagens são permitidas.");
+        return;
+      }
 
-      const { error: uploadError } = await supabase.storage
-        .from('barbers')
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError, data } = await supabase.storage
+        .from("barbers")
         .upload(filePath, file);
 
       if (uploadError) {
         throw uploadError;
       }
 
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('barbers')
+        .from("barbers")
         .getPublicUrl(filePath);
 
       onUpload(publicUrl);
-      toast({
-        title: "Imagem carregada com sucesso",
-        description: "A foto do barbeiro foi atualizada.",
-      });
+      toast.success("Imagem atualizada com sucesso!");
     } catch (error) {
-      console.error('Error uploading image:', error);
-      toast({
-        title: "Erro ao carregar imagem",
-        description: "Não foi possível carregar a imagem. Tente novamente.",
-        variant: "destructive",
-      });
+      console.error("Error uploading image:", error);
+      toast.error("Erro ao fazer upload da imagem");
     } finally {
-      setUploading(false);
+      setIsUploading(false);
     }
   };
 
   return (
-    <div className="space-y-4">
-      <FormLabel className="text-sm">Foto do Barbeiro</FormLabel>
-      <div className="flex items-start gap-4">
-        <div className="relative h-32 w-32 overflow-hidden rounded-full border border-border">
+    <Form {...form}>
+      <form className="space-y-4">
+        <div className="flex flex-col items-center gap-4">
           {currentImage ? (
             <img
               src={currentImage}
-              alt="Foto do barbeiro"
-              className="h-full w-full object-cover"
+              alt="Profile"
+              className="w-24 h-24 rounded-full object-cover border-2 border-barber-gold"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-muted">
-              <UserCircle2 className="h-16 w-16 text-muted-foreground" />
+            <div className="w-24 h-24 rounded-full bg-barber-gray flex items-center justify-center border-2 border-barber-gold">
+              <Upload className="w-8 h-8 text-barber-gold" />
             </div>
           )}
-        </div>
-        <div className="space-y-2">
-          <Button
-            type="button"
-            variant="outline"
-            className="relative"
-            disabled={uploading}
-          >
-            {uploading ? "Carregando..." : "Carregar Foto"}
+          
+          <div className="relative">
             <input
               type="file"
-              className="absolute inset-0 cursor-pointer opacity-0"
               accept="image/*"
               onChange={handleUpload}
-              disabled={uploading}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              disabled={isUploading}
             />
-          </Button>
-          <p className="text-sm text-muted-foreground">
-            Formatos suportados: JPG, PNG. Tamanho máximo: 5MB
-          </p>
+            <Button
+              type="button"
+              variant="outline"
+              className="border-barber-gold text-barber-gold hover:bg-barber-gold hover:text-barber-black"
+              disabled={isUploading}
+            >
+              {isUploading ? "Enviando..." : "Alterar foto"}
+            </Button>
+          </div>
         </div>
-      </div>
-    </div>
+      </form>
+    </Form>
   );
 }
