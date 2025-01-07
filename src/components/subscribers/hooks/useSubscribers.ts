@@ -1,14 +1,22 @@
-import { UseSubscribersProps, UseSubscribersReturn } from "../types/subscriber-hooks";
+import { useEffect } from "react";
+import { SubscriberStats } from "../types";
 import { useSubscriberData } from "./useSubscriberData";
 import { useSubscriberFilters } from "./useSubscriberFilters";
 import { useSubscriberStats } from "./useSubscriberStats";
 
-export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscribersProps): UseSubscribersReturn {
+interface UseSubscribersProps {
+  planFilter?: "Basic" | "Classic" | "Business";
+  statusFilter?: string;
+}
+
+export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscribersProps) {
   const { subscribers, isLoading, refetch } = useSubscriberData(planFilter);
-  const { filters, handleFilterChange, filterSubscribers } = useSubscriberFilters(statusFilter);
+  const { filters, handleFilterChange, filteredSubscribers } = useSubscriberFilters(subscribers, statusFilter);
   const stats = useSubscriberStats(subscribers);
 
-  const filteredSubscribers = filterSubscribers(subscribers);
+  useEffect(() => {
+    console.log('Estatísticas calculadas:', stats);
+  }, [stats]);
 
   return {
     subscribers,
@@ -17,6 +25,6 @@ export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscrib
     handleFilterChange,
     filteredSubscribers,
     stats,
-    refetch
+    refetch,
   };
 }
