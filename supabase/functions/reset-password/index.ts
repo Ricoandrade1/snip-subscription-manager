@@ -7,7 +7,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -21,13 +20,30 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
+    // First verify if the user exists
+    const { data: user, error: getUserError } = await supabaseAdmin.auth.admin.getUserById(userId)
+    
+    if (getUserError || !user) {
+      console.error('Error getting user:', getUserError)
+      return new Response(
+        JSON.stringify({ error: 'User not found' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        },
+      )
+    }
+
     // Update user's password to '123456'
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
       userId,
       { password: '123456' }
     )
 
-    if (updateError) throw updateError
+    if (updateError) {
+      console.error('Error updating password:', updateError)
+      throw updateError
+    }
 
     // Send email using Resend
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
@@ -54,6 +70,7 @@ serve(async (req) => {
     })
 
     if (!emailResponse.ok) {
+      console.error('Error sending email:', await emailResponse.text())
       throw new Error('Failed to send email')
     }
 
