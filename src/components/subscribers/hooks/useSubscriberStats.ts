@@ -24,7 +24,8 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
       }
 
       const planPrices = plans.reduce((acc: Record<string, number>, plan) => {
-        acc[plan.title] = Number(plan.price);
+        // Arredonda os preços para números inteiros
+        acc[plan.title] = Math.round(Number(plan.price));
         return acc;
       }, {});
 
@@ -46,8 +47,10 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
         
         const planPrice = planPrices[member.plan];
         if (planPrice) {
-          totalRevenue += planPrice;
-          console.log(`Preço do plano ${member.plan}: ${planPrice}€`);
+          // Arredonda o valor antes de adicionar à receita total
+          const roundedPrice = Math.round(planPrice);
+          totalRevenue += roundedPrice;
+          console.log(`Preço do plano ${member.plan}: ${roundedPrice}€`);
           console.log(`Subtotal após adicionar ${member.name}: ${totalRevenue}€`);
         } else {
           console.log(`Erro: Plano não encontrado para ${member.name}`);
