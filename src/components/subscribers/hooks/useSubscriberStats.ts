@@ -15,12 +15,14 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
 
   useEffect(() => {
     console.log('Calculando estatísticas para', subscribers.length, 'assinantes');
+    console.log('Preços dos planos:', planPrices);
     
     const calculatedStats = subscribers.reduce((acc, subscriber) => {
       console.log('-------------------');
       console.log('Processando assinante:', subscriber.name);
       console.log('Status:', subscriber.status);
       console.log('Plano:', subscriber.plan);
+      console.log('Preço do plano:', planPrices[subscriber.plan]);
       
       let monthlyRevenue = 0;
       if (subscriber.status === 'pago' && planPrices[subscriber.plan]) {
