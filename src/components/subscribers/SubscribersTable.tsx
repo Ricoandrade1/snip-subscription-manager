@@ -9,6 +9,7 @@ import { EditSubscriberDialog } from "./EditSubscriberDialog";
 import { SubscribersStats } from "./SubscribersStats";
 import { DeleteSubscriberDialog } from "./DeleteSubscriberDialog";
 import { SubscribersPDFButton } from "./SubscribersPDFButton";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Subscriber } from "./types";
 
 interface SubscribersTableProps {
@@ -59,54 +60,56 @@ export function SubscribersTable({ planFilter }: SubscribersTableProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <SubscribersStats 
-          stats={stats}
-          onFilterChange={handleStatusFilterChange}
-          selectedStatus={statusFilter}
+    <TooltipProvider>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <SubscribersStats 
+            stats={stats}
+            onFilterChange={handleStatusFilterChange}
+            selectedStatus={statusFilter}
+          />
+        </div>
+        
+        <SubscribersFilter 
+          filters={filters} 
+          onFilterChange={handleFilterChange} 
+        />
+
+        <div className="rounded-lg overflow-hidden border border-barber-gray">
+          <Table>
+            <SubscribersTableHeader />
+            <TableBody>
+              {filteredSubscribers.map((subscriber) => (
+                <SubscriberTableRow
+                  key={subscriber.id}
+                  subscriber={subscriber}
+                  subscribers={subscribers}
+                  onClick={() => handleSubscriberClick(subscriber)}
+                  onDeleteClick={() => handleDeleteClick(subscriber)}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        <div className="flex justify-end mt-4">
+          <SubscribersPDFButton subscribers={filteredSubscribers} />
+        </div>
+
+        <EditSubscriberDialog
+          subscriber={selectedSubscriber}
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          onSuccess={refetch}
+        />
+
+        <DeleteSubscriberDialog
+          subscriber={selectedSubscriber}
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          onSuccess={refetch}
         />
       </div>
-      
-      <SubscribersFilter 
-        filters={filters} 
-        onFilterChange={handleFilterChange} 
-      />
-
-      <div className="rounded-lg overflow-hidden border border-barber-gray">
-        <Table>
-          <SubscribersTableHeader />
-          <TableBody>
-            {filteredSubscribers.map((subscriber) => (
-              <SubscriberTableRow
-                key={subscriber.id}
-                subscriber={subscriber}
-                subscribers={subscribers}
-                onClick={() => handleSubscriberClick(subscriber)}
-                onDeleteClick={() => handleDeleteClick(subscriber)}
-              />
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      <div className="flex justify-end mt-4">
-        <SubscribersPDFButton subscribers={filteredSubscribers} />
-      </div>
-
-      <EditSubscriberDialog
-        subscriber={selectedSubscriber}
-        open={editDialogOpen}
-        onOpenChange={setEditDialogOpen}
-        onSuccess={refetch}
-      />
-
-      <DeleteSubscriberDialog
-        subscriber={selectedSubscriber}
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        onSuccess={refetch}
-      />
-    </div>
+    </TooltipProvider>
   );
 }
