@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { RoleManager } from "@/components/barber-list/RoleManager";
 import { Database } from "@/integrations/supabase/types";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -17,6 +18,7 @@ interface UserListProps {
   selectedUserId: string | null;
   onSelectUser: (userId: string | null) => void;
   onRoleUpdateSuccess: () => void;
+  loading?: boolean;
 }
 
 export function UserList({
@@ -24,6 +26,7 @@ export function UserList({
   selectedUserId,
   onSelectUser,
   onRoleUpdateSuccess,
+  loading = false,
 }: UserListProps) {
   const getRoleStyle = (role: string) => {
     switch (role) {
@@ -37,6 +40,31 @@ export function UserList({
         return "bg-gray-500/10 text-gray-400 border-gray-500/20";
     }
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map((index) => (
+          <div
+            key={index}
+            className="bg-barber-gray border border-barber-gray/20 rounded-lg p-6 flex flex-col md:flex-row md:items-center gap-4"
+          >
+            <div className="flex items-center gap-4 flex-1 min-w-0">
+              <Skeleton className="h-5 w-5" />
+              <div className="flex-1 min-w-0">
+                <Skeleton className="h-6 w-48 mb-2" />
+                <div className="flex flex-wrap gap-2">
+                  <Skeleton className="h-7 w-16" />
+                  <Skeleton className="h-7 w-20" />
+                </div>
+              </div>
+            </div>
+            <Skeleton className="h-9 w-32" />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

@@ -30,7 +30,7 @@ export function UserGrid({
 }: UserGridProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  if (loading) {
+  if (loading && viewMode === "grid") {
     return (
       <div className="flex items-center justify-center min-h-[200px]">
         <Loader2 className="h-8 w-8 animate-spin text-barber-gold" />
@@ -38,7 +38,7 @@ export function UserGrid({
     );
   }
 
-  if (users.length === 0) {
+  if (users.length === 0 && !loading) {
     return (
       <div className="text-center py-8">
         <p className="text-barber-light/60">Nenhum utilizador encontrado</p>
@@ -75,6 +75,7 @@ export function UserGrid({
       ) : (
         <UserList
           users={users}
+          loading={loading}
           onRoleUpdateSuccess={onRoleUpdateSuccess}
           selectedUserId={selectedUserId}
           onSelectUser={onSelectUser}
