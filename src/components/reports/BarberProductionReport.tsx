@@ -5,6 +5,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 interface BarberProduction {
   barber_name: string;
@@ -14,6 +29,8 @@ interface BarberProduction {
 
 export function BarberProductionReport() {
   const [period, setPeriod] = useState("month");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(true);
 
   const { data: barberStats, isLoading } = useQuery({
     queryKey: ["barber-production", period],
@@ -78,46 +95,79 @@ export function BarberProductionReport() {
     return date.toISOString();
   };
 
+  const filteredBarberStats = barberStats?.filter((barber) =>
+    barber.barber_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (isLoading) {
     return <Skeleton className="w-full h-[400px]" />;
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold text-barber-gold">
-          Produção por Barbeiro
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="w-full overflow-x-auto">
-          <BarChart
-            width={800}
-            height={400}
-            data={barberStats}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="barber_name" />
-            <YAxis yAxisId="left" />
-            <YAxis yAxisId="right" orientation="right" />
-            <Tooltip />
-            <Legend />
-            <Bar
-              yAxisId="left"
-              dataKey="total_services"
-              name="Total de Serviços"
-              fill="#FFB000"
-            />
-            <Bar
-              yAxisId="right"
-              dataKey="total_revenue"
-              name="Receita Total (R$)"
-              fill="#22C55E"
-            />
-          </BarChart>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogContent className="bg-barber-black border-barber-gold/20 max-w-5xl">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-barber-gold">
+            Produção por Barbeiro
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 space-y-2">
+              <Label htmlFor="search" className="text-barber-gold">Buscar Barbeiro</Label>
+              <Input
+                id="search"
+                placeholder="Digite o nome do barbeiro..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="border-barber-gold/20 bg-barber-black text-barber-light"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="period" className="text-barber-gold">Período</Label>
+              <Select value={period} onValueChange={setPeriod}>
+                <SelectTrigger id="period" className="w-[180px] border-barber-gold/20 bg-barber-black text-barber-light">
+                  <SelectValue placeholder="Selecione o período" />
+                </SelectTrigger>
+                <SelectContent className="bg-barber-black border-barber-gold/20">
+                  <SelectItem value="week" className="text-barber-light hover:bg-barber-gold/20">Última Semana</SelectItem>
+                  <SelectItem value="month" className="text-barber-light hover:bg-barber-gold/20">Último Mês</SelectItem>
+                  <SelectItem value="year" className="text-barber-light hover:bg-barber-gold/20">Último Ano</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="w-full overflow-x-auto">
+            <BarChart
+              width={800}
+              height={400}
+              data={filteredBarberStats}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="barber_name" />
+              <YAxis yAxisId="left" />
+              <YAxis yAxisId="right" orientation="right" />
+              <Tooltip />
+              <Legend />
+              <Bar
+                yAxisId="left"
+                dataKey="total_services"
+                name="Total de Serviços"
+                fill="#FFB000"
+              />
+              <Bar
+                yAxisId="right"
+                dataKey="total_revenue"
+                name="Receita Total (R$)"
+                fill="#22C55E"
+              />
+            </BarChart>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }
