@@ -1,18 +1,15 @@
 import { useState } from "react";
-import { supabase } from "@/lib/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { RoleManager } from "@/components/barber-list/RoleManager";
-import { UserForm } from "./UserForm";
-import { cn } from "@/lib/utils";
+import { Database } from "@/integrations/supabase/types";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Database } from "@/integrations/supabase/types";
+import { Button } from "@/components/ui/button";
+import { RoleManagementDialog } from "./dialogs/RoleManagementDialog";
+import { EditUserDialog } from "./dialogs/EditUserDialog";
+import { PasswordResetDialog } from "./dialogs/PasswordResetDialog";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -37,141 +34,31 @@ export function UserCardActions({
 }: UserCardActionsProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
-  const { toast } = useToast();
-
-  const handleUpdateUser = async (data: any) => {
-    try {
-      const { error } = await supabase
-        .from('barbers')
-        .update({
-          name: data.name,
-          phone: data.phone,
-          nif: data.nif,
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Sucesso",
-        description: "Informações do usuário atualizadas com sucesso!",
-      });
-      
-      setIsEditDialogOpen(false);
-      onRoleUpdateSuccess();
-    } catch (error) {
-      console.error('Error updating user:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível atualizar as informações do usuário.",
-      });
-    }
-  };
-
-  const handlePasswordReset = async () => {
-    try {
-      const newPassword = Math.random().toString(36).slice(-8);
-      
-      const { error } = await supabase.auth.admin.updateUserById(
-        user.id,
-        { password: newPassword }
-      );
-
-      if (error) throw error;
-
-      toast({
-        title: "Senha alterada com sucesso",
-        description: `Nova senha temporária: ${newPassword}`,
-      });
-      
-      setIsPasswordDialogOpen(false);
-    } catch (error) {
-      console.error('Error resetting password:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível redefinir a senha do usuário.",
-      });
-    }
-  };
 
   return (
     <div className="flex justify-end pt-2">
-      <Dialog 
-        open={selectedUserId === user.id} 
-        onOpenChange={(open) => !open && onSelectUser(null)}
-      >
-        <DialogTrigger asChild>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => onSelectUser(user.id)}
-            className="bg-barber-gray border-barber-gold text-barber-gold hover:bg-barber-gold/10"
-          >
-            Gerir Funções
-          </Button>
-        </DialogTrigger>
-        <DialogContent className={cn("border-barber-gold/20", getCardStyle())}>
-          <DialogTitle className="text-xl font-semibold text-barber-light">
-            Gerir Funções - {user.email || "Usuário sem email"}
-          </DialogTitle>
-          <RoleManager
-            barber={{
-              id: user.id,
-              name: user.email || 'Usuário sem email',
-              roles: user.roles
-            }}
-            onSuccess={onRoleUpdateSuccess}
-          />
-        </DialogContent>
-      </Dialog>
+      <RoleManagementDialog
+        user={user}
+        selectedUserId={selectedUserId}
+        onSelectUser={onSelectUser}
+        onSuccess={onRoleUpdateSuccess}
+        getCardStyle={getCardStyle}
+      />
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className={cn("border-barber-gold/20", getCardStyle())}>
-          <DialogTitle className="text-xl font-semibold text-barber-light">
-            Editar Usuário - {user.email || "Usuário sem email"}
-          </DialogTitle>
-          <UserForm 
-            onSubmit={handleUpdateUser}
-            initialData={{
-              email: user.email,
-              name: "",
-              phone: "",
-              nif: "",
-              role: "user"
-            }}
-            isEditing={true}
-          />
-        </DialogContent>
-      </Dialog>
+      <EditUserDialog
+        user={user}
+        isOpen={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onSuccess={onRoleUpdateSuccess}
+        getCardStyle={getCardStyle}
+      />
 
-      <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
-        <DialogContent className={cn("border-barber-gold/20", getCardStyle())}>
-          <DialogTitle className="text-xl font-semibold text-barber-light">
-            Alterar Senha - {user.email || "Usuário sem email"}
-          </DialogTitle>
-          <div className="space-y-4 p-4">
-            <p className="text-barber-light">
-              Tem certeza que deseja gerar uma nova senha para este usuário?
-            </p>
-            <div className="flex justify-end space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsPasswordDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handlePasswordReset}
-                className="bg-barber-gold hover:bg-barber-gold/90 text-barber-black"
-              >
-                Confirmar
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <PasswordResetDialog
+        user={user}
+        isOpen={isPasswordDialogOpen}
+        onOpenChange={setIsPasswordDialogOpen}
+        getCardStyle={getCardStyle}
+      />
 
       <ContextMenu>
         <ContextMenuTrigger>
