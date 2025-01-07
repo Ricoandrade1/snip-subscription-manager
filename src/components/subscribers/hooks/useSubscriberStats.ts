@@ -24,16 +24,19 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
       console.log('Status:', subscriber.status);
       console.log('Plano:', subscriber.plan);
       
-      // Calcula a receita apenas se o status for 'pago'
-      const monthlyRevenue = subscriber.status === 'pago' ? planPrices[subscriber.plan] : 0;
-      console.log('Receita do assinante:', monthlyRevenue, '€');
+      let monthlyRevenue = 0;
+      if (subscriber.status === 'pago') {
+        monthlyRevenue = planPrices[subscriber.plan];
+        console.log('Receita do plano:', monthlyRevenue, '€');
+        console.log('Receita acumulada:', acc.monthlyRevenue + monthlyRevenue, '€');
+      }
       
       return {
         totalSubscribers: acc.totalSubscribers + 1,
         activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
         overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
         pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
-        monthlyRevenue: acc.monthlyRevenue + monthlyRevenue, // Soma a receita do assinante atual
+        monthlyRevenue: acc.monthlyRevenue + monthlyRevenue,
       };
     }, {
       totalSubscribers: 0,
