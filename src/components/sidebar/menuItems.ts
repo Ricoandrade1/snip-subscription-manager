@@ -30,6 +30,11 @@ export const menuItems = [
     ],
   },
   {
+    title: "Utilizadores",
+    icon: UserCog,
+    url: "/users",
+  },
+  {
     title: "Barbeiros",
     icon: Scissors,
     url: "/barbers",
@@ -58,11 +63,6 @@ export const menuItems = [
     title: "Lojas",
     icon: Store,
     url: "/stores",
-  },
-  {
-    title: "Utilizadores",
-    icon: UserCog,
-    url: "/users",
   },
   {
     title: "Gestor de Conta",
