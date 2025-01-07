@@ -1,6 +1,8 @@
-import { Loader2 } from "lucide-react";
+import { Loader2, LayoutGrid, List } from "lucide-react";
 import { UserCard } from "./UserCard";
+import { UserList } from "./UserList";
 import { Database } from "@/integrations/supabase/types";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -25,6 +27,8 @@ export function UserGrid({
   onSelectUser,
   onRoleUpdateSuccess,
 }: UserGridProps) {
+  const [viewMode, setViewMode] = React.useState<"grid" | "list">("grid");
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[200px]">
@@ -42,16 +46,38 @@ export function UserGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {users.map((user) => (
-        <UserCard
-          key={user.id}
-          user={user}
+    <div className="space-y-6">
+      <div className="flex justify-end">
+        <ToggleGroup type="single" value={viewMode} onValueChange={(value) => value && setViewMode(value as "grid" | "list")}>
+          <ToggleGroupItem value="grid" aria-label="Grid View">
+            <LayoutGrid className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="list" aria-label="List View">
+            <List className="h-4 w-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
+      {viewMode === "grid" ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {users.map((user) => (
+            <UserCard
+              key={user.id}
+              user={user}
+              onRoleUpdateSuccess={onRoleUpdateSuccess}
+              selectedUserId={selectedUserId}
+              onSelectUser={onSelectUser}
+            />
+          ))}
+        </div>
+      ) : (
+        <UserList
+          users={users}
           onRoleUpdateSuccess={onRoleUpdateSuccess}
           selectedUserId={selectedUserId}
           onSelectUser={onSelectUser}
         />
-      ))}
+      )}
     </div>
   );
 }
