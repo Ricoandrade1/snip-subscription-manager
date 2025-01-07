@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,6 +18,12 @@ export function BarberProductionReport() {
   const { data: barberStats, isLoading } = useQuery({
     queryKey: ["barber-production", period],
     queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error("No authenticated session");
+      }
+
       const { data, error } = await supabase
         .from("sales")
         .select(`

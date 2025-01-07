@@ -80,8 +80,8 @@ export default function Users() {
     }
   };
 
-  const handleRoleUpdateSuccess = () => {
-    fetchUsers();
+  const handleRoleUpdateSuccess = async () => {
+    await fetchUsers();
     setSelectedUserId(null);
   };
 

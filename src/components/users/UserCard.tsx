@@ -4,7 +4,7 @@ import { UserCardHeader } from "./UserCardHeader";
 import { UserCardRoles } from "./UserCardRoles";
 import { UserCardActions } from "./UserCardActions";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import { ImageUpload } from "../barber-form/ImageUpload";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
@@ -26,7 +26,7 @@ interface UserDetails {
 
 interface UserCardProps {
   user: User;
-  onRoleUpdateSuccess: () => void;
+  onRoleUpdateSuccess: () => Promise<void>;
   selectedUserId: string | null;
   onSelectUser: (userId: string | null) => void;
 }
