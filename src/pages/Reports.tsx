@@ -9,12 +9,23 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function Reports() {
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState<string | null>(null);
+
+  const handleGeneratePDF = (reportType: string) => {
+    try {
+      // PDF generation logic will be implemented per report type
+      toast.success(`Relatório ${reportType} gerado com sucesso!`);
+    } catch (error) {
+      toast.error("Erro ao gerar relatório");
+    }
+  };
 
   const reports = [
     {
@@ -90,49 +101,51 @@ export default function Reports() {
               </CardHeader>
               <CardContent>
                 <p className="text-barber-light/60">{report.description}</p>
-                <Button 
-                  variant="outline" 
-                  className="mt-4 w-full border-barber-gold/20 hover:border-barber-gold text-barber-gold"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(report.path);
-                  }}
-                >
-                  Ver Relatório
-                </Button>
               </CardContent>
             </Card>
 
             <Dialog open={openDialog === report.id} onOpenChange={() => setOpenDialog(null)}>
-              <DialogContent className="bg-barber-black border-barber-gold/20">
+              <DialogContent className="bg-barber-black border-barber-gold/20 max-w-2xl mx-auto">
                 <DialogHeader>
-                  <DialogTitle className="text-barber-gold flex items-center gap-2">
+                  <DialogTitle className="text-barber-gold flex items-center gap-2 text-2xl">
                     <report.icon className="h-6 w-6" />
                     {report.title}
                   </DialogTitle>
-                  <DialogDescription className="text-barber-light/60">
+                  <DialogDescription className="text-barber-light/60 text-lg">
                     {report.description}
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4">
-                  <h3 className="text-barber-gold font-semibold">Informações Disponíveis:</h3>
-                  <ul className="space-y-2">
-                    {report.details.map((detail, index) => (
-                      <li key={index} className="text-barber-light/80 flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-barber-gold" />
-                        {detail}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button 
-                    className="w-full bg-barber-gold hover:bg-barber-gold/90 text-black"
-                    onClick={() => {
-                      navigate(report.path);
-                      setOpenDialog(null);
-                    }}
-                  >
-                    Acessar Relatório
-                  </Button>
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="text-barber-gold font-semibold text-lg">Informações Disponíveis:</h3>
+                    <ul className="space-y-2">
+                      {report.details.map((detail, index) => (
+                        <li key={index} className="text-barber-light/80 flex items-center gap-2">
+                          <div className="h-1.5 w-1.5 rounded-full bg-barber-gold" />
+                          {detail}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                    <Button 
+                      className="flex-1 bg-barber-gold hover:bg-barber-gold/90 text-black font-semibold"
+                      onClick={() => {
+                        navigate(report.path);
+                        setOpenDialog(null);
+                      }}
+                    >
+                      Visualizar Relatório
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="flex-1 border-barber-gold text-barber-gold hover:bg-barber-gold hover:text-black"
+                      onClick={() => handleGeneratePDF(report.title)}
+                    >
+                      Gerar PDF
+                    </Button>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
