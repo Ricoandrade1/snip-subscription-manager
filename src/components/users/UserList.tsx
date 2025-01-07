@@ -4,6 +4,8 @@ import { RoleManager } from "@/components/barber-list/RoleManager";
 import { Database } from "@/integrations/supabase/types";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -11,6 +13,11 @@ interface User {
   id: string;
   email: string;
   roles: UserAuthority[];
+}
+
+interface UserDetails {
+  name: string;
+  phone: string;
 }
 
 interface UserListProps {
@@ -28,6 +35,34 @@ export function UserList({
   onRoleUpdateSuccess,
   loading = false,
 }: UserListProps) {
+  const [userDetails, setUserDetails] = useState<Record<string, UserDetails>>({});
+
+  useEffect(() => {
+    if (!loading) {
+      fetchUsersDetails();
+    }
+  }, [users, loading]);
+
+  const fetchUsersDetails = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('barbers')
+        .select('id, name, phone')
+        .in('id', users.map(user => user.id));
+
+      if (error) throw error;
+
+      const detailsMap = (data || []).reduce((acc, user) => ({
+        ...acc,
+        [user.id]: { name: user.name, phone: user.phone }
+      }), {});
+
+      setUserDetails(detailsMap);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  };
+
   const getRoleStyle = (role: string) => {
     switch (role) {
       case "admin":
@@ -53,6 +88,8 @@ export function UserList({
               <Skeleton className="h-5 w-5" />
               <div className="flex-1 min-w-0">
                 <Skeleton className="h-6 w-48 mb-2" />
+                <Skeleton className="h-4 w-32 mb-1" />
+                <Skeleton className="h-4 w-36 mb-2" />
                 <div className="flex flex-wrap gap-2">
                   <Skeleton className="h-7 w-16" />
                   <Skeleton className="h-7 w-20" />
@@ -79,6 +116,16 @@ export function UserList({
               <h3 className="text-barber-light font-medium truncate">
                 {user.email}
               </h3>
+              {userDetails[user.id] && (
+                <div className="mt-1 space-y-0.5">
+                  <p className="text-sm text-barber-light/80">
+                    Nome: {userDetails[user.id].name}
+                  </p>
+                  <p className="text-sm text-barber-light/80">
+                    Telefone: {userDetails[user.id].phone}
+                  </p>
+                </div>
+              )}
               <div className="flex flex-wrap gap-2 mt-2">
                 {user.roles?.map((role) => (
                   <span
