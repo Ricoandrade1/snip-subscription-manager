@@ -12,6 +12,7 @@ export function SubscribersTableHeader() {
         <TableHead className="text-barber-light w-40">Data de Pagamento</TableHead>
         <TableHead className="text-barber-light w-40">Próximo Pagamento</TableHead>
         <TableHead className="text-barber-light w-32">Status</TableHead>
+        <TableHead className="text-barber-light w-16"></TableHead>
       </TableRow>
     </TableHeader>
   );

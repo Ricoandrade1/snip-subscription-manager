@@ -5,7 +5,8 @@ import { format, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getSubscriberCode } from "./utils/getSubscriberCode";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Phone } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface SubscriberTableRowProps {
   subscriber: Subscriber;
@@ -63,18 +64,18 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick, onDeleteC
 
   return (
     <TableRow 
-      className="hover:bg-barber-gray/50 border-b border-barber-gray transition-colors"
+      className="hover:bg-barber-gray/50 border-b border-barber-gray transition-colors cursor-pointer"
+      onClick={onClick}
     >
       <TableCell className="font-medium text-barber-light whitespace-nowrap px-4">
         {getSubscriberCode(subscriber, subscribers)}
       </TableCell>
-      <TableCell 
-        className="text-barber-light cursor-pointer"
-        onClick={onClick}
-      >
+      <TableCell className="text-barber-light">
         {subscriber.name}
       </TableCell>
-      <TableCell className="text-barber-light">{subscriber.nickname || '-'}</TableCell>
+      <TableCell className="text-barber-light">
+        {subscriber.nickname || '-'}
+      </TableCell>
       <TableCell>
         <Badge 
           key={`${subscriber.id}-${subscriber.plan}`} 
@@ -83,7 +84,21 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick, onDeleteC
           {subscriber.plan}
         </Badge>
       </TableCell>
-      <TableCell className="text-barber-light whitespace-nowrap">{subscriber.phone || '-'}</TableCell>
+      <TableCell className="text-barber-light">
+        {subscriber.phone ? (
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="flex items-center gap-1">
+                <Phone className="h-4 w-4" />
+                {subscriber.phone}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Clique para copiar</p>
+            </TooltipContent>
+          </Tooltip>
+        ) : '-'}
+      </TableCell>
       <TableCell className="text-barber-light whitespace-nowrap">
         {formatDate(subscriber.payment_date)}
       </TableCell>
