@@ -13,7 +13,6 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
 
   useEffect(() => {
     const calculateStats = async () => {
-      // Buscar preços dos planos do banco de dados
       const { data: plans, error } = await supabase
         .from('plans')
         .select('title, price');
@@ -24,8 +23,8 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
       }
 
       const planPrices = plans.reduce((acc: Record<string, number>, plan) => {
-        // Arredonda os preços para números inteiros
-        acc[plan.title] = Math.round(Number(plan.price));
+        // Convert price to a fixed number with 2 decimal places
+        acc[plan.title] = Number(Number(plan.price).toFixed(2));
         return acc;
       }, {});
 
@@ -46,9 +45,9 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
         
         const planPrice = planPrices[member.plan];
         if (planPrice) {
-          // Arredonda o valor antes de adicionar à receita total
-          const roundedPrice = Math.round(planPrice);
-          totalRevenue += roundedPrice;
+          // Use toFixed(2) to ensure proper decimal handling
+          const roundedPrice = Number(planPrice.toFixed(2));
+          totalRevenue = Number((totalRevenue + roundedPrice).toFixed(2));
           console.log(`Preço do plano ${member.plan}: ${roundedPrice}€`);
           console.log(`Subtotal após adicionar ${member.name}: ${totalRevenue}€`);
         } else {
