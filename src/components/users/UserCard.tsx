@@ -88,15 +88,15 @@ export function UserCard({
 
   return (
     <Card className={`h-full flex flex-col transition-none group relative ${getCardStyle()}`}>
-      <CardHeader className="pb-2 flex-shrink-0">
-        <div className="flex items-start gap-4">
+      <CardHeader className="pb-4 flex-shrink-0">
+        <div className="flex items-start gap-6">
           <div className="w-20 h-20 flex-shrink-0">
             <ImageUpload
               currentImage={userDetails?.image_url || null}
               onUpload={handleImageUpload}
             />
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 pt-2">
             <UserCardHeader 
               email={user.email} 
               name={userDetails?.name}
@@ -105,9 +105,9 @@ export function UserCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col justify-between">
+      <CardContent className="flex-1 flex flex-col justify-between pt-2">
         <UserCardRoles roles={user.roles} />
-        <div className="mt-4">
+        <div className="mt-6">
           <UserCardActions
             user={user}
             onRoleUpdateSuccess={onRoleUpdateSuccess}
