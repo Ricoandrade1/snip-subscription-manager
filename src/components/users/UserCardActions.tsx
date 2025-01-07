@@ -1,13 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { RoleManager } from "@/components/barber-list/RoleManager";
-import { Database } from "@/integrations/supabase/types";
-import { cn } from "@/lib/utils";
-import { UserForm } from "./UserForm";
-import { useState } from "react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { Database } from "@/integrations/supabase/types";
 import { supabase } from "@/lib/supabase/client";
-import { KeyRound } from "lucide-react";
+import { Key } from "lucide-react";
+import { useState } from "react";
+import { UserForm } from "./UserForm";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -39,7 +37,7 @@ export function UserCardActions({
   setIsEditDialogOpen,
 }: UserCardActionsProps) {
   const { toast } = useToast();
-  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const handleUpdateUser = async (data: any) => {
     try {
@@ -72,33 +70,42 @@ export function UserCardActions({
     }
   };
 
-  const handleResetPassword = async () => {
+  const handleChangePassword = async () => {
     try {
-      setIsResettingPassword(true);
+      setIsChangingPassword(true);
       
-      const { data, error } = await supabase.functions.invoke('reset-password', {
-        body: {
-          userId: user.id,
-          userEmail: user.email,
-        },
-      });
+      const { error } = await supabase.auth.admin.updateUserById(
+        user.id,
+        { password: generateTemporaryPassword() }
+      );
 
       if (error) throw error;
 
       toast({
         title: "Sucesso",
-        description: "Senha redefinida com sucesso! Um email foi enviado ao usuário.",
+        description: "Nova senha gerada com sucesso! Um email foi enviado ao usuário.",
       });
     } catch (error) {
-      console.error('Error resetting password:', error);
+      console.error('Error changing password:', error);
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Não foi possível redefinir a senha.",
+        description: "Não foi possível gerar nova senha.",
       });
     } finally {
-      setIsResettingPassword(false);
+      setIsChangingPassword(false);
     }
+  };
+
+  const generateTemporaryPassword = () => {
+    const length = 12;
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      password += charset[randomIndex];
+    }
+    return password;
   };
 
   return (
@@ -106,12 +113,12 @@ export function UserCardActions({
       <Button
         variant="outline"
         size="sm"
-        onClick={handleResetPassword}
-        disabled={isResettingPassword}
+        onClick={handleChangePassword}
+        disabled={isChangingPassword}
         className="bg-barber-gray border-yellow-600 text-yellow-600 hover:bg-yellow-600/10"
       >
-        <KeyRound className="mr-2 h-4 w-4" />
-        {isResettingPassword ? "Redefinindo..." : "Redefinir Senha"}
+        <Key className="mr-2 h-4 w-4" />
+        {isChangingPassword ? "Gerando..." : "Nova Senha"}
       </Button>
 
       <Dialog 
