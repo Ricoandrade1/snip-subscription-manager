@@ -60,6 +60,12 @@ export function UserListItem({
     return "bg-barber-gray border-gray-500/20";
   };
 
+  // Wrap the onRoleUpdateSuccess in an async function
+  const handleDeleteSuccess = async () => {
+    onRoleUpdateSuccess();
+    return Promise.resolve();
+  };
+
   return (
     <div className="bg-barber-gray border border-barber-gray/20 rounded-lg p-6 flex flex-col md:flex-row md:items-center gap-4">
       <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -115,7 +121,7 @@ export function UserListItem({
         user={user}
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        onSuccess={onRoleUpdateSuccess}
+        onSuccess={handleDeleteSuccess}
       />
     </div>
   );
