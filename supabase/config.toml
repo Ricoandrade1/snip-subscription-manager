@@ -1,10 +1,1 @@
 project_id = "mtuplhupdpedhrqdwnom"
-
-[api]
-enabled = true
-url = "https://mtuplhupdpedhrqdwnom.supabase.co"
-service_role_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10dXBsaHVwZHBlZGhycWR3bm9tIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwNDU5MjQxMywiZXhwIjoyMDIwMTY4NDEzfQ.XZWLzh1lQmf3Qdqvh3H_gFG5zqwqvDoXevGHN0uY1AA"
-
-[functions]
-[functions.reset-password]
-verify_jwt = false
