@@ -19,20 +19,19 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
       return;
     }
 
-    console.log('Calculando estatísticas com os novos preços:', planPrices);
-    console.log('Calculando estatísticas para', subscribers.length, 'assinantes');
+    console.log('Calculando estatísticas com os preços:', planPrices);
+    console.log('Total de assinantes:', subscribers.length);
     
     const calculatedStats = subscribers.reduce((acc, subscriber) => {
       console.log('-------------------');
       console.log('Processando assinante:', subscriber.name);
       console.log('Status:', subscriber.status);
       console.log('Plano:', subscriber.plan);
-      console.log('Preço atual do plano:', planPrices[subscriber.plan], '€');
       
       let monthlyRevenue = 0;
       if (subscriber.status === 'pago' && planPrices[subscriber.plan]) {
         monthlyRevenue = planPrices[subscriber.plan];
-        console.log('Receita do plano:', monthlyRevenue, '€');
+        console.log('Preço do plano:', monthlyRevenue, '€');
       }
       
       return {
