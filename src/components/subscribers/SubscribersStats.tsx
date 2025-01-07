@@ -29,11 +29,6 @@ const COLOR_SCHEMES = {
     border: "border-red-500",
     text: "text-red-500",
   },
-  revenue: {
-    background: "bg-blue-500/20",
-    border: "border-blue-500",
-    text: "text-blue-500",
-  },
 };
 
 export function SubscribersStats({ stats, onFilterChange, selectedStatus }: SubscribersStatsProps) {
@@ -41,7 +36,6 @@ export function SubscribersStats({ stats, onFilterChange, selectedStatus }: Subs
   const [showActive, setShowActive] = useState(true);
   const [showOverdue, setShowOverdue] = useState(true);
   const [showPending, setShowPending] = useState(true);
-  const [showRevenue, setShowRevenue] = useState(true);
 
   const handleCardClick = (status: string) => {
     if (status === selectedStatus) {
@@ -51,15 +45,8 @@ export function SubscribersStats({ stats, onFilterChange, selectedStatus }: Subs
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-PT', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(value);
-  };
-
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <StatCard
         label="Total de Assinantes"
         value={stats.totalSubscribers}
@@ -98,17 +85,6 @@ export function SubscribersStats({ stats, onFilterChange, selectedStatus }: Subs
         onClick={() => handleCardClick('overdue')}
         isSelected={selectedStatus === 'overdue'}
         colorScheme={COLOR_SCHEMES.overdue}
-      />
-
-      <StatCard
-        label="Receita Mensal"
-        value={stats.monthlyRevenue}
-        show={showRevenue}
-        onToggleVisibility={() => setShowRevenue(!showRevenue)}
-        onClick={() => handleCardClick('revenue')}
-        isSelected={selectedStatus === 'revenue'}
-        colorScheme={COLOR_SCHEMES.revenue}
-        isCurrency={true}
       />
     </div>
   );
