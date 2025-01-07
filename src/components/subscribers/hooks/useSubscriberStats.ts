@@ -3,7 +3,7 @@ import { Subscriber, SubscriberStats } from "../types";
 
 export function useSubscriberStats(subscribers: Subscriber[]) {
   const [stats] = useState<SubscriberStats>({
-    totalSubscribers: subscribers.length,
+    totalSubscribers: 0,
     activeSubscribers: 0,
     overdueSubscribers: 0,
     pendingSubscribers: 0,
