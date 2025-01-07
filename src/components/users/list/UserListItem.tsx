@@ -2,6 +2,9 @@ import { UserCog } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Database } from "@/integrations/supabase/types";
 import { RoleManagementDialog } from "../dialogs/RoleManagementDialog";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { DeleteUserDialog } from "../dialogs/DeleteUserDialog";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -29,6 +32,8 @@ export function UserListItem({
   onSelectUser,
   onRoleUpdateSuccess,
 }: UserListItemProps) {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
   const getRoleStyle = (role: string) => {
     switch (role) {
       case "admin":
@@ -89,12 +94,28 @@ export function UserListItem({
         </div>
       </div>
 
-      <RoleManagementDialog
+      <div className="flex gap-2">
+        <RoleManagementDialog
+          user={user}
+          selectedUserId={selectedUserId}
+          onSelectUser={onSelectUser}
+          onSuccess={onRoleUpdateSuccess}
+          getCardStyle={getCardStyle}
+        />
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => setIsDeleteDialogOpen(true)}
+        >
+          Excluir
+        </Button>
+      </div>
+
+      <DeleteUserDialog
         user={user}
-        selectedUserId={selectedUserId}
-        onSelectUser={onSelectUser}
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
         onSuccess={onRoleUpdateSuccess}
-        getCardStyle={getCardStyle}
       />
     </div>
   );
