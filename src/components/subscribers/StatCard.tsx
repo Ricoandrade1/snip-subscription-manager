@@ -1,64 +1,40 @@
 import { Card } from "@/components/ui/card";
-import { Eye, EyeOff, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Users } from "lucide-react";
 
 interface StatCardProps {
-  label: string;
-  value: number;
-  show: boolean;
-  onToggleVisibility: () => void;
+  title: string;
+  value: number | string;
+  icon?: React.ReactNode;
+  description: string;
   onClick: () => void;
-  isSelected: boolean;
-  colorScheme: {
-    background: string;
-    border: string;
-    text: string;
-  };
+  selected: boolean;
 }
 
 export function StatCard({
-  label,
+  title,
   value,
-  show,
-  onToggleVisibility,
+  icon,
+  description,
   onClick,
-  isSelected,
-  colorScheme,
+  selected,
 }: StatCardProps) {
   return (
     <Card 
       className={`p-4 cursor-pointer transition-colors ${
-        isSelected ? `${colorScheme.background} ${colorScheme.border}` : ''
+        selected ? 'bg-barber-gold/10 border-barber-gold' : ''
       }`}
       onClick={onClick}
     >
       <div className="flex items-center justify-between space-y-0">
-        <p className="text-sm font-medium text-barber-light">{label}</p>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleVisibility();
-          }}
-        >
-          {show ? (
-            <Eye className="h-4 w-4 text-barber-light" />
-          ) : (
-            <EyeOff className="h-4 w-4 text-barber-light" />
-          )}
-        </Button>
+        <p className="text-sm font-medium text-barber-light">{title}</p>
       </div>
       <div className="flex items-center gap-2">
-        <Users className={`h-8 w-8 ${colorScheme.text}`} />
-        <div className="flex items-baseline">
-          {show ? (
-            <h3 className={`text-2xl font-semibold ${colorScheme.text}`}>
-              {value}
-            </h3>
-          ) : (
-            <h3 className={`text-2xl font-semibold ${colorScheme.text}`}>****</h3>
-          )}
+        {icon || <Users className="h-8 w-8 text-barber-gold" />}
+        <div className="flex flex-col">
+          <h3 className="text-2xl font-semibold text-barber-gold">
+            {value}
+          </h3>
+          <p className="text-xs text-barber-light/60">{description}</p>
         </div>
       </div>
     </Card>
