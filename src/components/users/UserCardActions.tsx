@@ -61,16 +61,6 @@ export function UserCardActions({
         getCardStyle={getCardStyle}
       />
 
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setIsEditDialogOpen(true)}
-        className="text-barber-light/60 hover:text-barber-light"
-      >
-        <Pencil className="h-4 w-4" />
-        <span className="sr-only">Editar usuário</span>
-      </Button>
-
       <ContextMenu>
         <ContextMenuTrigger>
           <Button
