@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Subscriber, FilterState } from "../types/subscriber";
+import { useState } from "react";
+import { Subscriber, FilterState } from "../types";
 
 export function useSubscriberFilters(subscribers: Subscriber[], statusFilter: string = 'all') {
   const [filters, setFilters] = useState<FilterState>({
@@ -16,8 +16,28 @@ export function useSubscriberFilters(subscribers: Subscriber[], statusFilter: st
     setFilters(prev => ({ ...prev, [field]: value }));
   };
 
-  const filteredSubscribers = useMemo(() => {
-    let filtered = subscribers.filter((subscriber) => {
+  const sortSubscribers = (subscribers: Subscriber[]) => {
+    return [...subscribers].sort((a, b) => {
+      const sortOrder = filters.sortOrder === 'asc' ? 1 : -1;
+      
+      switch (filters.sortBy) {
+        case 'name':
+          return sortOrder * a.name.localeCompare(b.name);
+        case 'payment_date':
+          if (!a.payment_date && !b.payment_date) return 0;
+          if (!a.payment_date) return sortOrder;
+          if (!b.payment_date) return -sortOrder;
+          return sortOrder * (new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime());
+        case 'plan':
+          return sortOrder * a.plan.localeCompare(b.plan);
+        default:
+          return 0;
+      }
+    });
+  };
+
+  const filteredSubscribers = sortSubscribers(
+    subscribers.filter((subscriber) => {
       const matchName = subscriber.name.toLowerCase().includes(filters.name.toLowerCase());
       const matchPhone = !filters.phone || (subscriber.phone && subscriber.phone.toLowerCase().includes(filters.phone.toLowerCase()));
       const matchNif = !filters.nif || (subscriber.nif && subscriber.nif.toLowerCase().includes(filters.nif.toLowerCase()));
@@ -48,31 +68,12 @@ export function useSubscriberFilters(subscribers: Subscriber[], statusFilter: st
       }
 
       return matchName && matchPhone && matchNif && matchPlan && matchStatus && matchStatusFilter;
-    });
-
-    // Sort subscribers
-    return [...filtered].sort((a, b) => {
-      const sortOrder = filters.sortOrder === 'asc' ? 1 : -1;
-      
-      switch (filters.sortBy) {
-        case 'name':
-          return sortOrder * a.name.localeCompare(b.name);
-        case 'payment_date':
-          if (!a.payment_date && !b.payment_date) return 0;
-          if (!a.payment_date) return sortOrder;
-          if (!b.payment_date) return -sortOrder;
-          return sortOrder * (new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime());
-        case 'plan':
-          return sortOrder * a.plan.localeCompare(b.plan);
-        default:
-          return 0;
-      }
-    });
-  }, [subscribers, filters, statusFilter]);
+    })
+  );
 
   return {
     filters,
     handleFilterChange,
-    filteredSubscribers
+    filteredSubscribers,
   };
 }
