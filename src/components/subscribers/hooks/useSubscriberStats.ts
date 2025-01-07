@@ -29,7 +29,8 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
       }, {});
 
       console.log('=== INÍCIO DO CÁLCULO DE RECEITA ===');
-      console.log('Preços atualizados dos planos:', planPrices);
+      console.log('Preços dos planos no banco:', plans);
+      console.log('Preços convertidos para cálculo:', planPrices);
       console.log('Número total de assinantes:', subscribers.length);
       
       let totalRevenue = 0;
@@ -39,7 +40,9 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
       activeMembers.forEach(member => {
         console.log('-------------------');
         console.log(`Membro: ${member.name}`);
+        console.log(`Status: ${member.status}`);
         console.log(`Plano: ${member.plan}`);
+        console.log(`Preço bruto do plano: ${planPrices[member.plan]}`);
         
         const planPrice = planPrices[member.plan];
         if (planPrice) {
