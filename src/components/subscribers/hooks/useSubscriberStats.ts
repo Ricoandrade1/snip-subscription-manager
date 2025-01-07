@@ -43,7 +43,6 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
         console.log(`Membro: ${member.name}`);
         console.log(`Status: ${member.status}`);
         console.log(`Plano: ${member.plan}`);
-        console.log(`Preço bruto do plano: ${planPrices[member.plan]}`);
         
         const planPrice = planPrices[member.plan];
         if (planPrice) {
@@ -58,7 +57,7 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
       });
       
       console.log('-------------------');
-      console.log('Receita mensal total:', totalRevenue.toFixed(2), '€');
+      console.log('Receita mensal total:', totalRevenue, '€');
 
       const calculatedStats = {
         totalSubscribers: subscribers.length,
