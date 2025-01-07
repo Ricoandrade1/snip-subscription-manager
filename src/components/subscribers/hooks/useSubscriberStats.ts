@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Subscriber, SubscriberStats } from "../types";
+import { Subscriber, SubscriberStats } from "../types/subscriber";
 import { usePlanPrices } from "./usePlanPrices";
 
 export function useSubscriberStats(subscribers: Subscriber[]) {
