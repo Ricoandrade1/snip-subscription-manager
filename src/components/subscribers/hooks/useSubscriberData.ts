@@ -60,8 +60,7 @@ export function useSubscriberData({ planFilter, statusFilter = 'all' }: UseSubsc
           bank_name: member.bank_name,
           iban: member.iban,
           due_date: member.due_date,
-          last_plan_change: member.last_plan_change,
-          price: member.plans?.price || 0
+          last_plan_change: member.last_plan_change
         }));
 
       setSubscribers(formattedSubscribers);
@@ -78,6 +77,42 @@ export function useSubscriberData({ planFilter, statusFilter = 'all' }: UseSubsc
   useEffect(() => {
     fetchSubscribers();
   }, [planFilter, statusFilter]);
+
+  // Set up real-time subscription
+  useEffect(() => {
+    const channel = supabase
+      .channel('members-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'members'
+        },
+        async (payload) => {
+          console.log('Real-time update received:', payload);
+          await fetchSubscribers(); // Refresh the entire list
+          
+          // Show appropriate toast message based on the event
+          switch (payload.eventType) {
+            case 'INSERT':
+              toast.success('Novo assinante adicionado');
+              break;
+            case 'UPDATE':
+              toast.success('Assinante atualizado');
+              break;
+            case 'DELETE':
+              toast.success('Assinante removido');
+              break;
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [planFilter, statusFilter]); // Re-subscribe when filters change
 
   return {
     subscribers,
