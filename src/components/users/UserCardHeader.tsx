@@ -16,7 +16,7 @@ export function UserCardHeader({ email, name, phone }: UserCardHeaderProps) {
         </h3>
       </div>
       {(name || phone) && (
-        <div className="pl-7 space-y-1">
+        <div className="space-y-1">
           {name && (
             <p className="text-sm text-barber-light/80">
               Nome: {name}

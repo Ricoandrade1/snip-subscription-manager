@@ -5,6 +5,7 @@ import { UserCardRoles } from "./UserCardRoles";
 import { UserCardActions } from "./UserCardActions";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ImageUpload } from "../barber-form/ImageUpload";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -17,6 +18,7 @@ interface User {
 interface UserDetails {
   name: string;
   phone: string;
+  image_url: string | null;
 }
 
 interface UserCardProps {
@@ -45,7 +47,7 @@ export function UserCard({
     try {
       const { data, error } = await supabase
         .from('barbers')
-        .select('name, phone')
+        .select('name, phone, image_url')
         .eq('id', user.id)
         .single();
 
@@ -53,6 +55,22 @@ export function UserCard({
       setUserDetails(data);
     } catch (error) {
       console.error('Error fetching user details:', error);
+    }
+  };
+
+  const handleImageUpload = async (url: string) => {
+    try {
+      const { error } = await supabase
+        .from('barbers')
+        .update({ image_url: url })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      
+      // Update local state with new image URL
+      setUserDetails(prev => prev ? { ...prev, image_url: url } : null);
+    } catch (error) {
+      console.error('Error updating user image:', error);
     }
   };
 
@@ -72,11 +90,19 @@ export function UserCard({
   return (
     <Card className={`transition-none group relative ${getCardStyle()}`}>
       <CardHeader className="pb-2">
-        <UserCardHeader 
-          email={user.email} 
-          name={userDetails?.name}
-          phone={userDetails?.phone}
-        />
+        <div className="flex items-start gap-4">
+          <ImageUpload
+            currentImage={userDetails?.image_url || null}
+            onUpload={handleImageUpload}
+          />
+          <div className="flex-1">
+            <UserCardHeader 
+              email={user.email} 
+              name={userDetails?.name}
+              phone={userDetails?.phone}
+            />
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
