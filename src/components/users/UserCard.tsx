@@ -67,7 +67,6 @@ export function UserCard({
 
       if (error) throw error;
       
-      // Update local state with new image URL
       setUserDetails(prev => prev ? { ...prev, image_url: url } : null);
     } catch (error) {
       console.error('Error updating user image:', error);
@@ -88,14 +87,16 @@ export function UserCard({
   };
 
   return (
-    <Card className={`transition-none group relative ${getCardStyle()}`}>
-      <CardHeader className="pb-2">
+    <Card className={`h-full flex flex-col transition-none group relative ${getCardStyle()}`}>
+      <CardHeader className="pb-2 flex-shrink-0">
         <div className="flex items-start gap-4">
-          <ImageUpload
-            currentImage={userDetails?.image_url || null}
-            onUpload={handleImageUpload}
-          />
-          <div className="flex-1">
+          <div className="w-20 h-20 flex-shrink-0">
+            <ImageUpload
+              currentImage={userDetails?.image_url || null}
+              onUpload={handleImageUpload}
+            />
+          </div>
+          <div className="flex-1 min-w-0">
             <UserCardHeader 
               email={user.email} 
               name={userDetails?.name}
@@ -104,9 +105,9 @@ export function UserCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <UserCardRoles roles={user.roles} />
+      <CardContent className="flex-1 flex flex-col justify-between">
+        <UserCardRoles roles={user.roles} />
+        <div className="mt-4">
           <UserCardActions
             user={user}
             onRoleUpdateSuccess={onRoleUpdateSuccess}

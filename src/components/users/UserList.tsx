@@ -43,12 +43,14 @@ export function UserList({
       {users.map((user) => (
         <div
           key={user.id}
-          className="bg-barber-gray border border-barber-gray/20 rounded-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+          className="bg-barber-gray border border-barber-gray/20 rounded-lg p-6 flex flex-col md:flex-row md:items-center gap-4"
         >
-          <div className="flex items-center space-x-4 flex-1">
-            <UserCog className="h-5 w-5 text-barber-gold shrink-0" />
-            <div className="min-w-0 flex-1">
-              <h3 className="text-barber-light font-medium truncate">{user.email}</h3>
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <UserCog className="h-5 w-5 text-barber-gold flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <h3 className="text-barber-light font-medium truncate">
+                {user.email}
+              </h3>
               <div className="flex flex-wrap gap-2 mt-2">
                 {user.roles?.map((role) => (
                   <span
@@ -72,7 +74,7 @@ export function UserList({
             <DialogTrigger asChild>
               <button
                 onClick={() => onSelectUser(user.id)}
-                className="px-4 py-2 text-sm bg-barber-gray border border-barber-gold text-barber-gold rounded-md hover:bg-barber-gold/10 transition-colors whitespace-nowrap"
+                className="px-4 py-2 text-sm bg-barber-gray border border-barber-gold text-barber-gold rounded-md hover:bg-barber-gold/10 transition-colors whitespace-nowrap w-full md:w-auto"
               >
                 Gerir Funções
               </button>
