@@ -10,9 +10,9 @@ interface UseSubscribersProps {
 }
 
 const PLAN_PRICES = {
-  Basic: 29.99,
-  Classic: 49.99,
-  Business: 99.99
+  Basic: 30,
+  Classic: 40,
+  Business: 50
 };
 
 export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscribersProps) {
