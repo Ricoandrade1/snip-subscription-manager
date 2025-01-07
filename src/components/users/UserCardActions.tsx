@@ -2,7 +2,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RoleManager } from "@/components/barber-list/RoleManager";
 import { UserForm } from "./UserForm";
 import { cn } from "@/lib/utils";
@@ -12,12 +12,15 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { Database } from "@/integrations/supabase/types";
+
+type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
 interface UserCardActionsProps {
   user: {
     id: string;
     email: string;
-    roles: string[];
+    roles: UserAuthority[];
   };
   onRoleUpdateSuccess: () => void;
   selectedUserId: string | null;
@@ -117,7 +120,7 @@ export function UserCardActions({
             barber={{
               id: user.id,
               name: user.email || 'Usuário sem email',
-              roles: user.roles || []
+              roles: user.roles
             }}
             onSuccess={onRoleUpdateSuccess}
           />
