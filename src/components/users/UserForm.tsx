@@ -1,39 +1,50 @@
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Form } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-const userFormSchema = z.object({
+const formSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres").optional(),
   name: z.string().min(1, "Nome é obrigatório"),
   phone: z.string().min(1, "Telefone é obrigatório"),
-  nif: z.string().optional(),
-  role: z.string().default("user"),
+  nif: z.string().min(1, "NIF é obrigatório"),
+  role: z.string(),
+  password: z.string().optional(),
 });
 
-type UserFormValues = z.infer<typeof userFormSchema>;
-
 interface UserFormProps {
-  onSubmit: (data: UserFormValues) => Promise<void>;
-  initialData?: Partial<UserFormValues>;
+  onSubmit: (data: any) => void;
+  initialData?: {
+    email: string;
+    name: string;
+    phone: string;
+    nif: string;
+    role: string;
+  };
   isEditing?: boolean;
+  isLoading?: boolean;
 }
 
-export function UserForm({ onSubmit, initialData, isEditing = false }: UserFormProps) {
-  const form = useForm<UserFormValues>({
-    resolver: zodResolver(userFormSchema),
-    defaultValues: {
-      email: initialData?.email || "",
+export function UserForm({ onSubmit, initialData, isEditing = false, isLoading = false }: UserFormProps) {
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: initialData || {
+      email: "",
+      name: "",
+      phone: "",
+      nif: "",
+      role: "user",
       password: "",
-      name: initialData?.name || "",
-      phone: initialData?.phone || "",
-      nif: initialData?.nif || "",
-      role: initialData?.role || "user",
     },
   });
 
@@ -51,15 +62,34 @@ export function UserForm({ onSubmit, initialData, isEditing = false }: UserFormP
                   <FormControl>
                     <Input 
                       {...field} 
-                      type="email"
-                      className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
                       disabled={isEditing}
+                      className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {!isEditing && (
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-barber-light">Senha</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
+                        type="password"
+                        className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}
@@ -69,7 +99,7 @@ export function UserForm({ onSubmit, initialData, isEditing = false }: UserFormP
                   <FormLabel className="text-barber-light">Nome</FormLabel>
                   <FormControl>
                     <Input 
-                      {...field}
+                      {...field} 
                       className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
                     />
                   </FormControl>
@@ -86,7 +116,7 @@ export function UserForm({ onSubmit, initialData, isEditing = false }: UserFormP
                   <FormLabel className="text-barber-light">Telefone</FormLabel>
                   <FormControl>
                     <Input 
-                      {...field}
+                      {...field} 
                       className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
                     />
                   </FormControl>
@@ -103,7 +133,7 @@ export function UserForm({ onSubmit, initialData, isEditing = false }: UserFormP
                   <FormLabel className="text-barber-light">NIF</FormLabel>
                   <FormControl>
                     <Input 
-                      {...field}
+                      {...field} 
                       className="bg-barber-black border-barber-gold/20 focus:border-barber-gold text-barber-light"
                     />
                   </FormControl>
@@ -114,9 +144,10 @@ export function UserForm({ onSubmit, initialData, isEditing = false }: UserFormP
 
             <Button 
               type="submit" 
+              disabled={isLoading}
               className="w-full bg-barber-gold hover:bg-barber-gold/90 text-barber-black"
             >
-              {isEditing ? "Atualizar Utilizador" : "Criar Utilizador"}
+              {isLoading ? "Salvando..." : (isEditing ? "Salvar Alterações" : "Criar Usuário")}
             </Button>
           </form>
         </Form>

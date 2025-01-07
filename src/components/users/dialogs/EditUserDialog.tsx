@@ -1,9 +1,9 @@
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { UserForm } from "../UserForm";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
+import { UserForm } from "../UserForm";
 
 interface EditUserDialogProps {
   user: {
@@ -31,6 +31,7 @@ export function EditUserDialog({
 }: EditUserDialogProps) {
   const { toast } = useToast();
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -55,10 +56,14 @@ export function EditUserDialog({
         title: "Erro",
         description: "Não foi possível carregar os dados do usuário.",
       });
+      onOpenChange(false);
     }
   };
 
   const handleUpdateUser = async (data: UserData) => {
+    if (isLoading) return;
+    setIsLoading(true);
+
     try {
       const { error } = await supabase
         .from('barbers')
@@ -76,8 +81,8 @@ export function EditUserDialog({
         description: "Informações do usuário atualizadas com sucesso!",
       });
       
-      await onSuccess(); // Aguarda a atualização dos dados
-      onOpenChange(false); // Fecha o diálogo após a atualização
+      onSuccess();
+      onOpenChange(false);
     } catch (error) {
       console.error('Error updating user:', error);
       toast({
@@ -85,6 +90,8 @@ export function EditUserDialog({
         title: "Erro",
         description: "Não foi possível atualizar as informações do usuário.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -105,6 +112,7 @@ export function EditUserDialog({
               role: "user"
             }}
             isEditing={true}
+            isLoading={isLoading}
           />
         )}
       </DialogContent>
