@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Subscriber, FilterState } from "../types";
+import { Subscriber } from "../types";
+import { FilterState } from "../types";
 
-export function useSubscriberFilters(subscribers: Subscriber[], statusFilter: string = 'all') {
+export function useSubscriberFilters(subscribers: Subscriber[], statusFilter: string) {
   const [filters, setFilters] = useState<FilterState>({
     name: "",
     phone: "",
@@ -74,6 +75,6 @@ export function useSubscriberFilters(subscribers: Subscriber[], statusFilter: st
   return {
     filters,
     handleFilterChange,
-    filteredSubscribers,
+    filteredSubscribers
   };
 }
