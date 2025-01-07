@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Loader2, LayoutGrid, List } from "lucide-react";
 import { UserCard } from "./UserCard";
 import { UserList } from "./UserList";
@@ -27,7 +28,7 @@ export function UserGrid({
   onSelectUser,
   onRoleUpdateSuccess,
 }: UserGridProps) {
-  const [viewMode, setViewMode] = React.useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   if (loading) {
     return (
