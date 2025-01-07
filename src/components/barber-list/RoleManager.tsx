@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -31,6 +31,7 @@ const availableRoles: AvailableRole[] = [
   { id: "seller", label: "Vendedor", description: "Acesso à PDV e produtos" },
   { id: "barber", label: "Barbeiro", description: "Acesso básico ao sistema" },
   { id: "manager", label: "Gerente", description: "Acesso administrativo limitado" },
+  { id: "owner", label: "Proprietário", description: "Acesso total ao sistema" },
 ];
 
 const roleAccessMap: Record<UserAuthority, string[]> = {
@@ -38,6 +39,7 @@ const roleAccessMap: Record<UserAuthority, string[]> = {
   seller: ["/cash-flow", "/products"],
   barber: ["/", "/schedule", "/account"],
   manager: ["/", "/members", "/barbers", "/cash-flow", "/products", "/stores"],
+  owner: menuItems.map(item => item.url),
 };
 
 export function RoleManager({ barber, onSuccess }: RoleManagerProps) {

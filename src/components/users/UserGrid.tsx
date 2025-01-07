@@ -18,7 +18,7 @@ interface UserGridProps {
   loading: boolean;
   selectedUserId: string | null;
   onSelectUser: (userId: string | null) => void;
-  onRoleUpdateSuccess: () => void;
+  onRoleUpdateSuccess: () => Promise<void>;
 }
 
 export function UserGrid({
