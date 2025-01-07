@@ -34,13 +34,16 @@ function App() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
         if (session) {
           setSession(session);
           setIsAdmin(session.user.user_metadata.role === 'admin');
         }
       } catch (error) {
         console.error('Error checking session:', error);
+        navigate('/login');
       } finally {
         setLoading(false);
       }
@@ -48,16 +51,18 @@ function App() {
 
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
         setSession(session);
         setIsAdmin(session.user.user_metadata.role === 'admin');
-        if (event === 'SIGNED_OUT') {
-          navigate('/login');
-        }
       } else {
         setSession(null);
         setIsAdmin(false);
+        if (event === 'SIGNED_OUT') {
+          // Clear local storage
+          localStorage.removeItem('barber-session');
+          navigate('/login');
+        }
       }
     });
 
@@ -72,16 +77,16 @@ function App() {
     );
   }
 
-  // Rotas públicas que não requerem autenticação
+  // Public routes that don't require authentication
   const publicRoutes = ['/login', '/reset-password'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
 
-  // Redirecionar para login se não estiver autenticado e tentar acessar rota privada
+  // Redirect to login if not authenticated and trying to access private route
   if (!session && !isPublicRoute) {
     return <LoginForm />;
   }
 
-  // Redirecionar para dashboard se estiver autenticado e tentar acessar rota pública
+  // Redirect to dashboard if authenticated and trying to access public route
   if (session && isPublicRoute) {
     navigate('/');
     return null;

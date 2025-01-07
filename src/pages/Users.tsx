@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Database } from "@/integrations/supabase/types";
 import { UserForm } from "@/components/users/UserForm";
 import { UserGrid } from "@/components/users/UserGrid";
+import { useNavigate } from "react-router-dom";
 
 type UserAuthority = Database["public"]["Enums"]["user_authority"];
 
@@ -22,10 +23,39 @@ export default function Users() {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    checkAuth();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate('/login');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  const checkAuth = async () => {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) throw error;
+      
+      if (!session) {
+        navigate('/login');
+        return;
+      }
+
+      fetchUsers();
+    } catch (error) {
+      console.error('Auth error:', error);
+      navigate('/login');
+    }
+  };
 
   const fetchUsers = async () => {
     try {
