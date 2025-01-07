@@ -6,7 +6,7 @@ export function usePlanPrices() {
 
   useEffect(() => {
     const fetchPlanPrices = async () => {
-      console.log('Buscando preços dos planos do banco de dados...');
+      console.log('Buscando preços atualizados dos planos do banco de dados...');
       
       const { data: plans, error } = await supabase
         .from('plans')

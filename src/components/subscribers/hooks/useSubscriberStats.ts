@@ -14,15 +14,20 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
   const planPrices = usePlanPrices();
 
   useEffect(() => {
+    if (!Object.keys(planPrices).length) {
+      console.log('Aguardando preços dos planos serem carregados...');
+      return;
+    }
+
+    console.log('Calculando estatísticas com os novos preços:', planPrices);
     console.log('Calculando estatísticas para', subscribers.length, 'assinantes');
-    console.log('Preços dos planos:', planPrices);
     
     const calculatedStats = subscribers.reduce((acc, subscriber) => {
       console.log('-------------------');
       console.log('Processando assinante:', subscriber.name);
       console.log('Status:', subscriber.status);
       console.log('Plano:', subscriber.plan);
-      console.log('Preço do plano:', planPrices[subscriber.plan]);
+      console.log('Preço atual do plano:', planPrices[subscriber.plan], '€');
       
       let monthlyRevenue = 0;
       if (subscriber.status === 'pago' && planPrices[subscriber.plan]) {
