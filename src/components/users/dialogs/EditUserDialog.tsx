@@ -81,7 +81,13 @@ export function EditUserDialog({
         description: "Informações do usuário atualizadas com sucesso!",
       });
       
+      // Call onSuccess to trigger parent component refresh
       onSuccess();
+      
+      // Fetch updated data before closing
+      await fetchUserData();
+      
+      // Close dialog
       onOpenChange(false);
     } catch (error) {
       console.error('Error updating user:', error);
