@@ -41,7 +41,7 @@ export function useSubscriberStats(subscribers: Subscriber[]) {
         
         let monthlyRevenue = 0;
         if (subscriber.status === 'pago') {
-          monthlyRevenue = planPrices[subscriber.plan];
+          monthlyRevenue = planPrices[subscriber.plan] || 0;
           console.log('Receita do plano:', monthlyRevenue, '€');
           console.log('Receita acumulada:', acc.monthlyRevenue + monthlyRevenue, '€');
         }
