@@ -14,19 +14,25 @@ serve(async (req) => {
   try {
     const { userId, userEmail } = await req.json()
     
+    console.log('Attempting to reset password for:', { userId, userEmail })
+    
     // Initialize Supabase client with admin privileges
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // First verify if the user exists
-    const { data: user, error: getUserError } = await supabaseAdmin.auth.admin.getUserById(userId)
-    
-    if (getUserError || !user) {
-      console.error('Error getting user:', getUserError)
+    // First verify if the user exists in auth.users
+    const { data: userData, error: userError } = await supabaseAdmin
+      .from('auth.users')
+      .select('id')
+      .eq('email', userEmail)
+      .single()
+
+    if (userError) {
+      console.error('Error finding user:', userError)
       return new Response(
-        JSON.stringify({ error: 'User not found' }),
+        JSON.stringify({ error: 'User not found in auth system' }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 400,
@@ -36,7 +42,7 @@ serve(async (req) => {
 
     // Update user's password to '123456'
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-      userId,
+      userData.id,
       { password: '123456' }
     )
 
