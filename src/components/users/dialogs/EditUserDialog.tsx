@@ -84,11 +84,14 @@ export function EditUserDialog({
       // Call onSuccess to trigger parent component refresh
       onSuccess();
       
-      // Fetch updated data before closing
-      await fetchUserData();
-      
       // Close dialog
       onOpenChange(false);
+      
+      // Force page refresh after a short delay
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+      
     } catch (error) {
       console.error('Error updating user:', error);
       toast({
