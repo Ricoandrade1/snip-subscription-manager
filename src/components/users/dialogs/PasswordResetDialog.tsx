@@ -37,6 +37,7 @@ interface PasswordResetDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   getCardStyle: () => string;
+  onSuccess?: () => void;
 }
 
 export function PasswordResetDialog({
@@ -44,6 +45,7 @@ export function PasswordResetDialog({
   isOpen,
   onOpenChange,
   getCardStyle,
+  onSuccess,
 }: PasswordResetDialogProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -75,6 +77,17 @@ export function PasswordResetDialog({
       
       form.reset();
       onOpenChange(false);
+      
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
+
+      // Refresh the page after a short delay
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+
     } catch (error) {
       console.error('Error updating password:', error);
       toast({
