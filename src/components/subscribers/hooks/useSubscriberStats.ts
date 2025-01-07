@@ -6,7 +6,9 @@ export async function calculateSubscriberStats(subscribers: Subscriber[]): Promi
   
   const planPrices = await getPlanPrices();
   
-  return subscribers.reduce((acc, subscriber) => {
+  console.log('Preços dos planos:', planPrices);
+  
+  const stats = subscribers.reduce((acc, subscriber) => {
     console.log('-------------------');
     console.log('Processando assinante:', subscriber.name);
     console.log('Status:', subscriber.status);
@@ -18,13 +20,16 @@ export async function calculateSubscriberStats(subscribers: Subscriber[]): Promi
       console.log('Receita do plano:', monthlyRevenue, '€');
     }
     
-    return {
+    const newStats = {
       totalSubscribers: acc.totalSubscribers + 1,
       activeSubscribers: acc.activeSubscribers + (subscriber.status === 'pago' ? 1 : 0),
       overdueSubscribers: acc.overdueSubscribers + (subscriber.status === 'cancelado' ? 1 : 0),
       pendingSubscribers: acc.pendingSubscribers + (subscriber.status === 'pendente' ? 1 : 0),
       monthlyRevenue: acc.monthlyRevenue + monthlyRevenue,
     };
+    
+    console.log('Receita mensal acumulada:', newStats.monthlyRevenue, '€');
+    return newStats;
   }, {
     totalSubscribers: 0,
     activeSubscribers: 0,
@@ -32,4 +37,12 @@ export async function calculateSubscriberStats(subscribers: Subscriber[]): Promi
     pendingSubscribers: 0,
     monthlyRevenue: 0,
   });
+
+  console.log('-------------------');
+  console.log('Estatísticas finais:');
+  console.log('Total de assinantes:', stats.totalSubscribers);
+  console.log('Assinantes ativos:', stats.activeSubscribers);
+  console.log('Receita mensal total:', stats.monthlyRevenue, '€');
+  
+  return stats;
 }
