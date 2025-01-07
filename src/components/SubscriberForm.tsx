@@ -27,7 +27,11 @@ const formSchema = z.object({
 
 export type SubscriberFormData = z.infer<typeof formSchema>;
 
-export function SubscriberForm() {
+interface SubscriberFormProps {
+  onSuccess?: () => void;
+}
+
+export function SubscriberForm({ onSuccess }: SubscriberFormProps) {
   const navigate = useNavigate();
   const form = useForm<SubscriberFormData>({
     resolver: zodResolver(formSchema),
@@ -89,6 +93,9 @@ export function SubscriberForm() {
 
       toast.success("Assinante cadastrado com sucesso!");
       form.reset();
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error('Erro ao cadastrar assinante:', error);
       toast.error("Erro ao cadastrar assinante");

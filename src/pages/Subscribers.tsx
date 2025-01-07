@@ -4,13 +4,14 @@ import { SubscribersTable } from "@/components/subscribers/SubscribersTable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UserPlus, Users } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { SubscriberForm } from "@/components/SubscriberForm";
 
 export default function Subscribers() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -48,6 +49,10 @@ export default function Subscribers() {
     }
   };
 
+  const handleSuccess = () => {
+    setOpen(false);
+  };
+
   return (
     <div className="p-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -61,7 +66,7 @@ export default function Subscribers() {
               Gerencie todos os assinantes da sua barbearia
             </p>
           </div>
-          <Dialog>
+          <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button className="bg-barber-gold hover:bg-barber-gold/90 text-barber-black">
                 <UserPlus className="mr-2 h-4 w-4" />
@@ -69,7 +74,7 @@ export default function Subscribers() {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-3xl bg-barber-gray border-barber-gold/20">
-              <SubscriberForm />
+              <SubscriberForm onSuccess={handleSuccess} />
             </DialogContent>
           </Dialog>
         </header>
