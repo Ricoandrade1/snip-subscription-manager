@@ -42,6 +42,19 @@ export function UserListItem({
     }
   };
 
+  const getCardStyle = () => {
+    if (user.roles?.includes("admin")) {
+      return "bg-barber-gray border-barber-gold/20";
+    }
+    if (user.roles?.includes("seller")) {
+      return "bg-barber-gray border-blue-500/20";
+    }
+    if (user.roles?.includes("barber")) {
+      return "bg-barber-gray border-gray-500/20";
+    }
+    return "bg-barber-gray border-gray-500/20";
+  };
+
   return (
     <div className="bg-barber-gray border border-barber-gray/20 rounded-lg p-6 flex flex-col md:flex-row md:items-center gap-4">
       <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -81,6 +94,7 @@ export function UserListItem({
         selectedUserId={selectedUserId}
         onSelectUser={onSelectUser}
         onSuccess={onRoleUpdateSuccess}
+        getCardStyle={getCardStyle}
       />
     </div>
   );
