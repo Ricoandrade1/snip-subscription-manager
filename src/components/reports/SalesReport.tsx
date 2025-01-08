@@ -15,8 +15,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { addDays, format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { DateRange } from "react-day-picker";
 
 interface SaleData {
   date: string;
@@ -29,10 +29,20 @@ interface SaleData {
   }[];
 }
 
+interface PaymentMethod {
+  name: string;
+  value: number;
+}
+
+interface ProductSale {
+  name: string;
+  total: number;
+}
+
 const COLORS = ['#FFB000', '#22C55E', '#3B82F6', '#EC4899', '#8B5CF6'];
 
 export function SalesReport() {
-  const [dateRange, setDateRange] = useState({
+  const [dateRange, setDateRange] = useState<Required<DateRange>>({
     from: addDays(new Date(), -30),
     to: new Date(),
   });
@@ -64,9 +74,9 @@ export function SalesReport() {
         if (salesError) throw salesError;
 
         // Processar dados para gráficos
-        const salesByDate = new Map();
-        const paymentMethods = new Map();
-        const productSales = new Map();
+        const salesByDate = new Map<string, number>();
+        const paymentMethods = new Map<string, number>();
+        const productSales = new Map<string, number>();
 
         sales?.forEach((sale) => {
           // Agrupar por data
@@ -97,14 +107,14 @@ export function SalesReport() {
           paymentMethods: Array.from(paymentMethods.entries()).map(([method, total]) => ({
             name: method,
             value: total,
-          })),
+          })) as PaymentMethod[],
           productSales: Array.from(productSales.entries())
             .map(([name, total]) => ({
               name,
               total,
             }))
             .sort((a, b) => b.total - a.total)
-            .slice(0, 5),
+            .slice(0, 5) as ProductSale[],
           totalSales: sales?.reduce((acc, sale) => acc + sale.total, 0) || 0,
           totalTransactions: sales?.length || 0,
         };
@@ -132,6 +142,12 @@ export function SalesReport() {
     );
   }
 
+  const handleDateRangeChange = (newDateRange: DateRange | undefined) => {
+    if (newDateRange?.from && newDateRange?.to) {
+      setDateRange({ from: newDateRange.from, to: newDateRange.to });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 items-end">
@@ -139,7 +155,7 @@ export function SalesReport() {
           <Label>Período de Análise</Label>
           <DatePickerWithRange
             date={dateRange}
-            onDateChange={setDateRange}
+            onDateChange={handleDateRangeChange}
           />
         </div>
         <div className="space-y-2">
