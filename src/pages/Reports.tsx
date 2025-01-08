@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { BarberProductionReport } from "@/components/reports/BarberProductionReport";
+import { SalesReport } from "@/components/reports/SalesReport";
 import {
   Dialog,
   DialogContent,
@@ -105,7 +106,7 @@ export default function Reports() {
             </Card>
 
             <Dialog open={openDialog === report.id} onOpenChange={() => setOpenDialog(null)}>
-              <DialogContent className="bg-barber-black border-barber-gold/20 max-w-2xl mx-auto">
+              <DialogContent className="bg-barber-black border-barber-gold/20 max-w-7xl mx-auto">
                 <DialogHeader>
                   <DialogTitle className="text-barber-gold flex items-center gap-2 text-2xl">
                     <report.icon className="h-6 w-6" />
@@ -115,45 +116,16 @@ export default function Reports() {
                     {report.description}
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="text-barber-gold font-semibold text-lg">Informações Disponíveis:</h3>
-                    <ul className="space-y-2">
-                      {report.details.map((detail, index) => (
-                        <li key={index} className="text-barber-light/80 flex items-center gap-2">
-                          <div className="h-1.5 w-1.5 rounded-full bg-barber-gold" />
-                          {detail}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                    <Button 
-                      className="flex-1 bg-barber-gold hover:bg-barber-gold/90 text-black font-semibold"
-                      onClick={() => {
-                        navigate(report.path);
-                        setOpenDialog(null);
-                      }}
-                    >
-                      Visualizar Relatório
-                    </Button>
-                    <Button 
-                      variant="outline"
-                      className="flex-1 border-barber-gold text-barber-gold hover:bg-barber-gold hover:text-black"
-                      onClick={() => handleGeneratePDF(report.title)}
-                    >
-                      Gerar PDF
-                    </Button>
-                  </div>
-                </div>
+                
+                {report.id === "sales" && <SalesReport />}
+                {report.id === "barbers" && <BarberProductionReport />}
+                
+                {/* Outros relatórios serão implementados aqui */}
               </DialogContent>
             </Dialog>
           </div>
         ))}
       </div>
-
-      {window.location.pathname === '/reports/barbers' && <BarberProductionReport />}
     </div>
   );
 }
