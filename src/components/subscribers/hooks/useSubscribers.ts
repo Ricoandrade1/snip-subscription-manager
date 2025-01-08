@@ -1,14 +1,11 @@
-import { useSubscriberData } from "./useSubscriberData";
-import { useSubscriberFilters } from "./useSubscriberFilters";
+import { useSubscriberData } from './useSubscriberData';
+import { useSubscriberFilters } from './useSubscriberFilters';
 
-interface UseSubscribersProps {
-  planFilter?: "Basic" | "Classic" | "Business";
-  statusFilter?: string;
-}
+export function useSubscribers() {
+  const { subscribers, isLoading, stats, refetch } = useSubscriberData();
+  const { filters, handleFilterChange, filterSubscribers, sortSubscribers } = useSubscriberFilters();
 
-export function useSubscribers({ planFilter, statusFilter = 'all' }: UseSubscribersProps) {
-  const { subscribers, isLoading, stats, refetch } = useSubscriberData({ planFilter, statusFilter });
-  const { filters, handleFilterChange, filteredSubscribers } = useSubscriberFilters(subscribers, statusFilter);
+  const filteredSubscribers = sortSubscribers(filterSubscribers(subscribers));
 
   return {
     subscribers,
