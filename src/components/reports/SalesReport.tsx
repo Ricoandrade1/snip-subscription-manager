@@ -1,45 +1,15 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { DatePickerWithRange } from "@/components/ui/date-range-picker";
-import { addDays, format } from "date-fns";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { addDays } from "date-fns";
 import { DateRange } from "react-day-picker";
-
-interface SaleData {
-  date: string;
-  total: number;
-  payment_method: string;
-  items: {
-    product_name: string;
-    quantity: number;
-    price: number;
-  }[];
-}
-
-interface PaymentMethod {
-  name: string;
-  value: number;
-}
-
-interface ProductSale {
-  name: string;
-  total: number;
-}
-
-const COLORS = ['#FFB000', '#22C55E', '#3B82F6', '#EC4899', '#8B5CF6'];
+import { SalesSummaryCard } from "./sales/SalesSummaryCard";
+import { PaymentMethodsChart } from "./sales/PaymentMethodsChart";
+import { SalesByDateChart } from "./sales/SalesByDateChart";
+import { TopProductsChart } from "./sales/TopProductsChart";
+import { SalesFilters } from "./sales/SalesFilters";
 
 export function SalesReport() {
   const [dateRange, setDateRange] = useState<Required<DateRange>>({
@@ -73,23 +43,19 @@ export function SalesReport() {
 
         if (salesError) throw salesError;
 
-        // Processar dados para gráficos
         const salesByDate = new Map<string, number>();
         const paymentMethods = new Map<string, number>();
         const productSales = new Map<string, number>();
 
         sales?.forEach((sale) => {
-          // Agrupar por data
-          const date = format(new Date(sale.created_at), 'dd/MM/yyyy');
+          const date = new Date(sale.created_at).toLocaleDateString('pt-PT');
           salesByDate.set(date, (salesByDate.get(date) || 0) + sale.total);
-
-          // Agrupar por método de pagamento
+          
           paymentMethods.set(
             sale.payment_method,
             (paymentMethods.get(sale.payment_method) || 0) + sale.total
           );
 
-          // Agrupar por produto
           sale.sale_items?.forEach((item) => {
             const productName = item.products?.name || 'Produto Desconhecido';
             productSales.set(
@@ -104,17 +70,17 @@ export function SalesReport() {
             date,
             total,
           })),
-          paymentMethods: Array.from(paymentMethods.entries()).map(([method, total]) => ({
-            name: method,
-            value: total,
-          })) as PaymentMethod[],
+          paymentMethods: Array.from(paymentMethods.entries()).map(([name, value]) => ({
+            name,
+            value,
+          })),
           productSales: Array.from(productSales.entries())
             .map(([name, total]) => ({
               name,
               total,
             }))
             .sort((a, b) => b.total - a.total)
-            .slice(0, 5) as ProductSale[],
+            .slice(0, 5),
           totalSales: sales?.reduce((acc, sale) => acc + sale.total, 0) || 0,
           totalTransactions: sales?.length || 0,
         };
@@ -150,123 +116,23 @@ export function SalesReport() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4 items-end">
-        <div className="space-y-2 flex-1">
-          <Label>Período de Análise</Label>
-          <DatePickerWithRange
-            date={dateRange}
-            onDateChange={handleDateRangeChange}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Agrupamento</Label>
-          <Select value={period} onValueChange={setPeriod}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Selecione o período" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="daily">Diário</SelectItem>
-              <SelectItem value="weekly">Semanal</SelectItem>
-              <SelectItem value="monthly">Mensal</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      <SalesFilters
+        dateRange={dateRange}
+        onDateChange={handleDateRangeChange}
+        period={period}
+        onPeriodChange={setPeriod}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Resumo</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <p className="text-2xl font-bold">
-                {new Intl.NumberFormat('pt-PT', {
-                  style: 'currency',
-                  currency: 'EUR'
-                }).format(salesData.totalSales)}
-              </p>
-              <p className="text-muted-foreground">
-                Total de {salesData.totalTransactions} transações
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Métodos de Pagamento</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <PieChart width={300} height={300}>
-              <Pie
-                data={salesData.paymentMethods}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-                label={({ name, percent }) => 
-                  `${name} ${(percent * 100).toFixed(0)}%`
-                }
-              >
-                {salesData.paymentMethods.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </CardContent>
-        </Card>
+        <SalesSummaryCard
+          totalSales={salesData.totalSales}
+          totalTransactions={salesData.totalTransactions}
+        />
+        <PaymentMethodsChart paymentMethods={salesData.paymentMethods} />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Vendas por Data</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[400px]">
-            <BarChart
-              width={800}
-              height={300}
-              data={salesData.salesByDate}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="total" name="Total de Vendas" fill="#FFB000" />
-            </BarChart>
-          </ScrollArea>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Top 5 Produtos</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[400px]">
-            <BarChart
-              width={800}
-              height={300}
-              data={salesData.productSales}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" />
-              <YAxis dataKey="name" type="category" width={150} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="total" name="Total de Vendas" fill="#22C55E" />
-            </BarChart>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+      <SalesByDateChart salesByDate={salesData.salesByDate} />
+      <TopProductsChart productSales={salesData.productSales} />
     </div>
   );
 }
