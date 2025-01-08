@@ -11,6 +11,30 @@ import { SalesByDateChart } from "./sales/SalesByDateChart";
 import { TopProductsChart } from "./sales/TopProductsChart";
 import { SalesFilters } from "./sales/SalesFilters";
 
+interface SaleItem {
+  quantity: number;
+  price: number;
+  products: {
+    name: string;
+  } | null;
+}
+
+interface Sale {
+  id: string;
+  total: number;
+  payment_method: string;
+  created_at: string;
+  sale_items: SaleItem[] | null;
+}
+
+interface SalesData {
+  salesByDate: Array<{ date: string; total: number }>;
+  paymentMethods: Array<{ name: string; value: number }>;
+  productSales: Array<{ name: string; total: number }>;
+  totalSales: number;
+  totalTransactions: number;
+}
+
 export function SalesReport() {
   const [dateRange, setDateRange] = useState<Required<DateRange>>({
     from: addDays(new Date(), -30),
@@ -47,7 +71,7 @@ export function SalesReport() {
         const paymentMethods = new Map<string, number>();
         const productSales = new Map<string, number>();
 
-        sales?.forEach((sale) => {
+        (sales as Sale[])?.forEach((sale) => {
           const date = new Date(sale.created_at).toLocaleDateString('pt-PT');
           salesByDate.set(date, (salesByDate.get(date) || 0) + sale.total);
           
@@ -65,7 +89,7 @@ export function SalesReport() {
           });
         });
 
-        return {
+        const result: SalesData = {
           salesByDate: Array.from(salesByDate.entries()).map(([date, total]) => ({
             date,
             total,
@@ -84,6 +108,8 @@ export function SalesReport() {
           totalSales: sales?.reduce((acc, sale) => acc + sale.total, 0) || 0,
           totalTransactions: sales?.length || 0,
         };
+
+        return result;
       } catch (error) {
         console.error("Error fetching sales data:", error);
         toast.error("Erro ao carregar dados de vendas");
