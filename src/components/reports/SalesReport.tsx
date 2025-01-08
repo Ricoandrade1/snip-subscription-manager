@@ -46,7 +46,7 @@ export function SalesReport() {
     queryKey: ["sales-report", dateRange, period],
     queryFn: async () => {
       try {
-        const { data: sales, error: salesError } = await supabase
+        const { data: rawSales, error: salesError } = await supabase
           .from("sales")
           .select(`
             id,
@@ -67,11 +67,12 @@ export function SalesReport() {
 
         if (salesError) throw salesError;
 
+        const sales = rawSales as unknown as Sale[];
         const salesByDate = new Map<string, number>();
         const paymentMethods = new Map<string, number>();
         const productSales = new Map<string, number>();
 
-        (sales as Sale[])?.forEach((sale) => {
+        sales?.forEach((sale) => {
           const date = new Date(sale.created_at).toLocaleDateString('pt-PT');
           salesByDate.set(date, (salesByDate.get(date) || 0) + sale.total);
           
