@@ -1,8 +1,8 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Subscriber } from "./types";
-import { format, addDays } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { format, addDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { getSubscriberCode } from "./utils/getSubscriberCode";
 import { Button } from "@/components/ui/button";
 import { Trash2, Phone } from "lucide-react";
@@ -65,7 +65,6 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick, onDeleteC
   const handlePhoneClick = () => {
     if (subscriber.phone) {
       navigator.clipboard.writeText(subscriber.phone);
-      // Toast notification is handled by the Tooltip
     }
   };
 
@@ -111,6 +110,9 @@ export function SubscriberTableRow({ subscriber, subscribers, onClick, onDeleteC
             </TooltipContent>
           </Tooltip>
         ) : '-'}
+      </TableCell>
+      <TableCell className="text-barber-light">
+        {subscriber.nif || '-'}
       </TableCell>
       <TableCell className="text-barber-light whitespace-nowrap">
         {formatDate(subscriber.payment_date)}
