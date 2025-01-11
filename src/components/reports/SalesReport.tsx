@@ -11,12 +11,14 @@ import { SalesByDateChart } from "./sales/SalesByDateChart";
 import { TopProductsChart } from "./sales/TopProductsChart";
 import { SalesFilters } from "./sales/SalesFilters";
 
+interface Product {
+  name: string;
+}
+
 interface SaleItem {
   quantity: number;
   price: number;
-  products: {
-    name: string;
-  } | null;
+  products: Product | null;
 }
 
 interface Sale {
